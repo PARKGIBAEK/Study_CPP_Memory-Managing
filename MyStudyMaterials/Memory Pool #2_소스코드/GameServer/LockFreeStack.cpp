@@ -1,9 +1,12 @@
 #include "pch.h"
 #include "LockFreeStack.h"
 
+/*-------------------
+	1차 시도
+-------------------*/
+
 /*
-// []
-// Header[ next ]
+
 void InitializeHead(SListHeader* header)
 {
 	header->next = nullptr;
@@ -26,6 +29,14 @@ SListEntry* PopEntrySList(SListHeader* header)
 }
 */
 
+
+//=========================================================
+
+
+/*-------------------
+		2차 시도
+--------------------/*
+
 /*
 void InitializeHead(SListHeader* header)
 {
@@ -35,7 +46,8 @@ void InitializeHead(SListHeader* header)
 void PushEntrySList(SListHeader* header, SListEntry* entry)
 {
 	entry->next = header->next;
-	while (::InterlockedCompareExchange64((int64*)&header->next, (int64)entry, (int64)entry->next) == 0)
+
+	while (::InterlockedCompareExchange64((int64*)&header->next, (int64)entry, (int64)entry->next) != entry)
 	{
 
 	}
@@ -45,10 +57,11 @@ void PushEntrySList(SListHeader* header, SListEntry* entry)
 // Header[ next ]
 SListEntry* PopEntrySList(SListHeader* header)
 {
+	//최상단 데이터를 꺼내옴
 	SListEntry* expected = header->next;
 
 	// ABA Problem
-	while (expected && ::InterlockedCompareExchange64((int64*)&header->next, (int64)expected->next, (int64)expected) == 0)
+	while (expected && ::InterlockedCompareExchange64((int64*)&header->next, (int64)expected->next, (int64)expected) != expected)
 	{
 
 	}
@@ -56,6 +69,14 @@ SListEntry* PopEntrySList(SListHeader* header)
 	return expected;
 }
 */
+
+
+//=========================================================
+
+
+/*-------------------
+		3차 시도
+-------------------*/
 
 void InitializeHead(SListHeader* header)
 {
@@ -65,10 +86,11 @@ void InitializeHead(SListHeader* header)
 
 void PushEntrySList(SListHeader* header, SListEntry* entry)
 {
-	SListHeader expected = {};
-	SListHeader desired = {};
 	
-	// 16 바이트 정렬
+	SListHeader expected{};
+	SListHeader desired{};
+
+	// 포인터entry가 가리키는 주소는 16바이트 단위 정렬이기 때문에 하위4비트는 0이므로 bit shift>>4를 해도 됨
 	desired.HeaderX64.next = (((uint64)entry) >> 4);
 
 	while (true)
