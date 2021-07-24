@@ -17,6 +17,9 @@ public:
 	int32 _hp = rand() % 1000;
 };
 
+SLIST_HEADER a;
+SLIST_ENTRY b;
+
 int main()
 {
 	for (int32 i = 0; i < 5; i++)
@@ -25,13 +28,13 @@ int main()
 			{
 				while (true)
 				{
-					Knight* knight = xnew<Knight>();
+					Knight* knight = xNew<Knight>();
 
 					cout << knight->_hp << endl;
 
 					this_thread::sleep_for(10ms);
 
-					xdelete(knight);
+					xDelete(knight);
 				}
 			});
 	}

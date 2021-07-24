@@ -35,10 +35,10 @@ int main()
 		ObjectPool<Knight>::Push(knights[i]);
 		knights[i] = nullptr;
 	}
-	
+
 	shared_ptr<Knight> sptr = ObjectPool<Knight>::MakeShared();
 	shared_ptr<Knight> sptr2 = MakeShared<Knight>();
-	
+
 	for (int32 i = 0; i < 5; i++)
 	{
 		GThreadManager->Launch([]()

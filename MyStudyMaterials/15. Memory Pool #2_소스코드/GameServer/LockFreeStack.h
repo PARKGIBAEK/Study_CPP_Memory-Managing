@@ -128,8 +128,8 @@ struct SListHeader
 		struct
 		{
 			//depth(16비트) 와 sequence(48비트)가 위의 alignment(64비트)의 메모리 크기에 대응
-			uint64 depth : 16;
-			uint64 sequence : 48;
+			uint64 depth : 16; // stack의 깊이(데이터 갯수)
+			uint64 sequence : 48; // 몇번째 push/pop 작업인지 카운트
 			//reserved(4비트) 와 next(60비트)가 위의 region(64비트)의 메모리 크기에 대응
 			uint64 reserved : 4;
 			uint64 next : 60;

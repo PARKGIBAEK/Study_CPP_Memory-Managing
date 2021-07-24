@@ -2,7 +2,7 @@
 <Project>
   <ProjectOutputs>
     <ProjectOutput>
-      <FullPath>C:\Rookiss\CPP_Server\Server\Binary\Debug\DummyClient.exe</FullPath>
+      <FullPath>C:\Git_Repository\MyStudyMaterials\19. 소켓 프로그래밍 기초 #2_소스코드\Binary\Debug\DummyClient.exe</FullPath>
     </ProjectOutput>
   </ProjectOutputs>
   <ContentFiles />

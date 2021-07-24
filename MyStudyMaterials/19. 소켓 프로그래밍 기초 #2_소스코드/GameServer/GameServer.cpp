@@ -71,7 +71,7 @@ int main()
 			return 0;
 		}
 
-		// 손님 입장!
+		// 클라이언트 입장 메시지 출력
 		char ipAddress[16];
 		::inet_ntop(AF_INET, &clientAddr.sin_addr, ipAddress, sizeof(ipAddress));
 		cout << "Client Connected! IP = " << ipAddress << endl;

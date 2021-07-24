@@ -14,7 +14,7 @@ int main()
 	if (::WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
 		return 0;
 
-	// ad : Address Family (AF_INET = IPv4, AF_INET6 = IPv6)
+	// af - 주소체계(Address Family) => (AF_INET = IPv4, AF_INET6 = IPv6)
 	// type : TCP(SOCK_STREAM) vs UDP(SOCK_DGRAM)
 	// protocol : 0
 	// return : descriptor
@@ -31,13 +31,13 @@ int main()
 	::memset(&serverAddr, 0, sizeof(serverAddr));
 	serverAddr.sin_family = AF_INET;
 	//serverAddr.sin_addr.s_addr = ::inet_addr("127.0.0.1"); << deprecated
-	::inet_pton(AF_INET, "127.0.0.1", &serverAddr.sin_addr);
+	::inet_pton(AF_INET, "127.0.0.1", &serverAddr.sin_addr); // 127.0.0.1 은 Loop back 주소로 자기 자신에게 보내고 자신이 응답하는 방식이다 
 	serverAddr.sin_port = ::htons(7777); // 80 : HTTP
 	// host to network short
 	// Little-Endian vs Big-Endian
 	// ex) 0x12345678 4바이트 정수
-	// low [0x78][0x56][0x34][0x12] high < little
-	// low [0x12][0x34][0x56][0x78] high < big = network
+	// low [0x78][0x56][0x34][0x12] high < Little-Endian (인텔 CPU)
+	// low [0x12][0x34][0x56][0x78] high < Big-Endian  ( network에서 공식적으로 사용 )
 
 	if (::connect(clientSocket, (SOCKADDR*)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR)
 	{

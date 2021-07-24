@@ -5,3 +5,6 @@
 *.log
 *.ipch
 *.idb
+*.db
+*.exe
+*.pch

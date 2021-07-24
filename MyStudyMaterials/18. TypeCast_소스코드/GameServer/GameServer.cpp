@@ -52,10 +52,14 @@ class Dog
 
 int main()
 {
+	/*Player p1 = new Knight();
+	Player p2 = new Mage();*/
+
 	//TypeList<Mage, Knight>::Head whoAMI;
 	//TypeList<Mage, Knight>::Tail whoAMI2;
 
 	//TypeList<Mage, TypeList<Knight, Archer>>::Head whoAMI3;
+	
 	//TypeList<Mage, TypeList<Knight, Archer>>::Tail::Head whoAMI4;
 	//TypeList<Mage, TypeList<Knight, Archer>>::Tail::Tail whoAMI5;
 
@@ -72,37 +76,40 @@ int main()
 	//int32 index2 = IndexOf<TL, Archer>::value;
 	//int32 index3 = IndexOf<TL, Dog>::value;
 
-	//bool canConvert1 = Conversion<Player, Knight>::exists;
-	//bool canConvert2 = Conversion<Knight, Player>::exists;
-	//bool canConvert3 = Conversion<Knight, Dog>::exists;
+	//bool canConvert1 = Conversion<Player, Knight>::isConversible;
+	//bool canConvert2 = Conversion<Knight, Player>::isConversible;
+	//bool canConvert3 = Conversion<Knight, Dog>::isConversible;
 
-	/*{
-		Player* player = new Knight();
+	{
+	Player* player = new Knight();
+	//Player* player = new Player();
 
-		bool canCast = CanCast<Knight*>(player);
+	if(bool canCast = CanCast<Knight*>(player))
 		Knight* knight = TypeCast<Knight*>(player);
 		
 
-		delete player;
-	}*/
+	delete player;
+	}
 
 	{
 		shared_ptr<Player> player = MakeShared<Knight>();
 
-		shared_ptr<Archer> archer = TypeCast<Archer>(player);
-		bool canCast = CanCast<Mage>(player);
-
+		if (bool canCast = CanCast<Knight>(player))
+			player = TypeCast<Knight>(player);
+		else if (bool canCast = CanCast<Mage>(player))
+			player = TypeCast<Mage>(player);
+		
 	}
 	
-	for (int32 i = 0; i < 5; i++)
-	{
-		GThreadManager->Launch([]()
-			{
-				while (true)
-				{
-				}
-			});
-	}
+	//for (int32 i = 0; i < 5; i++)
+	//{
+	//	GThreadManager->Launch([]()
+	//		{
+	//			while (true)
+	//			{
+	//			}
+	//		});
+	//}
 
-	GThreadManager->Join();
+	//GThreadManager->Join();
 }

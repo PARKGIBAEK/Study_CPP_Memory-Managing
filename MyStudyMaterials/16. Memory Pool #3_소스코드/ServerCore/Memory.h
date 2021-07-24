@@ -31,18 +31,18 @@ private:
 	MemoryPool* _poolTable[MAX_ALLOC_SIZE + 1];
 };
 
-
+//메모리 풀을 이용한 new
 template<typename Type, typename... Args>
-Type* xnew(Args&&... args)
+Type* xNew(Args&&... args)
 {
-	Type* memory = static_cast<Type*>(xalloc(sizeof(Type)));
+	Type* memory = static_cast<Type*>(xAlloc(sizeof(Type)));
 	new(memory)Type(forward<Args>(args)...); // placement new
 	return memory;
 }
 
 template<typename Type>
-void xdelete(Type* obj)
+void xDelete(Type* obj)
 {
 	obj->~Type();
-	xrelease(obj);
+	xRelease(obj);
 }

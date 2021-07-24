@@ -2,14 +2,14 @@
 
 enum
 {
-	SLIST_ALIGNMENT = 16
+	SLIST_ALIGNMENT_SIZE = 16
 };
 
 /*-----------------
 	MemoryHeader
 ------------------*/
 
-DECLSPEC_ALIGN(SLIST_ALIGNMENT)
+DECLSPEC_ALIGN(SLIST_ALIGNMENT_SIZE)
 struct MemoryHeader : public SLIST_ENTRY
 {
 	// [MemoryHeader][Data]
@@ -35,7 +35,7 @@ struct MemoryHeader : public SLIST_ENTRY
 	MemoryPool
 ------------------*/
 
-DECLSPEC_ALIGN(SLIST_ALIGNMENT)
+DECLSPEC_ALIGN(SLIST_ALIGNMENT_SIZE)
 class MemoryPool
 {
 public:
@@ -46,7 +46,7 @@ public:
 	MemoryHeader*	Pop();
 
 private:
-	SLIST_HEADER	_header;
+	SLIST_HEADER	_header; // Microsoft에서 만든 SLIST_HEADER
 	int32			_allocSize = 0;
 	atomic<int32>	_allocCount = 0;
 };
