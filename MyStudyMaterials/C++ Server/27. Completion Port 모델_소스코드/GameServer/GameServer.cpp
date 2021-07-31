@@ -55,7 +55,7 @@ void WorkerThreadMain(HANDLE iocpHandle)
 			(ULONG_PTR*)&session, (LPOVERLAPPED*)&overlappedEx, INFINITE);
 
 		if (ret == FALSE || bytesTransferred == 0)
-		{
+		{// 문제가 있는 상황
 			// TODO : 연결 끊김
 			continue;
 		}
@@ -70,6 +70,7 @@ void WorkerThreadMain(HANDLE iocpHandle)
 
 		DWORD recvLen = 0;
 		DWORD flags = 0;
+		// 같은 소켓과 계속 통신을 이어나가기 위해(GetQueuedCompletionStatus 함수에서 다시 해당 소켓을 만나기 위해)
 		::WSARecv(session->socket, &wsaBuf, 1, &recvLen, &flags, &overlappedEx->overlapped, NULL);
 	}
 }
@@ -96,7 +97,7 @@ int main()
 	if (::listen(listenSocket, SOMAXCONN) == SOCKET_ERROR)
 		return 0;
 
-	cout << "Accept" << endl;
+	cout << "Start listening" << endl;
 	
 	// Overlapped 모델 (Completion Routine 콜백 기반)
 	// - 비동기 입출력 함수 완료되면, 쓰레드마다 있는 APC 큐에 일감이 쌓임
@@ -114,7 +115,7 @@ int main()
 
 	vector<Session*> sessionManager;
 
-	// CP 생성
+	// CP 생성하기
 	HANDLE iocpHandle = ::CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 0);
 
 	// WorkerThreads
@@ -137,7 +138,11 @@ int main()
 
 		cout << "Client Connected !" << endl;
 
-		// 소켓을 CP에 등록
+		/* 소켓을 CP에 등록할 때도 CP를 생성할 때와 같은 함수를 사용한다
+		
+			3번째 인자는 어떤 소켓에 전달한 작업인지 구분하기 위한 key이며
+			GetCompletionQueuedStatus 함수에서 다시 받아오게 될 값이다.
+		*/
 		::CreateIoCompletionPort((HANDLE)clientSocket, iocpHandle, /*Key*/(ULONG_PTR)session, 0);
 
 		WSABUF wsaBuf;

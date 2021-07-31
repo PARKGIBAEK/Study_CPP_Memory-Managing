@@ -19,7 +19,7 @@ int main()
 		cout << "Socket ErrorCode : " << errCode << endl;
 		return 0;
 	}
-
+	InterlockedBitTestAndReset
 	SOCKADDR_IN serverAddr; // IPv4
 	::memset(&serverAddr, 0, sizeof(serverAddr));
 	serverAddr.sin_family = AF_INET;

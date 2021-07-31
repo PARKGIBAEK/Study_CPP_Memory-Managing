@@ -11,9 +11,11 @@ void HandleError(const char* cause)
 	int32 errCode = ::WSAGetLastError();
 	cout << cause << " ErrorCode : " << errCode << endl;
 }
+using namespace std::literals;
 
 int main()
 {
+	std::this_thread::sleep_for(1s);
 	WSAData wsaData;
 	if (::WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
 		return 0;

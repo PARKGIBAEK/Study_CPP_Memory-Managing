@@ -52,7 +52,7 @@ int main()
 
 	char sendBuffer[100] = "Hello World";
 	WSAEVENT wsaEvent = ::WSACreateEvent();
-	WSAOVERLAPPED overlapped = {};
+	WSAOVERLAPPED overlapped;
 	overlapped.hEvent = wsaEvent;
 
 	// Send
@@ -64,17 +64,19 @@ int main()
 
 		DWORD sendLen = 0;
 		DWORD flags = 0;
+		// 비동기 방식으로 Send를 진행하므로 즉시 성공할 수도 있고, 아닐 수도 있으므로 SOCKET_ERROR가 반드시 진짜 에러는 아닐 수도 있다.
 		if (::WSASend(clientSocket, &wsaBuf, 1, &sendLen, flags, &overlapped, nullptr) == SOCKET_ERROR)
-		{
+		{// 상대방이 데이터를 받을 수 없는 상황이어서 pending된 상황
 			if (::WSAGetLastError() == WSA_IO_PENDING)
 			{
+				std::cout << "WSASend has been pending\n";
 				// Pending
 				::WSAWaitForMultipleEvents(1, &wsaEvent, TRUE, WSA_INFINITE, FALSE);
 				::WSAGetOverlappedResult(clientSocket, &overlapped, &sendLen, FALSE, &flags);
 			}
-			else
+			else//진짜 에러가 발생한 상황
 			{
-				// 진짜 문제 있는 상황
+				// TODO : 에러/예외 처리
 				break;
 			}
 		}

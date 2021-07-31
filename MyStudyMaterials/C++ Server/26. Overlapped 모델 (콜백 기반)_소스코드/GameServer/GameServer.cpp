@@ -25,16 +25,23 @@ struct Session
 	WSAOVERLAPPED overlapped = {};
 	SOCKET socket = INVALID_SOCKET;
 	char recvBuffer[BUFSIZE] = {};
-	int32 recvBytes = 0;	
+	int32 recvBytes = 0;
+	int32 sendBytes = 0;
 };
 
+/* 콜백 함수의 3번째 인자 overlapped는
+	WSARecv/WSASend함수의 6번째 인자로 넘겨주는 OVERLAPPED구조체의 주소를 다시 넘겨 받는다.*/
 void CALLBACK RecvCallback(DWORD error, DWORD recvLen, LPWSAOVERLAPPED overlapped, DWORD flags)
 {
-	cout << "Data Recv Len Callback = " << recvLen << endl;
-	// TODO : 에코 서버를 만든다면 WSASend()
-
+	/* 특정 구조체의 첫번째 멤버 변수는 형변환하여 특정 구조체 사이즈만큼의 메모리를 그대로 로드할 수 있다.
+	따라서 overlapped를 형변환하여 Session객체를 그대로 불러올 수 있다.*/
 	Session* session = (Session*)overlapped;
-
+	session->recvBytes += recvLen;
+	if (session->recvBytes < 1) {
+		// 오류 처리
+		return;
+	}
+	// ...
 }
 
 int main()
@@ -64,7 +71,7 @@ int main()
 		return 0;
 
 	cout << "Accept" << endl;
-	
+
 	// Overlapped 모델 (Completion Routine 콜백 기반)
 	// - 비동기 입출력 지원하는 소켓 생성
 	// - 비동기 입출력 함수 호출 (완료 루틴의 시작 주소를 넘겨준다)
@@ -147,13 +154,13 @@ int main()
 			else
 			{
 				cout << "Data Recv Len = " << recvLen << endl;
-			}			
+			}
 		}
 
 		::closesocket(session.socket);
 		//::WSACloseEvent(wsaEvent);
 	}
-	
+
 	// 윈속 종료
 	::WSACleanup();
 }
