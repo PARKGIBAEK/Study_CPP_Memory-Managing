@@ -24,6 +24,7 @@
 	*crash = 0xDEADBEEF;					\
 }
 
+//참이 아닐 경우 크래쉬 발생
 #define ASSERT_CRASH(expr)			\
 {									\
 	if (!(expr))					\

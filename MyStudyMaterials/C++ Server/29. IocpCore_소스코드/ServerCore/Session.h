@@ -3,9 +3,9 @@
 #include "IocpEvent.h"
 #include "NetAddress.h"
 
-/*--------------
-	Session
----------------*/
+///////////////////
+//    Session    //
+///////////////////
 
 class Session : public IocpObject
 {

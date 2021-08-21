@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "Listener.h"
 #include "SocketUtils.h"
-#include "IocpEvent.h"
+#include "IocpEvent.h"//전방 선언해준 AcceptEvent용
 #include "Session.h"
 
 /*--------------
@@ -71,6 +71,7 @@ void Listener::Dispatch(IocpEvent* iocpEvent, int32 numOfBytes)
 
 void Listener::RegisterAccept(AcceptEvent* acceptEvent)
 {
+	std::cout << "RegisterAccept\n";
 	Session* session = xnew<Session>();
 
 	acceptEvent->Init();
@@ -112,5 +113,5 @@ void Listener::ProcessAccept(AcceptEvent* acceptEvent)
 
 	// TODO
 
-	RegisterAccept(acceptEvent);
+	RegisterAccept(acceptEvent);// RegisterAccept 재실행
 }

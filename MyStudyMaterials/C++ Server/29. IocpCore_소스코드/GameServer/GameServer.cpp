@@ -13,6 +13,7 @@
 
 int main()
 {
+	std::cout << "Start Server" << std::endl;
 	Listener listener;
 	listener.StartAccept(NetAddress(L"127.0.0.1", 7777));
 

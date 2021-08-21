@@ -6,7 +6,7 @@ enum class EventType : uint8
 {
 	Connect,
 	Accept,
-	//PreRecv,
+	//PreRecv, 0 byte recv라는 고급 기법
 	Recv,
 	Send
 };

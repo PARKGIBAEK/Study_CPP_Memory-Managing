@@ -23,7 +23,7 @@
 	__analysis_assume(crash != nullptr);	\
 	*crash = 0xDEADBEEF;					\
 }
-
+//expr이 false이면 크래쉬 발생
 #define ASSERT_CRASH(expr)			\
 {									\
 	if (!(expr))					\

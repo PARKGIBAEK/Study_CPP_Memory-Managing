@@ -27,6 +27,8 @@ bool IocpCore::Register(IocpObject* iocpObject)
 
 bool IocpCore::Dispatch(uint32 timeoutMs)
 {
+	std::cout << "Dispatch\n";
+
 	DWORD numOfBytes = 0;
 	IocpObject* iocpObject = nullptr;
 	IocpEvent* iocpEvent = nullptr;

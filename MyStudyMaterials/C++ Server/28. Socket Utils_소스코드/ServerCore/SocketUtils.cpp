@@ -35,6 +35,8 @@ bool SocketUtils::BindWindowsFunction(SOCKET socket, GUID guid, LPVOID* fn)
 
 SOCKET SocketUtils::CreateSocket()
 {
+	/* 소켓을 생성하는 기본 함수 socket이 아닌 WSASocket함수를 이용하면 소켓 생성 시 더 세부적인 설정을 적용할 수 있다.
+	* WSASocket 함수로 생성된 소켓에서 Overlapped함수를 사용하려면 생성 시 WSA_FLAG_OVERLAPPED 옵션을 적용해줘야한다*/
 	return ::WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED);
 }
 

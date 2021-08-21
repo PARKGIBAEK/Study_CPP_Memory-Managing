@@ -8,3 +8,6 @@
 *.db
 *.exe
 *.pch
+*.recipe
+*.ilk
+*.suo
