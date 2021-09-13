@@ -1,0 +1,9 @@
+diff a/.gitignore b/.gitignore	(rejected hunks)
+@@ -8,6 +8,7 @@
+ *.db
+ *.exe
+ *.pch
+ *.recipe
+ *.ilk
+ *.suo
++/MyStudyMaterials
