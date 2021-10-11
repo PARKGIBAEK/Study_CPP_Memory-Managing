@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "RecvBuffer.h"
-
+#include <iterator>
 /*--------------
 	RecvBuffer
 ----------------*/
@@ -28,6 +28,7 @@ void RecvBuffer::Clean()
 		// 여유 공간이 버퍼 1개 크기 미만이면, 데이터를 앞으로 땅긴다.
 		if (FreeSize() < _bufferSize)
 		{
+			
 			::memcpy(&_buffer[0], &_buffer[_readPos], dataSize);
 			_readPos = 0;
 			_writePos = dataSize;

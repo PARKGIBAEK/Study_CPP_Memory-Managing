@@ -40,21 +40,21 @@ private:
 class ReadLockGuard
 {
 public:
-	ReadLockGuard(Lock& lock, const char* name) : mtxLock(lock), _name(name) { mtxLock.ReadLock(name); }
-	~ReadLockGuard() { mtxLock.ReadUnlock(_name); }
+	ReadLockGuard(Lock& _lock, const char* name) : lock(_lock), _name(name) { lock.ReadLock(name); }
+	~ReadLockGuard() { lock.ReadUnlock(_name); }
 
 private:
-	Lock& mtxLock;
+	Lock& lock;
     const char* _name;
 };
 
 class WriteLockGuard
 {
 public:
-	WriteLockGuard(Lock& lock, const char* name) : mtxLock(lock), _name(name) { mtxLock.WriteLock(name); }
-	~WriteLockGuard() { mtxLock.WriteUnlock(_name); }
+	WriteLockGuard(Lock& lock, const char* name) : lock(lock), _name(name) { lock.WriteLock(name); }
+	~WriteLockGuard() { lock.WriteUnlock(_name); }
 
 private:
-	Lock& mtxLock;
+	Lock& lock;
     const char* _name;
 };

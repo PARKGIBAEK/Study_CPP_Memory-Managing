@@ -21,7 +21,7 @@ public:
 	void	Join();
 	// 쓰레드 ID를 부여하고 각쓰레드의 TLS에 해당 쓰레드 ID를 전달해 줌
 	static void InitTLS();
-	static void DestroyTLS();
+	static void  DestroyTLS();
 
 	static void DoGlobalQueueWork();
 	static void DistributeReservedJobs();
