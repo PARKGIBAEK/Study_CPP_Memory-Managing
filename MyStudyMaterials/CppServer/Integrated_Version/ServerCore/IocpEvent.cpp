@@ -5,7 +5,7 @@
 	IocpEvent
 ---------------*/
 
-IocpEvent::IocpEvent(EventType type) : eventType(type)
+IocpEvent::IocpEvent(EventType _type) : eventType(_type)
 {
 	Init();
 }

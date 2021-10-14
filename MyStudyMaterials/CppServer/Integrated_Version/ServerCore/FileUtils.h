@@ -1,3 +1,6 @@
+/*   사용 안함   */
+
+
 #pragma once
 #include <vector>
 #include "Types.h"

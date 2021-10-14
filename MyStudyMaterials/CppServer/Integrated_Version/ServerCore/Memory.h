@@ -31,24 +31,30 @@ private:
 	MemoryPool* _poolTable[MAX_ALLOC_SIZE + 1];
 };
 
-
+// new 연산자 대신 사용
 template<typename Type, typename... Args>
-Type* xnew(Args&&... args)
+Type* XNew(Args&&... args)
 {
-	Type* memory = static_cast<Type*>(PoolAllocator::Alloc(sizeof(Type)));
-	new(memory)Type(forward<Args>(args)...); // placement new
+	// 메모리만 할당
+	Type* memory = static_cast<Type*>(PoolAllocator::AllocateMemory(sizeof(Type)));
+	// placement new를 통해 생성자 호출
+	new(memory)Type(std::forward<Args>(args)...);
 	return memory;
 }
 
 template<typename Type>
-void xdelete(Type* obj)
+void XDelete(Type* obj)
 {
+	// obj의 소멸자 호출
 	obj->~Type();
-	PoolAllocator::Release(obj);
+	// Memory Pool에 반납
+	PoolAllocator::ReleaseMemory(obj);
 }
 
 template<typename Type, typename... Args>
-shared_ptr<Type> MakeShared(Args&&... args)
+std::shared_ptr<Type> MakeShared(Args&&... args)
 {
-	return shared_ptr<Type>{ xnew<Type>(forward<Args>(args)...), xdelete<Type> };
+	// shared_ptr로 반환해 주기
+	//return std::shared_ptr<Type>{ XNew<Type>(forward<Args>(args)...), XDelete<Type> };
+	return std::make_shared<Type>{ XNew<Type>(forward<Args>(args)...), XDelete<Type> };
 }

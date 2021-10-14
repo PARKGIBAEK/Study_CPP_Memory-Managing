@@ -62,7 +62,7 @@ void* Memory::Allocate(int32 size)
 	const int32 allocSize = size + sizeof(MemoryHeader);
 
 #ifdef _STOMP
-	header = reinterpret_cast<MemoryHeader*>(StompAllocator::Alloc(allocSize));
+	header = reinterpret_cast<MemoryHeader*>(StompAllocator::AllocateMemory(allocSize));
 #else
 	if (allocSize > MAX_ALLOC_SIZE)
 	{
@@ -87,7 +87,7 @@ void Memory::Release(void* ptr)
 	ASSERT_CRASH(allocSize > 0);
 
 #ifdef _STOMP
-	StompAllocator::Release(header);
+	StompAllocator::ReleaseMemory(header);
 #else
 	if (allocSize > MAX_ALLOC_SIZE)
 	{

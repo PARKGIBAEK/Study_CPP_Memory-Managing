@@ -1,5 +1,5 @@
 #pragma once
-
+#include "Container.h"
 class Session;
 
 enum class EventType : uint8
@@ -19,7 +19,7 @@ enum class EventType : uint8
 class IocpEvent : public OVERLAPPED
 {
 public:
-	IocpEvent(EventType type);
+	IocpEvent(EventType _type);
 	// 상속받은 OVERLLAPED객체의 내용을 초기화
 	void			Init();
 
@@ -80,5 +80,6 @@ class SendEvent : public IocpEvent
 public:
 	SendEvent() : IocpEvent(EventType::Send) { }
 	 
+	//Vector<SendBufferRef> sendBuffers;
 	Vector<SendBufferRef> sendBuffers;
 };

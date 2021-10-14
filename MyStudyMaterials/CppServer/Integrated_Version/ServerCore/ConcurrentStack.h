@@ -1,8 +1,9 @@
-#pragma once
+/* 사용 안함 */
 
+#pragma once
 #include <mutex>
 
-//간단한 Stack ( thread-safe )
+//간단한 Lock Stack ( thread-safe )
 template<typename T>
 class LockStack
 {

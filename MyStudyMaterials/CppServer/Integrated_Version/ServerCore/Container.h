@@ -13,36 +13,36 @@
 using namespace std;
 
 template<typename Type, uint32 Size>
-using Array = array<Type, Size>;
+using Array = std::array<Type, Size>;
 
 template<typename Type>
-using Vector = vector<Type, StlAllocator<Type>>;
+using Vector = std::vector<Type, STL_Allocator<Type>>;
 
 template<typename Type>
-using List = list<Type, StlAllocator<Type>>;
+using List = std::list<Type, STL_Allocator<Type>>;
 
 template<typename Key, typename Type, typename Pred = less<Key>>
-using Map = map<Key, Type, Pred, StlAllocator<pair<const Key, Type>>>;
+using Map = std::map<Key, Type, Pred, STL_Allocator<pair<const Key, Type>>>;
 
 template<typename Key, typename Pred = less<Key>>
-using Set = set<Key, Pred, StlAllocator<Key>>;
+using Set = std::set<Key, Pred, STL_Allocator<Key>>;
 
 template<typename Type>
-using Deque = deque<Type, StlAllocator<Type>>;
+using Deque = std::deque<Type, STL_Allocator<Type>>;
 
 template<typename Type, typename Container = Deque<Type>>
-using Queue = queue<Type, Container>;
+using Queue = std::queue<Type, Container>;
 
 template<typename Type, typename Container = Deque<Type>>
-using Stack = stack<Type, Container>;
+using Stack = std::stack<Type, Container>;
 
 template<typename Type, typename Container = Vector<Type>, typename Pred = less<typename Container::value_type>>
-using PriorityQueue = priority_queue<Type, Container, Pred>;
+using PriorityQueue = std::priority_queue<Type, Container, Pred>;
 
-using String = basic_string<wchar_t, char_traits<wchar_t>, StlAllocator<wchar_t>>;
+using String = std::basic_string<wchar_t, char_traits<wchar_t>, STL_Allocator<wchar_t>>;
 
 template<typename Key, typename Type, typename Hasher = hash<Key>, typename KeyEq = equal_to<Key>>
-using HashMap = unordered_map<Key, Type, Hasher, KeyEq, StlAllocator<pair<const Key, Type>>>;
+using HashMap = std::unordered_map<Key, Type, Hasher, KeyEq, STL_Allocator<pair<const Key, Type>>>;
 
 template<typename Key, typename Hasher = hash<Key>, typename KeyEq = equal_to<Key>>
-using HashSet = unordered_set<Key, Hasher, KeyEq, StlAllocator<Key>>;
+using HashSet = std::unordered_set<Key, Hasher, KeyEq, STL_Allocator<Key>>;

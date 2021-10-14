@@ -5,28 +5,28 @@
 	NetAddress
 ---------------*/
 
-NetAddress::NetAddress(SOCKADDR_IN sockAddr) : _sockAddr(sockAddr)
+NetAddress::NetAddress(SOCKADDR_IN _sockAddr) : sockAddr(_sockAddr)
 {
 }
 
-NetAddress::NetAddress(wstring ip, uint16 port)
+NetAddress::NetAddress(wstring _ip, uint16 _port)
 {
-	::memset(&_sockAddr, 0, sizeof(_sockAddr));
-	_sockAddr.sin_family = AF_INET;
-	_sockAddr.sin_addr = Ip2Address(ip.c_str());
-	_sockAddr.sin_port = ::htons(port);
+	::memset(&sockAddr, 0, sizeof(sockAddr));
+	sockAddr.sin_family = AF_INET;
+	sockAddr.sin_addr = Ip2Address(_ip.c_str());
+	sockAddr.sin_port = ::htons(_port);
 }
 
 wstring NetAddress::GetIpAddress()
 {
 	WCHAR buffer[100];
-	::InetNtopW(AF_INET, &_sockAddr.sin_addr, buffer, len32(buffer));
+	::InetNtopW(AF_INET, &sockAddr.sin_addr, buffer, len32(buffer));
 	return wstring(buffer);
 }
 
-IN_ADDR NetAddress::Ip2Address(const WCHAR* ip)
+IN_ADDR NetAddress::Ip2Address(const WCHAR* _ip)
 {
 	IN_ADDR address;
-	::InetPtonW(AF_INET, ip, &address);
+	::InetPtonW(AF_INET, _ip, &address);
 	return address;
 }

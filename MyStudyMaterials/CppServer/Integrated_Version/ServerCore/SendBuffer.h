@@ -9,19 +9,19 @@ class SendBufferChunk;
 class SendBuffer
 {
 public:
-	SendBuffer(SendBufferChunkRef owner, BYTE* buffer, uint32 allocSize);
+	SendBuffer(SendBufferChunkRef _owner, BYTE* _buffer, uint32 _allocSize);
 	~SendBuffer();
 
-	BYTE*		Buffer() { return _buffer; }
-	uint32		AllocSize() { return _allocSize; }
-	uint32		WriteSize() { return _writeSize; }
-	void		Close(uint32 writeSize);
+	BYTE*		Buffer() { return buffer; }
+	uint32		AllocSize() { return allocSize; }
+	uint32		WriteSize() { return writeSize; }
+	void		Close(uint32 _writeSize);
 
 private:
-	BYTE*				_buffer;
-	uint32				_allocSize = 0;
-	uint32				_writeSize = 0;
-	SendBufferChunkRef	_owner;
+	BYTE*				buffer;
+	uint32				allocSize = 0;
+	uint32				writeSize = 0;
+	SendBufferChunkRef	owner;
 };
 
 /*--------------------
@@ -40,17 +40,17 @@ public:
 	~SendBufferChunk();
 
 	void					Reset();
-	SendBufferRef		Open(uint32 allocSize);
-	void					Close(uint32 writeSize);
+	SendBufferRef		Open(uint32 _allocSize);
+	void					Close(uint32 _writeSize);
 
-	bool					IsOpen() { return _open; }
-	BYTE*					Buffer() { return &_buffer[_usedSize]; }
-	uint32				FreeSize() { return static_cast<uint32>(_buffer.size()) - _usedSize; }
+	bool					IsOpen() { return isOpen; }
+	BYTE*					Buffer() { return &buffer[usedSize]; }
+	uint32				FreeSize() { return static_cast<uint32>(buffer.size()) - usedSize; }
 
 private:
-	Array<BYTE, SEND_BUFFER_CHUNK_SIZE>		_buffer = {};
-	bool												_open = false;
-	uint32											_usedSize = 0;
+	Array<BYTE, SEND_BUFFER_CHUNK_SIZE>		buffer = {};
+	bool												isOpen = false;
+	uint32											usedSize = 0;
 };
 
 /*---------------------
@@ -60,15 +60,15 @@ private:
 class SendBufferManager
 {
 public:
-	SendBufferRef		Open(uint32 size);
+	SendBufferRef		Open(uint32 _size);
 
 private:
 	SendBufferChunkRef	Pop();
-	void					Push(SendBufferChunkRef buffer);
+	void					Push(SendBufferChunkRef _buffer);
 
-	static void			PushGlobal(SendBufferChunk* buffer);
+	static void			PushGlobal(SendBufferChunk* _buffer);
 
 private:
 	USE_LOCK;
-	Vector<SendBufferChunkRef> _sendBufferChunks;
+	Vector<SendBufferChunkRef> sendBufferChunks;
 };

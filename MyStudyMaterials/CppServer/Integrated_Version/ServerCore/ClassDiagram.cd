@@ -1,0 +1,696 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="IocpObject" Collapsed="true">
+    <Position X="9.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IocpCore.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="IocpCore" Collapsed="true">
+    <Position X="18.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIgAAAAAIAAAAEAAAAAAAAAAAAABAAAAAAAAAAgAAAA=</HashCode>
+      <FileName>IocpCore.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="IocpEvent" Collapsed="true">
+    <Position X="5.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAgAAAAAQAAAAAAEAAAAAAAAACAAAAAAA=</HashCode>
+      <FileName>IocpEvent.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ConnectEvent" Collapsed="true">
+    <Position X="0.75" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IocpEvent.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DisconnectEvent" Collapsed="true">
+    <Position X="3" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IocpEvent.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AcceptEvent" Collapsed="true">
+    <Position X="5.25" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAEAAABAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IocpEvent.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RecvEvent" Collapsed="true">
+    <Position X="7.5" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAA=</HashCode>
+      <FileName>IocpEvent.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SendEvent" Collapsed="true">
+    <Position X="9.75" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAI=</HashCode>
+      <FileName>IocpEvent.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Listener" Collapsed="true">
+    <Position X="8.5" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIgAAAEAAAAAAEAAAAAAQECAAAAAAACAAEEAAABAAAA=</HashCode>
+      <FileName>Listener.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="NetAddress" Collapsed="true">
+    <Position X="23.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAQAAAAAAAAAAAAAAAQAAAAAgAAAACAAAAAAA=</HashCode>
+      <FileName>NetAddress.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RecvBuffer" Collapsed="true">
+    <Position X="23.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgQAIAAAAAAIEAIAAAIAgAAAAAAAQgACAABBAAAAQAA=</HashCode>
+      <FileName>RecvBuffer.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SendBuffer" Collapsed="true">
+    <Position X="15" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAQAgAAAAAAAAABCAAAAQgAACABAAACAQAA=</HashCode>
+      <FileName>SendBuffer.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SendBufferChunk" Collapsed="true">
+    <Position X="16.75" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IgAAAAAAAAAAZAAAAAAAAAAAAAABAAAAAABAACCAQAg=</HashCode>
+      <FileName>SendBuffer.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SendBufferManager" Collapsed="true">
+    <Position X="18.5" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAIAACAAAAAAAAAACAAAAAAAAIAAAACAA=</HashCode>
+      <FileName>SendBuffer.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Service" Collapsed="true">
+    <Position X="9.75" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQAAAEACCgMBAAAQRAIAAIAAABQAEAAAAAMAACVAA=</HashCode>
+      <FileName>Service.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ClientService" Collapsed="true">
+    <Position X="8.5" Y="9" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAQAAAAEAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Service.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ServerService" Collapsed="true">
+    <Position X="10.75" Y="9" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACAAAAAEACAAAAAAAABAAAAAAIAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Service.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Session" Collapsed="true">
+    <Position X="10.75" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AI6IFAIIBAAAERNQAUAAgIQBhAAAAIIBACCAQAEAAFA=</HashCode>
+      <FileName>Session.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PacketSession" Collapsed="true">
+    <Position X="10.75" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAEAAAAAgAgAAAABAAAAAAAAAIAAAAAAAAAAAAA=</HashCode>
+      <FileName>Session.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SocketUtils" Collapsed="true">
+    <Position X="20.25" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAAAgAAAkAIAgEUAABAAAAAAAAAAgAAAAAAGAADAAAA=</HashCode>
+      <FileName>SocketUtils.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BufferReader" Collapsed="true">
+    <Position X="16.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgAAAAAAAAAEgAAAAIAAAoAggAAAAAAAAABAAAEAQAA=</HashCode>
+      <FileName>BufferReader.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BufferWriter" Collapsed="true">
+    <Position X="18.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgAAAAAAAAAAgAAAAICAAIACAAAAAAAAABBCAAUAQAA=</HashCode>
+      <FileName>BufferWriter.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LockStack&lt;T&gt;" Collapsed="true">
+    <Position X="18.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAgAAAAAAACAIAAAABAAAAAAAAgAAAACBg=</HashCode>
+      <FileName>ConcurrentStack.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LockFreeStack&lt;T&gt;" Collapsed="true">
+    <Position X="15" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAgAAAAAAAQAAAAIAAAAAAAAAAAAAAAAAACAA=</HashCode>
+      <FileName>ConcurrentStack.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FileUtils" Collapsed="true">
+    <Position X="23.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAQAAAAIAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>FileUtils.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LockQueue&lt;T&gt;" Collapsed="true">
+    <Position X="16.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAEAAAAAAAAAAAAAAAAAAAAABCAAAAAAAAAAABACAA=</HashCode>
+      <FileName>LockQueue.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CoreGlobal" Collapsed="true">
+    <Position X="13.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAA=</HashCode>
+      <FileName>CoreGlobal.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DeadLockProfiler" Collapsed="true">
+    <Position X="20.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAgBAARAAAABAAAEIAAEAAQAAAAAAABAIAA=</HashCode>
+      <FileName>DeadLockProfiler.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Lock" Collapsed="true">
+    <Position X="13.25" Y="3.5" Width="1.5" />
+    <NestedTypes>
+      <Enum Name="Lock::__unnamed_enum_0042_1" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Lock.h</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAIAAAAAAAAAAAAABAAAAAAABAAAEAAAAAAAAAAAkA=</HashCode>
+      <FileName>Lock.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ReadLockGuard" Collapsed="true">
+    <Position X="22" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAAAEAAAAAAAAAAACAAAAAAAAACAAAAAAAAAAAA=</HashCode>
+      <FileName>Lock.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WriteLockGuard" Collapsed="true">
+    <Position X="20.25" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAAIAAAEAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Lock.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ThreadManager" Collapsed="true">
+    <Position X="15" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEAEAgAQAgAAAgAQAAAAAAAAAAAAAAACAAAQBAAAAA=</HashCode>
+      <FileName>ThreadManager.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BaseAllocator" Collapsed="true">
+    <Position X="15" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAABAAAAA=</HashCode>
+      <FileName>Allocator.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="StompAllocator" Collapsed="true">
+    <Position X="23.75" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAABAAAAA=</HashCode>
+      <FileName>Allocator.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PoolAllocator" Collapsed="true">
+    <Position X="18.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAABAAAAA=</HashCode>
+      <FileName>Allocator.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="StlAllocator&lt;T&gt;" Collapsed="true">
+    <Position X="22" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEEAAAAAAAAAAAAQAAAIAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Allocator.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Memory" Collapsed="true">
+    <Position X="20.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEBAAAAAABAAAAAAAAAAAAAAQAAgAAABAAAAA=</HashCode>
+      <FileName>Memory.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MemoryPool" Collapsed="true">
+    <Position X="22" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAQEAAAAAAAAAAEACABAAAIAAAAAAACAA=</HashCode>
+      <FileName>MemoryPool.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ObjectPool&lt;Type&gt;" Collapsed="true">
+    <Position X="15" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAIAAAAAAAAAAAAAQAgAAACAAAAAAAAAAAAACAA=</HashCode>
+      <FileName>ObjectPool.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RefCountable" Collapsed="true">
+    <Position X="13.25" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAhAAAAAAAABAAQAAAAAAAIAAAAAAAAAAAIAAAAAAA=</HashCode>
+      <FileName>RefCounting.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TSharedPtr&lt;T&gt;" Collapsed="true">
+    <Position X="16.75" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAIAQAAABAIAAQAAAwAAAAAAAAAIAAAgABAAAAA=</HashCode>
+      <FileName>RefCounting.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Conversion&lt;From, To&gt;" Collapsed="true">
+    <Position X="23.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAA=</HashCode>
+      <FileName>TypeCast.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TypeConversion&lt;TL&gt;" Collapsed="true">
+    <Position X="18.5" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAIAAAAAAACAA=</HashCode>
+      <FileName>TypeCast.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GlobalQueue" Collapsed="true">
+    <Position X="13.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAAAgAgAAAAAAAAAAAAACAAAAAAAAAAAAACAA=</HashCode>
+      <FileName>GlobalQueue.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Job" Collapsed="true">
+    <Position X="20.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAQAAAAAAAAAAAACAAAQAAAAAAAAAAA=</HashCode>
+      <FileName>Job.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="JobTimer" Collapsed="true">
+    <Position X="23.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAABAAAgAAAAACAABAgAA=</HashCode>
+      <FileName>JobTimer.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="JobQueue" Collapsed="true">
+    <Position X="22" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAADAAAAAAAAQAAAAAAAAAAAAAAAAgAAABAAAAiAA=</HashCode>
+      <FileName>JobQueue.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DBBind&lt;ParamCount, ColumnCount&gt;" Collapsed="true">
+    <Position X="3" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACAAAAAAAACAAAQkAAEAAAIAgAAAAARAAAAAAAAIgAA=</HashCode>
+      <FileName>DBBind.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DBConnection" Collapsed="true">
+    <Position X="15" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAACAAIAAAAAAQEAAEAAIAAAIAAAABAAAAEAABABAA=</HashCode>
+      <FileName>DBConnection.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DBConnectionPool" Collapsed="true">
+    <Position X="16.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAgAAAAIAAAACAIAAAAAABAABADAA=</HashCode>
+      <FileName>DBConnectionPool.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Column" Collapsed="true">
+    <Position X="20.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABAIIAAAAAAAAAQQAAAAAAAIAgAAAAAEIBAAAAAAIBA=</HashCode>
+      <FileName>DBModel.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Index" Collapsed="true">
+    <Position X="16.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIEAIQAAAAAAAIQAAAAAAAAEAJAQAAAAAAAAAAABAAA=</HashCode>
+      <FileName>DBModel.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Table" Collapsed="true">
+    <Position X="13.25" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAIQAAAAAAAAAggAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DBModel.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Procedure" Collapsed="true">
+    <Position X="20.25" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAAACAAEAAAIAAAAAAAAAAAAAAAAAAAAAAAAEQE=</HashCode>
+      <FileName>DBModel.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Helpers" Collapsed="true">
+    <Position X="15" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAgAAAAAQAAAAAAAAAAAAAAAAgAAAAAAEAAAAAAAAA=</HashCode>
+      <FileName>DBModel.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DBSynchronizer" Collapsed="true">
+    <Position X="18.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>GAAASAGEAAABAAKgCAAAAAAAAAgIAwAAIAAAACEAAAA=</HashCode>
+      <FileName>DBSynchronizer.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="XmlNode" Collapsed="true">
+    <Position X="22" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAMLAAAgYAAEgABIwAAAABAhABABAAAAAQAAAAQAA=</HashCode>
+      <FileName>XmlParser.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="XmlParser" Collapsed="true">
+    <Position X="23.75" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAABEAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>XmlParser.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ConsoleLog" Collapsed="true">
+    <Position X="22" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAAAAAAAAAAAAAAAAAAAAAAAEAAACAAQAAoCAAAAAAA=</HashCode>
+      <FileName>ConsoleLog.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SP::GetDBTables" Collapsed="true">
+    <Position X="0.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AADAQAQAAACBAAAAAAAAEAIAAAAADCAIAAAAIAAAEAA=</HashCode>
+      <FileName>DBSynchronizer.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SP::GetDBIndexes" Collapsed="true">
+    <Position X="3" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAgQAAAAAAAAAAAgAAIAAAAAAACBAAIAAAAAAAAAQA=</HashCode>
+      <FileName>DBSynchronizer.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SP::GetDBStoredProcedures" Collapsed="true">
+    <Position X="5.25" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAQAAIAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DBSynchronizer.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="rapidxml::parse_error" Collapsed="true">
+    <Position X="16.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAgCAAAAAAAAAAYAAAAAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>rapidxml.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="rapidxml::xml_node&lt;Ch&gt;" Collapsed="true">
+    <Position X="0.5" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABFIAAAYAIUgjEAAAAAEAEgAEoBADBAAAAgEBEQBAA=</HashCode>
+      <FileName>rapidxml.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="rapidxml::xml_attribute&lt;Ch&gt;" Collapsed="true">
+    <Position X="2.75" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAgAABBAAAIAIIAAAAAAAAAAAAA=</HashCode>
+      <FileName>rapidxml.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="rapidxml::xml_document&lt;Ch&gt;" Collapsed="true">
+    <Position X="0.5" Y="9.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AkAgAAAASAQAAABAAAAAAAQCAAAAAgCAAEAYACAAKAA=</HashCode>
+      <FileName>rapidxml.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="rapidxml::memory_pool&lt;Ch&gt;" Collapsed="true">
+    <Position X="5.5" Y="8" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEEwABBQAAAAAAgAACAAQAAAAAQIAgIQAEAAAAQAAAA=</HashCode>
+      <FileName>rapidxml.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="rapidxml::xml_base&lt;Ch&gt;" Collapsed="true">
+    <Position X="1.75" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAAAAAAABEAAABAAAAAEAAAAAQUICIAABAAAAAAAAA=</HashCode>
+      <FileName>rapidxml.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="rapidxml::node_iterator&lt;Ch&gt;" Collapsed="true">
+    <Position X="13.25" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAQAEAAwAAAAAAAAAgAAAgAAAAAAA=</HashCode>
+      <FileName>rapidxml_iterators.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="rapidxml::attribute_iterator&lt;Ch&gt;" Collapsed="true">
+    <Position X="13.25" Y="0.5" Width="1.5" />
+    <NestedTypes>
+      <Typedef Name="rapidxml::attribute_iterator&lt;Ch&gt;::value_type" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>rapidxml_iterators.hpp</NewMemberFileName>
+        </TypeIdentifier>
+      </Typedef>
+      <Typedef Name="rapidxml::attribute_iterator&lt;Ch&gt;::reference" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>rapidxml_iterators.hpp</NewMemberFileName>
+        </TypeIdentifier>
+      </Typedef>
+      <Typedef Name="rapidxml::attribute_iterator&lt;Ch&gt;::pointer" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>rapidxml_iterators.hpp</NewMemberFileName>
+        </TypeIdentifier>
+      </Typedef>
+      <Typedef Name="rapidxml::attribute_iterator&lt;Ch&gt;::difference_type" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>rapidxml_iterators.hpp</NewMemberFileName>
+        </TypeIdentifier>
+      </Typedef>
+      <Typedef Name="rapidxml::attribute_iterator&lt;Ch&gt;::iterator_category" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>rapidxml_iterators.hpp</NewMemberFileName>
+        </TypeIdentifier>
+      </Typedef>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAQAEEAwAAAAAAAAAIAAAgAAAAAAA=</HashCode>
+      <FileName>rapidxml_iterators.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="rapidxml::file&lt;Ch&gt;" Collapsed="true">
+    <Position X="22" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAABAAQAAAAAAA=</HashCode>
+      <FileName>rapidxml_utils.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Struct Name="PacketHeader" Collapsed="true">
+    <Position X="18.5" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAgA=</HashCode>
+      <FileName>Session.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="MemoryHeader" Collapsed="true">
+    <Position X="16.75" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAACAAACAAQAAIAAAAAAAAAAA=</HashCode>
+      <FileName>MemoryPool.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="TypeList&lt;T, U&gt;" Collapsed="true">
+    <Position X="13.25" Y="9.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TypeCast.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="Length&lt;TypeList&lt;&gt;&gt;" Collapsed="true">
+    <Position X="13.25" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TypeCast.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="TypeAt&lt;TypeList&lt;Head,Tail...&gt;, 0&gt;" Collapsed="true">
+    <Position X="23.75" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TypeCast.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="IndexOf&lt;TypeList&lt;T,Tail...&gt;, T&gt;" Collapsed="true">
+    <Position X="18.5" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TypeCast.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="IndexOf&lt;TypeList&lt;&gt;, T&gt;" Collapsed="true">
+    <Position X="20.25" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TypeCast.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="Int2Type&lt;v&gt;" Collapsed="true">
+    <Position X="22" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TypeCast.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="JobData" Collapsed="true">
+    <Position X="23.75" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAIAAgAAAAAAAAAIAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>JobTimer.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="TimerItem" Collapsed="true">
+    <Position X="22" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAQAAAIAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>JobTimer.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="FullBits&lt;C&gt;" Collapsed="true">
+    <Position X="13.25" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DBBind.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="FullBits&lt;1&gt;" Collapsed="true">
+    <Position X="15" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DBBind.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="FullBits&lt;0&gt;" Collapsed="true">
+    <Position X="16.75" Y="7.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DBBind.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="Param" Collapsed="true">
+    <Position X="20.25" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DBModel.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="rapidxml::internal::lookup_tables&lt;Dummy&gt;" Collapsed="true">
+    <Position X="15" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAEAAAAAgBBASAAAAAAgAAgAAAAAAAAFAABAAIA=</HashCode>
+      <FileName>rapidxml.hpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Enum Name="EventType" Collapsed="true">
+    <Position X="20.25" Y="11" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIQAAAAAAAAAAAAAAEAAAIAAAIAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IocpEvent.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="ServiceType" Collapsed="true">
+    <Position X="13.25" Y="11.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAQ=</HashCode>
+      <FileName>Service.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="__unnamed_enum_0048_1" Collapsed="true">
+    <Position X="15" Y="11" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>MemoryPool.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="__unnamed_enum_0028_1" Collapsed="true">
+    <Position X="13.25" Y="11" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAg=</HashCode>
+      <FileName>DBConnection.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="DataType" Collapsed="true">
+    <Position X="18.5" Y="11" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAAUAAAAAAAAAAADAAAACACAAAACAQAAAAAAAEoACE=</HashCode>
+      <FileName>DBModel.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="IndexType" Collapsed="true">
+    <Position X="22" Y="11" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DBModel.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="Color" Collapsed="true">
+    <Position X="16.75" Y="11" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAgAQIAAAAAAAABAAgAAAAAAEAAAAAAAAAA=</HashCode>
+      <FileName>ConsoleLog.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="rapidxml::node_type" Collapsed="true">
+    <Position X="23.75" Y="11" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEQDAACAgAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAACA=</HashCode>
+      <FileName>rapidxml.hpp</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
