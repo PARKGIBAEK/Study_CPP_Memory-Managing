@@ -50,8 +50,12 @@ void* StompAllocator::AllocateMemory(int32 size)
 
 void StompAllocator::ReleaseMemory(void* ptr)
 {
+	// AllocateMemory 함수에서 할당한 전체 메모리 중 실제 사용할 목적으로 반환받은 주소 ( baseAddress + dataOffset )
 	const int64 address = reinterpret_cast<int64>(ptr);
-	// 
+	// 위의 주소에서 data offset을 뺀 주소 ( baseAddress + dataOffset ) - dataOffset
+	// ex) base : 5000, dataOffset : 500, address : 5500
+	//		 5500 - ( 5500 % 4096 ) = 5500 - 1404  = 
+
 	const int64 baseAddress = address - (address % PAGE_SIZE);
 	::VirtualFree(reinterpret_cast<void*>(baseAddress), 0, MEM_RELEASE);
 }
