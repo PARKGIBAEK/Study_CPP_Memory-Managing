@@ -1,5 +1,6 @@
 #pragma once
 #include "Allocator.h"
+using namespace std;
 
 class MemoryPool;
 
@@ -49,12 +50,14 @@ void XDelete(Type* obj)
 	obj->~Type();
 	// Memory Pool에 반납
 	PoolAllocator::ReleaseMemory(obj);
-}
+} 
 
 template<typename Type, typename... Args>
 std::shared_ptr<Type> MakeShared(Args&&... args)
 {
 	// shared_ptr로 반환해 주기
-	//return std::shared_ptr<Type>{ XNew<Type>(forward<Args>(args)...), XDelete<Type> };
-	return std::make_shared<Type>{ XNew<Type>(forward<Args>(args)...), XDelete<Type> };
+	return std::shared_ptr<Type>{ XNew<Type>(forward<Args>(args)...), XDelete<Type> };
+
+	//이걸로하면 오류 남
+	//return std::make_shared<Type>( XNew<Type>(forward<Args>(args)...), XDelete<Type> );
 }

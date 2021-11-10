@@ -522,7 +522,9 @@ void DBSynchronizer::CompareTables(DBModel::TableRef dbTable, DBModel::TableRef 
 	for (DBModel::IndexRef& dbIndex : dbTable->_indexes)
 	{
 		auto findIndex = xmlIndexMap.find(dbIndex->GetUniqueName());
-		if (findIndex != xmlIndexMap.end() && _dependentIndexes.find(dbIndex->GetUniqueName()) == _dependentIndexes.end())
+		if (findIndex != xmlIndexMap.end() && _dependentIndexes.find(
+			dbIndex->GetUniqueName()) == _dependentIndexes.end()
+			)
 		{
 			DBModel::IndexRef xmlIndex = findIndex->second;
 			xmlIndexMap.erase(findIndex);
@@ -530,8 +532,14 @@ void DBSynchronizer::CompareTables(DBModel::TableRef dbTable, DBModel::TableRef 
 		else
 		{
 			GConsoleLogger->WriteStdOut(Color::YELLOW, L"Dropping Index : [%s] [%s] %s %s\n", dbTable->_name.c_str(), dbIndex->_name.c_str(), dbIndex->GetKeyText().c_str(), dbIndex->GetTypeText().c_str());
+
 			if (dbIndex->_primaryKey || dbIndex->_uniqueConstraint)
-				_updateQueries[UpdateStep::DropIndex].push_back(DBModel::Helpers::Format(L"ALTER TABLE [dbo].[%s] DROP CONSTRAINT [%s]", dbTable->_name.c_str(), dbIndex->_name.c_str()));
+				_updateQueries[UpdateStep::DropIndex].push_back(
+					DBModel::Helpers::Format(
+						L"ALTER TABLE [dbo].[%s] DROP CONSTRAINT [%s]",
+						dbTable->_name.c_str(), dbIndex->_name.c_str()
+					)
+				);
 			else
 				_updateQueries[UpdateStep::DropIndex].push_back(DBModel::Helpers::Format(L"DROP INDEX [%s] ON [dbo].[%s]", dbIndex->_name.c_str(), dbTable->_name.c_str()));
 		}
@@ -541,16 +549,34 @@ void DBSynchronizer::CompareTables(DBModel::TableRef dbTable, DBModel::TableRef 
 	for (auto& mapIt : xmlIndexMap)
 	{
 		DBModel::IndexRef xmlIndex = mapIt.second;
-		GConsoleLogger->WriteStdOut(Color::YELLOW, L"Creating Index : [%s] %s %s [%s]\n", dbTable->_name.c_str(), xmlIndex->GetKeyText().c_str(), xmlIndex->GetTypeText().c_str(), xmlIndex->GetUniqueName().c_str());
+		GConsoleLogger->WriteStdOut(
+			Color::YELLOW, L"Creating Index : [%s] %s %s [%s]\n", dbTable->_name.c_str(),
+			xmlIndex->GetKeyText().c_str(),
+			xmlIndex->GetTypeText().c_str(),
+			xmlIndex->GetUniqueName().c_str());
+
 		if (xmlIndex->_primaryKey || xmlIndex->_uniqueConstraint)
 		{
-			_updateQueries[UpdateStep::CreateIndex].push_back(DBModel::Helpers::Format(L"ALTER TABLE [dbo].[%s] ADD CONSTRAINT [%s] %s %s (%s)",
-				dbTable->_name.c_str(), xmlIndex->CreateName(dbTable->_name).c_str(), xmlIndex->GetKeyText().c_str(), xmlIndex->GetTypeText().c_str(), xmlIndex->CreateColumnsText().c_str()));
+			_updateQueries[UpdateStep::CreateIndex].push_back(
+				DBModel::Helpers::Format(L"ALTER TABLE [dbo].[%s] ADD CONSTRAINT [%s] %s %s (%s)",
+					dbTable->_name.c_str(), xmlIndex->CreateName(dbTable->_name).c_str(), 
+					xmlIndex->GetKeyText().c_str(), 
+					xmlIndex->GetTypeText().c_str(), 
+					xmlIndex->CreateColumnsText().c_str()
+				)
+			);
 		}
 		else
 		{
-			_updateQueries[UpdateStep::CreateIndex].push_back(DBModel::Helpers::Format(L"CREATE %s INDEX [%s] ON [dbo].[%s] (%s)",
-				xmlIndex->GetTypeText(), xmlIndex->CreateName(dbTable->_name).c_str(), dbTable->_name.c_str(), xmlIndex->CreateColumnsText().c_str()));
+			_updateQueries[UpdateStep::CreateIndex].push_back(
+				DBModel::Helpers::Format(
+					L"CREATE %s INDEX [%s] ON [dbo].[%s] (%s)",
+					xmlIndex->GetTypeText().c_str(), 
+					xmlIndex->CreateName(dbTable->_name).c_str(), 
+					dbTable->_name.c_str(), 
+					xmlIndex->CreateColumnsText().c_str()
+				)
+			);
 		}
 	}
 }

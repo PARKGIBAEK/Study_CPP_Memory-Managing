@@ -1,5 +1,6 @@
 #pragma once
 #include "Types.h"
+#include "CoreMacro.h"
 
 NAMESPACE_BEGIN(DBModel)
 

@@ -168,6 +168,9 @@
     <ClInclude Include="ConcurrentStack.h">
       <Filter>Utils</Filter>
     </ClInclude>
+    <ClInclude Include="LockFreeQueue.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CorePch.cpp">
@@ -279,6 +282,9 @@
       <Filter>Utils</Filter>
     </ClCompile>
     <ClCompile Include="ConcurrentStack.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="LcokFreeQueue.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
   </ItemGroup>

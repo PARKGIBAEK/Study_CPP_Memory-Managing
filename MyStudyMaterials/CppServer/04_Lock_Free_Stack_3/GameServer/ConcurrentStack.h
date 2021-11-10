@@ -1,8 +1,10 @@
 #pragma once
-
 #include <mutex>
+using namespace std;
 
-//간단한 Stack ( thread-safe )
+/*
+//간단한 Lock Stack ( thread-safe )
+
 template<typename T>
 class LockStack
 {
@@ -44,17 +46,18 @@ private:
 	std::mutex _mutex;
 	std::condition_variable _condVar;
 };
+*/
 
 
-// 강의 영상 9분20초부터 보면 됨
+// Reference Count를 직접 구현하여 ABA 문제 해결
 template<typename T>
 class LockFreeStack
 {
-	//struct Node;
+	struct Node;
 
 	struct CountedNodePtr
 	{
-		int32 externalCount = 0;
+		int32 externalCount = 0;// Push 하면 1로 시작
 		struct Node* ptr = nullptr;
 	};
 
@@ -64,50 +67,47 @@ class LockFreeStack
 		{	}
 
 		shared_ptr<T> data;
-		atomic<int32> internalCount = 0;
+		atomic<int32> internalCount = 0;// 다른 Thread들이 더 이상 접근하지 않는지 확인하기 위한 용도 ( TryPop함수에서 건드림 )
 		CountedNodePtr next;
 	};
 
 public:
-	// [][][][][][][]
-	// [head]
+
 	void Push(const T& value)
 	{
-		CountedNodePtr node;//새로 삽입할 노드
+		CountedNodePtr node;//새로 삽입할 노드 externalCount는 0으로 시작함
 		node.ptr = new Node(value);
 		node.externalCount = 1;//외부 참조 카운트 1로 생성
-		// [!]
+
 		node.ptr->next = head;// head는 가장 top 노드
-		/*head == node.ptr->next 일 경우(다른 스레드의 간섭을 받지 않은 상황), head = node , true 반환,   
+		/*head == node.ptr->next 일 경우(다른 스레드의 간섭을 받지 않은 상황), head = node , true 반환,
 		  head != node.ptr->next 일 경우(다른 스레드의 간섭을 받은 상황), node.ptr->next = head , false 반환(루프 재 진입하게되고 이번에 간섭받지 않았다면 통과)*/
 		while (head.compare_exchange_weak(node.ptr->next, node) == false)
 		{
 		}
 	}
 
-	// [][][][][][][]
-	// [head]
 	std::shared_ptr<T> TryPop()
 	{
-		CountedNodePtr oldHead = head;//top 노드 꺼내오기
+		CountedNodePtr oldHead = head;//head 노드 꺼내오기
 		while (true)
 		{
-			// 참조권 획득 (externalCount를 현 시점 기준 +1 한 애가 이김)
-			IncreaseHeadCount(oldHead);
-			// 최소한 externalCount >= 2 일테니 삭제X (oldHead에 대하여 안전하게 접근할 수 있음을 보장)
-			Node* ptr = oldHead.ptr;//진짜 top에 있는 노드의 포인터를 꺼내옴
+			// 참조권 획득 (externalCount를 현 시점 기준 +1 한 Thread가 이김)
+			IncreaseHeadCount(oldHead);// IncreaseHeadCount함수는 externalCount를 1증가시킴
 
-			// 데이터 없음
-			if (ptr == nullptr)
+			// Push할 때 externalCount가 1로 변경되므로 externalCount는 최소한 2이상 일테니 삭제X  (안전하게 접근할 수 있는)
+			Node* ptr = oldHead.ptr;
+
+			if (ptr == nullptr)// 데이터 없을 시
 				return std::shared_ptr<T>();
 
-			// 소유권 획득 (ptr->next로 head를 바꿔치기 한 애가 이김)
-			if (head.compare_exchange_strong(oldHead, ptr->next))//head와 oldHead가 같은(비트레벨에서 동일해야하므로 externalCount까지 동일) 경우 = 아직 다른 스레드에서 stack을 변경하지 않았다는 얘기
+			// 소유권 획득 (head를 ptr->next로 변경한 Thread가 이김)
+			if (head.compare_exchange_strong(oldHead, ptr->next))//처음부터 head와 oldHead가 같은 경우 : 아직 다른 스레드에서 stack에 손을 대지 않은 상황
 			{
 				std::shared_ptr<T> res;
 				res.swap(ptr->data);
 
-				// external : 1 -> 2(나+1) -> 4(나+1 남+2)
+				// external(참조권 획득 시 1증가) : 1 -> 2(나+1) -> 4(나+1 남+2)
 				// internal : 1 -> 0
 				const int32 countIncrease = oldHead.externalCount - 2;
 
@@ -116,7 +116,7 @@ public:
 
 				return res;
 			}
-			else if (ptr->internalCount.fetch_sub(1) == 1)
+			else if (ptr->internalCount.fetch_sub(1) == 1)//internalCount가 1이면 나만 남은 상태이므로 삭제
 			{
 				// 참조권은 얻었으나, 소유권은 실패 -> 뒷수습은 내가 한다
 				delete ptr;
@@ -129,16 +129,11 @@ private:
 	{
 		while (true)
 		{
-			CountedNodePtr newCounter = oldCounter;// old Counter는 이 함수가 호출 될 당시의 head였던 노드
+			CountedNodePtr newCounter = oldCounter;
 			newCounter.externalCount++;
-			/*head는 top 노드이므로 oldCounter와 다르다면, 다른 쓰레드가 중간에 노드를 pop또는 push한 경우이다.
-			* 즉, head != oldCounter일 경우에는 oldCounter = head가 된다.(즉 oldCounter는 현재의 head를 가리킨다)
-			* 하지만 head == oldCounter일 경우, head = newCounter가 되는데, 한번만에 만족했을 경우에는 newCounter와 oldCounter가 일치한다.
-			* 한번만에 만족하지 않았을 경우에는, oldCounter가 현재의 head로 변한다.
-			* 그럼 다시 최근의 헤드가 그대로 변화하지 않았는지를 확인하는 과정을 반복하는 것이다.
-			*/
+			//head는 top 노드이므로 oldCounter와 다르다면, 다른 쓰레드가 중간에 노드를 pop또는 push한 경우
 			if (head.compare_exchange_strong(oldCounter, newCounter))
-			{//head == oldCounter를 만족하면, head = newCounter가 된다
+			{
 				oldCounter.externalCount = newCounter.externalCount;
 				break;
 			}
@@ -146,49 +141,147 @@ private:
 	}
 
 private:
-	std::atomic<CountedNodePtr> head; // 탑 노드
+	std::atomic<CountedNodePtr> head; // 탑 노드를 가리킴
 };
 
-//간단한 Lock-free Stack
+
+
+// Lock-free Stack 원리 설명 코드 (Chain-Pending List 방식)
+
 //template<typename T>
 //class LockFreeStack
 //{
 //	struct Node
 //	{
-//		Node(const T& value) : data(make_shared<T>(value)), next(nullptr)
+//		Node(const T& value) : data(value), next(nullptr)
 //		{
 //
 //		}
 //
-//		shared_ptr<T> data;
-//		shared_ptr<Node> next;
+//		T data;
+//		Node* next;
 //	};
 //
 //public:
+//
+//	// 1) 새 노드를 만들고
+//	// 2) 새 노드의 next = head
+//	// 3) head = 새 노드
 //	void Push(const T& value)
 //	{
-//		shared_ptr<Node> node = make_shared<Node>(value);
-//		node->next = std::atomic_load(&_head);
-//		while (std::atomic_compare_exchange_weak(&_head, &node->next, node) == false)
+//		Node* node = new Node(value);//새로운 노드 생성
+//		node->next = head;//새로운 노드에 헤드 연결
+//
+//		/*중간에 다른 쓰레드가 끼어들어 head가 변경되었을 수 있으므로 확인하기
+//		* head == node->next 의 경우 (아직 head가 변경되지 않음)head가 새로 생성된 node를 가리키도록 변경하고 종료.
+//		* head != node->next 의 경우 (head가 변경 된것이기 때문에) node->next가 가리키는 대상을 새로운 head로 바꿔주고 다시 루프를 돈다.
+//		*/
+//		while (head.compare_exchange_weak(node->next, node) == false)
 //		{
 //		}
 //	}
 //
-//	shared_ptr<T> TryPop()
+//	// 1) head 읽기
+//	// 2) head->next 읽기
+//	// 3) head = head->next
+//	// 4) data 추출해서 반환
+//	// 5) 추출한 노드를 삭제
+//	bool TryPop(T& value)
 //	{
-//		shared_ptr<Node> oldHead = std::atomic_load(&_head);
+//		++popCount;
 //
-//		while (oldHead && std::atomic_compare_exchange_weak(&_head, &oldHead, oldHead->next) == false)
+//		Node* oldHead = head;
+//		/* head가 nullptr이 아닌것을 확인하고,
+//		*
+//		*/
+//
+//		while (oldHead && head.compare_exchange_weak(oldHead, oldHead->next) == false)
 //		{
-//
 //		}
 //
 //		if (oldHead == nullptr)
-//			return shared_ptr<T>();
+//		{
+//			--popCount;
+//			return false;
+//		}
 //
-//		return oldHead->data;
+//		value = oldHead->data;
+//		TryDelete(oldHead);
+//		return true;
+//	}
+//
+//	// 1) 데이터 분리
+//	// 2) Count 체크
+//	// 3) 나 혼자면 삭제
+//	void TryDelete(Node* oldHead)
+//	{
+//		// 나 외에 누가 있는가?
+//		if (popCount == 1)
+//		{
+//			// 나 혼자네?
+//
+//			// 이왕 혼자인거, 삭제 예약된 다른 데이터들도 삭제해보자
+//			Node* node = pendingList.exchange(nullptr);//기존의 pendingList가 가리키던 주소를 반환하고, pendingList는 nullptr을 가리키도록 변경
+//
+//			if (--popCount == 0)
+//			{
+//				// 끼어든 애가 없음 -> 삭제 진행
+//				// 이제와서 끼어들어도, 어차피 삭제해야할 데이터(pendingList)는 분리해둔 상태~!
+//				DeleteNodes(node);
+//			}
+//			else if (node)
+//			{
+//				// 누가 끼어들었으니 다시 갖다 놓자
+//				ChainPendingNodeList(node);
+//			}
+//
+//			// 내 데이터만 삭제
+//			delete oldHead;
+//		}
+//		else
+//		{
+//			// 누가 있네? 그럼 지금 삭제하지 않고, 삭제 예약만
+//			ChainPendingNode(oldHead);
+//			--popCount;
+//		}
+//	}
+//
+//	void ChainPendingNodeList(Node* first, Node* last)
+//	{
+//		last->next = pendingList;
+//
+//		while (pendingList.compare_exchange_weak(last->next, first) == false)
+//		{
+//		}
+//	}
+//
+//	void ChainPendingNodeList(Node* node)
+//	{
+//		Node* last = node;
+//		while (last->next)
+//			last = last->next;
+//
+//		ChainPendingNodeList(node, last);
+//	}
+//
+//	void ChainPendingNode(Node* node)
+//	{
+//		ChainPendingNodeList(node, node);
+//	}
+//
+//	static void DeleteNodes(Node* node)
+//	{
+//		while (node)
+//		{
+//			Node* next = node->next;
+//			delete node;
+//			node = next;
+//		}
 //	}
 //
 //private:
-//	shared_ptr<Node> _head;
+//	atomic<Node*> head;
+//
+//	atomic<uint32> popCount = 0; // Pop을 실행중인 쓰레드 개수
+//	atomic<Node*> pendingList; // 삭제 되어야 할 노드들 (첫번째 노드)
 //};

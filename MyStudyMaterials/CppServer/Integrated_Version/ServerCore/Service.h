@@ -22,7 +22,7 @@ public:
 	Service(ServiceType _type, NetAddress _address, IocpCoreRef _core, SessionFactory _factory, int32 _maxSessionCount = 1);
 	virtual ~Service();
 
-	virtual bool		Start() abstract;
+	virtual bool		Start() =0;
 	bool				CanStart() { return sessionFactory != nullptr; }
 
 	virtual void		CloseService();

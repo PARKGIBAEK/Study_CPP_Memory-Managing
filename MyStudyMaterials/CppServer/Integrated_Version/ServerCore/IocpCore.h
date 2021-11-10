@@ -4,11 +4,11 @@
 	IocpObject
 -----------------*/
 
-class IocpObject : public enable_shared_from_this<IocpObject>
+class IocpObject : public std::enable_shared_from_this<IocpObject>
 {
 public:
-	virtual HANDLE GetHandle() abstract;
-	virtual void Dispatch(class IocpEvent* _iocpEvent, int32 _numOfBytes = 0) abstract;
+	virtual HANDLE GetHandle() =0;
+	virtual void Dispatch(class IocpEvent* _iocpEvent, int32 _numOfBytes = 0) =0;
 };
 
 /*--------------

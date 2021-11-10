@@ -82,7 +82,7 @@ void DeadLockProfiler::DFS(int32 _here)
 
 	discoveredOrder[_here] = discoveredCount++;
 
-	// 모든 인접한 정점을 순회한다.
+	// 모든 인접한 정점을 순회하기
 	auto findIt = lockHistory.find(_here);
 	if (findIt == lockHistory.end())
 	{
@@ -93,7 +93,7 @@ void DeadLockProfiler::DFS(int32 _here)
 	set<int32>& nextSet = findIt->second;
 	for (int32 there : nextSet)
 	{
-		// 아직 방문한 적이 없다면 방문한다.
+		// 아직 방문한 적이 없는 정점이라면 방문하기
 		if (discoveredOrder[there] == -1)
 		{
 			parent[there] = _here;

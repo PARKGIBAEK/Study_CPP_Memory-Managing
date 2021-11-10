@@ -2,6 +2,7 @@
 #include <stack>
 #include <map>
 #include <vector>
+#include "ConcurrentStack.h"
 
 /*--------------------
 	DeadLockProfiler
@@ -29,5 +30,6 @@ private:
 	int32			discoveredCount = 0; // 노드가 발견된 순서
 	vector<bool>	finished; // Dfs(i)가 종료 되었는지 여부
 	vector<int32>	parent;
+	
 };
 
