@@ -41,12 +41,19 @@ public:
 
 int main()
 {
+	SYSTEM_INFO info;
+	
+	
+	::GetSystemInfo(&info);
+
+	auto t = info.dwPageSize;
+
 	// [                    [   ]]
-	Knight* knight = (Knight*)xnew<Player>();
+	Knight* knight = (Knight*)xNew<Player>();
 
 	knight->_hp = 100;
 
-	xdelete(knight);
+	xDelete(knight);
 
 	
 }

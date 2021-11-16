@@ -15,7 +15,7 @@ void JobQueue::Push(JobRef job, bool pushOnly)
 	if (prevCount == 0)
 	{
 		// 이미 실행중인 JobQueue가 없으면 실행
-		if (LCurrentJobQueue == nullptr && pushOnly == false)
+		if (tls_CurrentJobQueue == nullptr && pushOnly == false)
 		{
 			Execute();
 		}
@@ -30,7 +30,7 @@ void JobQueue::Push(JobRef job, bool pushOnly)
 // 1) 일감이 너~무 몰리면?
 void JobQueue::Execute()
 {
-	LCurrentJobQueue = this;
+	tls_CurrentJobQueue = this;
 
 	while (true)
 	{
@@ -44,14 +44,14 @@ void JobQueue::Execute()
 		// 남은 일감이 0개라면 종료
 		if (_jobCount.fetch_sub(jobCount) == jobCount)
 		{
-			LCurrentJobQueue = nullptr;
+			tls_CurrentJobQueue = nullptr;
 			return;
 		}
 
 		const uint64 now = ::GetTickCount64();
-		if (now >= LEndTickCount)
+		if (now >= tls_EndTickCount)
 		{
-			LCurrentJobQueue = nullptr;
+			tls_CurrentJobQueue = nullptr;
 			// 여유 있는 다른 쓰레드가 실행하도록 GlobalQueue에 넘긴다
 			GGlobalQueue->Push(shared_from_this());
 			break;

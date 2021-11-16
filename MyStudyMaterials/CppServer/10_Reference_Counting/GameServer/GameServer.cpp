@@ -56,6 +56,23 @@ using MissileRef = TSharedPtr<Missile>;
 
 int main()
 {	
+	
+	Wraight* pWraight = new Wraight();
+	Missile* pMissile = new Missile();
+	pMissile->SetTarget(pWraight);
+
+	//레이스가 피격 당해서 소멸 처리
+	pWraight->_hp = 0;
+	delete pWraight;
+
+	while (true) {
+		if (pMissile)
+			pMissile->Update(); // 피격당한 wraigth를 계속 참조하고 있음
+	}
+
+	delete pMissile;
+	
+
 	WraightRef wraight(new Wraight());
 	wraight->ReleaseRef();
 	MissileRef missile(new Missile());

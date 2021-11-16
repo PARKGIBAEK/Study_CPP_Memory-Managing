@@ -25,12 +25,13 @@ void DeadLockProfiler::PushLock(const char* _name)
 		lockId = findIt->second;
 	}
 
-	// 잡고 있는 락이 있었다면
-	if (LLockStack.empty() == false)
+	// 현재 쓰레드에서 잡고 있는 락이 있었다면
+	if (tls_LockStack.empty() == false)
 	{
+		// 잡고 있는 락 중에서 직전에 잡은 락의 ID 조회
+		const int32 prevId = tls_LockStack.top();
 		// 기존에 발견되지 않은 케이스라면 데드락 여부 다시 확인한다.
-		const int32 prevId = LLockStack.top();
-		if (lockId != prevId)
+		if (lockId != prevId)//지금 잡으려는 락이 바로 직전에 잡은 락이 아닌경우 
 		{
 			set<int32>& history = lockHistory[prevId];
 			if (history.find(lockId) == history.end())
@@ -41,21 +42,21 @@ void DeadLockProfiler::PushLock(const char* _name)
 		}
 	}
 
-	LLockStack.push(lockId);
+	tls_LockStack.push(lockId);
 }
 
 void DeadLockProfiler::PopLock(const char* _name)
 {
 	LockGuard guard(mtxLock);
 
-	if (LLockStack.empty())
+	if (tls_LockStack.empty())
 		CRASH("MULTIPLE_UNLOCK");
 
 	int32 lockId = nameToId[_name];
-	if (LLockStack.top() != lockId)
+	if (tls_LockStack.top() != lockId)
 		CRASH("INVALID_UNLOCK");
 
-	LLockStack.pop();
+	tls_LockStack.pop();
 }
 
 void DeadLockProfiler::CheckCycle()

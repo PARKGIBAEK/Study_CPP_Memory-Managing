@@ -60,6 +60,7 @@ void WorkerThreadMain(HANDLE iocpHandle)
 			continue;
 		}
 
+		//  메인 스레드에서 WSARecv밖에 수행하지 않아서 IO_TYPE::READ 밖에 전달하지 않는다
 		ASSERT_CRASH(overlappedEx->type == IO_TYPE::READ);
 
 		cout << "Recv Data IOCP = " << bytesTransferred << endl;
@@ -115,10 +116,10 @@ int main()
 
 	vector<Session*> sessionManager;
 
-	// CP 생성하기
+	// Completion Port 생성하기
 	HANDLE iocpHandle = ::CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 0);
 
-	// WorkerThreads
+	// WorkerThreads 생성
 	for (int32 i = 0; i < 5; i++)
 		GThreadManager->Launch([=]() { WorkerThreadMain(iocpHandle); });
 
@@ -138,10 +139,13 @@ int main()
 
 		cout << "Client Connected !" << endl;
 
-		/* 소켓을 CP에 등록할 때도 CP를 생성할 때와 같은 함수를 사용한다
+		/* 소켓을 IOCP에 등록하기
+		
+		   소켓을 CP에 등록할 때도 CP를 생성할 때와 같은 함수를 사용한다.
 		
 			3번째 인자는 어떤 소켓에 전달한 작업인지 구분하기 위한 key이며
-			GetCompletionQueuedStatus 함수에서 다시 받아오게 될 값이다.
+			GetCompletionQueuedStatus 함수에서 다시 받아오게 된다.
+			4번째 인자는 IOCP에 활용할 스레드 최대 갯수이며, 0을 입력하면 자동으로 책정된다.
 		*/
 		::CreateIoCompletionPort((HANDLE)clientSocket, iocpHandle, /*Key*/(ULONG_PTR)session, 0);
 

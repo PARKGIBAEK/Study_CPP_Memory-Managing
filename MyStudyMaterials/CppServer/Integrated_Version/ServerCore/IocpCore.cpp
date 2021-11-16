@@ -8,6 +8,7 @@
 
 IocpCore::IocpCore()
 {
+	// IOCP »ý¼º
 	iocpHandle = ::CreateIoCompletionPort(INVALID_HANDLE_VALUE, 0, 0, 0);
 	ASSERT_CRASH(iocpHandle != INVALID_HANDLE_VALUE);
 }

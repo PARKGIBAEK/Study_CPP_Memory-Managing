@@ -57,9 +57,6 @@
     <ClInclude Include="DeadLockProfiler.h">
       <Filter>Thread</Filter>
     </ClInclude>
-    <ClInclude Include="RefCounting.h">
-      <Filter>Memory</Filter>
-    </ClInclude>
     <ClInclude Include="Allocator.h">
       <Filter>Memory</Filter>
     </ClInclude>
@@ -162,9 +159,6 @@
     <ClInclude Include="DBSynchronizer.h">
       <Filter>DB</Filter>
     </ClInclude>
-    <ClInclude Include="ConcurrentQueue.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
     <ClInclude Include="ConcurrentStack.h">
       <Filter>Utils</Filter>
     </ClInclude>
@@ -196,9 +190,6 @@
     </ClCompile>
     <ClCompile Include="DeadLockProfiler.cpp">
       <Filter>Thread</Filter>
-    </ClCompile>
-    <ClCompile Include="RefCounting.cpp">
-      <Filter>Memory</Filter>
     </ClCompile>
     <ClCompile Include="Allocator.cpp">
       <Filter>Memory</Filter>
@@ -280,9 +271,6 @@
     </ClCompile>
     <ClCompile Include="DBSynchronizer.cpp">
       <Filter>DB</Filter>
-    </ClCompile>
-    <ClCompile Include="ConcurrentQueue.cpp">
-      <Filter>Utils</Filter>
     </ClCompile>
     <ClCompile Include="ConcurrentStack.cpp">
       <Filter>Utils</Filter>

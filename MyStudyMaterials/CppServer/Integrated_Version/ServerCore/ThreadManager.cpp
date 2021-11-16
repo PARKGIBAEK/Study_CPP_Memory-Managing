@@ -44,7 +44,7 @@ void ThreadManager::Join()
 void ThreadManager::InitTLS()
 {
 	static Atomic<uint32> SThreadId = 1;
-	LThreadId = SThreadId.fetch_add(1);
+	tls_ThreadId = SThreadId.fetch_add(1);
 }
 
 void ThreadManager::DestroyTLS()
@@ -57,7 +57,7 @@ void ThreadManager::DoGlobalQueueWork()
 	while (true)
 	{
 		uint64 now = ::GetTickCount64();
-		if (now > LEndTickCount)
+		if (now > tls_EndTickCount)
 			break;
 
 		JobQueueRef jobQueue = GGlobalQueue->Pop();

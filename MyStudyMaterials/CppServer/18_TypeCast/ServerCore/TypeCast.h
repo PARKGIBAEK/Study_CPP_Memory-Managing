@@ -1,14 +1,22 @@
 #pragma once
 #include "Types.h"
 
-// 템플릿에 입력된 타입들 중에 특정 타입을 찾아 반환
+/* TMP (Template Meta Programming) : 템플릿 인자로 또 다른 템플릿을 전달할 수 있고,
+	이것을 재귀적으로 구현할 수 있다는 점을 이용하는 방식이다 */
+
+
+
 #pragma region TypeList
-// 0번 템플릿 : TypeList라는 구조체로 템플릿을 정의하기 전에 구현해주어야 함
+	/* 0번 템플릿 :
+		템플릿의 재귀적 추론의 끝이 되는 빈 템플릿(empty template)이다.
+		TypeList라는 재귀적 템플릿을 정의할 최하위 템플릿에 해당
+		즉, 재귀 탈출 조건 같은 것이라고 보면 된다.*/
 template<typename... T>
 struct TypeList;
 
-/* 1번 템플릿 : 2번 템플릿과 함께 사용하여 T 또는 U 자리에 재귀로 TypeList<T,U>를 정의 할 수 있게 해준다
-
+/* 1번 템플릿 :
+	2개의 템플릿 인자를 받는다. using 키워드로 Head와 Tail이라는 별칭을 정의.
+	( 2번 템플릿과 함께 사용하여 2번 템플릿 인자 T 또는 U 자리에 템플릿 재귀로 TypeList<T,U>를 전달할 목적 )
 */
 template<typename T, typename U>
 struct TypeList<T, U>
@@ -17,60 +25,114 @@ struct TypeList<T, U>
 	using Tail = U;
 };
 
-// 2번 템플릿 : 2개 이상의 템플릿 타입인자를 전달 할 수 있도록 해준다
+/* 2번 템플릿 :
+	2개 이상의 템플릿 타입인자를 받는다.
+	Head는 템플릿 추론시 재귀를 통해 계속 맨앞의 인자인 T를 지칭하며,
+	Tail은 T를 제외한 나머지 템플릿 인자들을 모두 받는 TypeList<U...>를 재귀적으로 지칭한다. */
 template<typename T, typename... U>
 struct TypeList<T, U...>
 {
 	using Head = T;
 	using Tail = TypeList<U...>;
 };
+
 /*
-	사용 예시)
-	TypeList<Mage, Knight>::Head whoAMI; // 템플릿의 Head는 Mage타입을 반환
-	TypeList<Mage, Knight>::Tail whoAMI2; // 템플릿의 Tail은 Knight타입을 반환
+사용 예시)
 
-	TypeList<Mage, TypeList<Knight, Archer>>::Head whoAMI3;  // 템플릿의 Head는 Mage타입을 반환
+TypeList<Mage, Knight>::Head whoAMI; // 템플릿의 Head는 Mage타입을 반환
 
-	TypeList<Mage, TypeList<Knight, Archer>>::Tail::Head whoAMI4; // 템플릿의 Tail::Head는 Knight타입을 반환
-	TypeList<Mage, TypeList<Knight, Archer>>::Tail::Tail whoAMI5; // 템플릿의 Tail::Tail는 Archer타입을 반환
+TypeList<Mage, Knight>::Tail whoAMI2; // 템플릿의 Tail은 Knight타입을 반환
+
+TypeList<Mage, TypeList<Knight, Archer>>::Head whoAMI3;  // 템플릿의 Head는 Mage타입을 반환
+
+TypeList<Mage, TypeList<Knight, Archer>>::Tail::Head whoAMI4; // 템플릿의 Tail은 TypeList<Knight, Archer>로 치환되고, Tail::Head 는 Knight로 추론
+
+TypeList<Mage, TypeList<Knight, Archer>>::Tail::Tail whoAMI5; // 템플릿의 Tail은 TypeList<Knight, Archer>로 치환되고, Tail::Tail는 Archer로 추론
+
 */
 #pragma endregion
 
 
 
 
-//템플릿에 몇개의 타입이 인자로 들어있는지를 반환
+//템플릿에 몇개의 타입이 인자로 들어있는지를 반환하는 템플릿
 #pragma region Length
 
-// 0번 템플릿 : Length라는 구조체로 템플릿을 정의하기 전에 구현해주어야 함
+/* 0번 템플릿 : 템플릿의 재귀적 추론의 끝이 되는 빈 템플릿(empty template)이다.
+	Length라는 재귀적 템플릿을 정의할 최하위 템플릿에 해당
+	즉, 재귀 탈출 조건 같은 것이라고 보면 된다.*/
 template<typename T>
 struct Length;
 
-// 1번 템플릿 : 아무 타입도 입력하지 않은 경우 0을 반환
+/* 1번 템플릿 : 템플릿 인자의 갯수가 0개일 경우 0을 반환
+	인자로 전달되는 템플릿 TypeList에 인자의 갯수가 0개
+*/
 template<>
 struct Length<TypeList<>>
 {
 	enum { value = 0 };
 };
 
-// 2번 템플릿 : 1개 이상의 타입인자를 전달한 경우 전달한 타입인자의 갯수만큼을 반환
+
+/* 2번 템플릿 : 1개 이상의 타입인자를 전달한 경우 전달한 타입인자의 갯수만큼을 반환*/
 template<typename T, typename... U>
 struct Length<TypeList<T, U...>>
 {
-	//Length<TypeList<U...>>::value부분이 재귀로 0의 값을 찾을 때 까지 반복하여 결과를 합산
+	//Length<TypeList<U...>>::value부분이 재귀로 0의 값을 반환 할 때 까지 반복하여 결과를 합산
 	enum { value = 1 + Length<TypeList<U...>>::value };
 };
-/*
-	사용 예시)
-	int32 len1 = Length<TypeList<Mage, Knight>>::value; 
-	/*  value는 2를 반환하게되며, 그 과정은 다음과 같다.
-	Length<TypeList<Mage, Knight>>::value에서 맨앞의 타입Mage를 value(1)로 치환하여
-	1 + Length<TypeList<Knight>>::value로 만든다.
-	이어서 Length<TypeList<Knight>>::value를 1로 치환하여 1+1 로 만든다.
-	마지막으로 아무 타입도 입력되지 않은 템플릿Length<TypeList<>>::value로 치환되어 0으로 치환한다.
-	최종 결과는 1 + 1 + 0 = 2 가 된다.
 
-	int32 len2 = Length<TypeList<Mage, Knight, Archer>>::value; // 위의 과정에서 재귀가 한번 더 추가되어 템플릿의 value는 3를 반환하게된다
+/*
+	[ 사용 예시 1 ]
+
+	int32 len1 = Length< TypeList<Mage, Knight> >::value;
+
+	len1은 2가 된다. 그 치환과정을 설명하겠다.
+
+	1)
+	 Length<TypeList<Mage, Knight>>::value에서 TypeList의 첫번째 타입Mage는
+	 Length<TypeList<T, U...>> 에서 T에 해당한다.
+	 그렇기 때문에 value 는 1 + Length<TypeList<Knight>>::value 로 치환된다.
+
+	2)
+	 value의 상수 부분인 1을 제외한 Length<TypeList<Knight>>::value를 계산한다.
+	 그런데 인자가 1개 밖에 없는 TypeList를 인자로 받는 Length<TypeList<T>>같은 녀석이 보이지 않는다.
+	 당황스럽겠지만 하나의 인자를 가지고도 Length<TypeList<T, U...>> 으로 들어올 수 있다.
+	 이유는 U...은 인자가 없는것도 포함하기 때문이다.
+
+	 굳이 아래과 같은 템플릿을 정의해줄 필요가 없는 것이다. (가독성을 위해 아래 내용을 추가로 정의해줘도 문제는 없음)
+
+	 template<typename T>
+	 struct Length<TypeList<T>>
+	 {
+		enum { value = 1 };
+	 };
+
+	그럼 이제 하나의 인자를 가지고 들어왔기 때문에 value = 1 + Length<TypeList<>>가 된다.
+
+	Length<TypeList<>>의 value는 0이므로 재귀는 끝나고 결과를 합산하면  1 + 1 + 0 = 2 가 된다.
+
+
+
+
+	[ 사용 예시 2 ]
+
+	int32 len2 = Length<TypeList<Mage, Knight, Archer>>::value;
+
+	len2는 3이된다. [사용 예시 1]에다가 재귀가 한번 더 추가되는 것이다.
+
+	1) Length<TypeList<Mage, Knight, Archer>>::value 에서 Mage는 템플릿 인자 T에 해당하기 때문에 사라지고,
+		1 + Length<TypeList< Knight, Archer>>::value 로 치환된다.
+
+	2) value 계산식에서 상수 1을 제외하고 Length<TypeList< Knight, Archer>>::value을 다시 계산하면,
+		Knight가 T에 해당하기 때문에 사라지고,
+		1 + 1 + Length<TypeList<Archer>>::value 가 된다.
+
+		상수 부분을 제외한 Length<TypeList<Archer>>::value는
+		1 + Length<TypeList<>>::value 로 치환되므로
+		1 + 1 + 1 + Length<TypeList<>>::value 이 된다.
+		Length<TypeList<>>::value 는 0이므로
+		합산하면 1 + 1 + 1 + 0 = 4 라는 결과가 나온다.
 
 */
 #pragma endregion
@@ -153,7 +215,7 @@ public:
 #pragma endregion
 
 
-//From타입에서 To타입으로 변환이 가능한지 체크해주는 템플릿
+	//From타입에서 To타입으로 변환이 가능한지 체크해주는 템플릿
 #pragma region Conversion
 template<typename From, typename To>
 class Conversion
@@ -170,7 +232,7 @@ private:
 	static From MakeFrom() { return 0; }
 
 public:
-	
+
 	enum
 	{
 		/*Test메서드에 MakeFrom함수가 반환한 From타입을 인자로 전달했을 때 From타입이 To타입으로 변환이 가능하다면 첫번째 Test함수가 호출된다.
@@ -185,7 +247,7 @@ public:
 	사용 예시)
 
 	* Knight는 Player를 상속받은 하위 객체이며, Dog는 전혀 관련없는 객체 일 경우의 결과
-	
+
 	bool canConvert1 = Conversion<Player, Knight>::isConversible; // 0
 	bool canConvert2 = Conversion<Knight, Player>::isConversible; // 1
 	bool canConvert3 = Conversion<Knight, Dog>::isConversible; // 0
@@ -214,11 +276,11 @@ public:
 
 	TypeConversion()
 	{
-		
+
 		MakeTable(Int2Type<0>(), Int2Type<0>());
 		/*
 			위의 메서드는 아래의 코드를 컴파일 타임에 분석할 수 없기 때문에 TMP를 이용해 만든 매서드이다.
-			
+
 		for (size_t i = 0; i < length; i++)
 		{
 			for (size_t j = 0; j < length; j++)
@@ -250,7 +312,7 @@ public:
 	/*
 	위의 MakeTable메서드에서 j값이 length가 되었을 때
 	j는 0으로 초기화하고 i를 1 증가하여 반복하도록 함
-	 	  */
+		  */
 	template<int32 i>
 	static void MakeTable(Int2Type<i>, Int2Type<length>)
 	{
@@ -267,7 +329,7 @@ public:
 	static inline bool CanConvert(int32 from, int32 to)
 	{
 		static TypeConversion conversion; // TL의 형태별로 하나만 생성 되도록 하기 위해 static으로 선언
-		return s_convert[from][to]; 
+		return s_convert[from][to];
 	}
 
 public:
@@ -289,7 +351,7 @@ To TypeCast(From* ptr)
 	using TL = typename From::TL;
 
 	/* remove_pointer_t는 템플릿 인자 To로 전달받은 포인터 타입에서 포인터를 없앤 타입으로 만들어준다*/
-	if (TypeConversion<TL>::CanConvert(ptr->_typeId, IndexOf<TL, remove_pointer_t<To>>::value))
+	if (TypeConversion<TL>::CanConvert(ptr->typeId, IndexOf<TL, remove_pointer_t<To>>::value))
 		return static_cast<To>(ptr);
 
 	return nullptr;
@@ -304,7 +366,7 @@ shared_ptr<To> TypeCast(shared_ptr<From> ptr)
 
 	using TL = typename From::TL;
 
-	if (TypeConversion<TL>::CanConvert(ptr->_typeId, IndexOf<TL, remove_pointer_t<To>>::value))
+	if (TypeConversion<TL>::CanConvert(ptr->typeId, IndexOf<TL, remove_pointer_t<To>>::value))
 		return static_pointer_cast<To>(ptr);//static_pointer_cast는 shared_ptr을 대상하로하는  형변환이다
 
 	return nullptr;
@@ -328,7 +390,7 @@ bool CanCast(From* ptr)
 		return false;
 
 	using TL = typename From::TL;
-	return TypeConversion<TL>::CanConvert(ptr->_typeId, IndexOf<TL, remove_pointer_t<To>>::value);
+	return TypeConversion<TL>::CanConvert(ptr->typeId, IndexOf<TL, remove_pointer_t<To>>::value);
 }
 
 //shared_ptr의 형변환 가능 여부를 반환
@@ -348,10 +410,10 @@ bool CanCast(shared_ptr<From> ptr)
 		return false;
 
 	using TL = typename From::TL;
-	return TypeConversion<TL>::CanConvert(ptr->_typeId, IndexOf<TL, remove_pointer_t<To>>::value);
+	return TypeConversion<TL>::CanConvert(ptr->typeId, IndexOf<TL, remove_pointer_t<To>>::value);
 }
 
-#pragma endregion
+#pragma endregion TypeCast
 
-#define DECLARE_TL		using TL = TL; int32 _typeId;
-#define INIT_TL(Type)	_typeId = IndexOf<TL, Type>::value;
+#define DECLARE_TL		using TL = TL; int32 typeId;
+#define INIT_TL(Type)	typeId = IndexOf<TL, Type>::value;

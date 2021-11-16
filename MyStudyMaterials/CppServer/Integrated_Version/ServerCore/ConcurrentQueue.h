@@ -44,7 +44,7 @@ class LockFreeQueue {
 				//끼어들 수 있음
 				if (nodeCounter.compare_exchange_strong(oldCounter, newCounter))
 				{
-					if (newCunter.internalCouont == 0 && newCounter.externalCountRemaining == 0)
+					if (newCounter.internalCouont == 0 && newCounter.externalCountRemaining == 0)
 						delete this;
 					break;
 				}
@@ -82,7 +82,7 @@ public:
 
 		CountedNodePtr oldTail = tail.load(); // tail은 더미노드를 가리키고 있을 것이므로 내용은 nullptr이다
 
-		while (true) 
+		while (true)
 		{
 			// 참조권 획득 ( externalCount를 현시점 기준 +1 한 Thread가 이김 )
 			IncreaseExternalCount(tail, oldTail);
@@ -102,7 +102,7 @@ public:
 		oldTail.ptr->ReleaseRef();
 	}
 
-	std::shared_ptr<T> TryPop() 
+	std::shared_ptr<T> TryPop()
 	{
 
 		CountedNodePtr oldHead = head.load();
@@ -110,9 +110,9 @@ public:
 		while (true)
 		{
 			// 참조권 획득 (externalCount를 현 시점 기준 +1 한 Thread가 이김 )
-			IncreaseExternalCount()
+			IncreaseExternalCount();
 
-				Node* ptr = oldHead.ptr;
+			Node* ptr = oldHead.ptr;
 			if (ptr == tail.load().ptr)
 			{
 				ptr->ReleaseRef();
@@ -131,14 +131,14 @@ public:
 	}
 
 private:
-	static void IncreaseExternalCount(std::atomic<CountedNodePtr>& counter, CountedNodePtr& oldCounter) 
+	static void IncreaseExternalCount(std::atomic<CountedNodePtr>& counter, CountedNodePtr& oldCounter)
 	{
-		while (true) 
+		while (true)
 		{
 			CountedNodePtr newCounter = oldCounter;
 			newCounter.externalCount++;
 
-			if (counter.compare_exchange_strong(oldCounter, newCounter)) 
+			if (counter.compare_exchange_strong(oldCounter, newCounter))
 			{
 				oldCounter.externalCount = newCounter.externalCount;
 				break;
@@ -146,20 +146,20 @@ private:
 		}
 	}
 
-	static void FreeExternalCount(CountedNodePtr& oldNodePtr) 
+	static void FreeExternalCount(CountedNodePtr& oldNodePtr)
 	{
 		Node* ptr = oldNodePtr.ptr;
 		const int32 countIncrease = oldNodePtr.externalCount - 2;
 
 		NodeCounter oldCounter = ptr->count.load();
 
-		while (true) 
+		while (true)
 		{
 			NodeCounter newCounter = oldCounter;
 			newCounter.externalCountRemaining--;
 			newCounter.internalCount += countIncrease;
 
-			if (ptr->count.compare_exchange_strong(oldCounter, newCounter)) 
+			if (ptr->count.compare_exchange_strong(oldCounter, newCounter))
 			{
 				if (newCounter.internalCount == 0 && newCounter.externalCounterRemaining)
 					delete ptr;

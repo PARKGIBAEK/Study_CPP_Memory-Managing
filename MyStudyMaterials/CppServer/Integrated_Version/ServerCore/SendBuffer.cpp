@@ -64,22 +64,22 @@ void SendBufferChunk::Close(uint32 _writeSize)
 
 SendBufferRef SendBufferManager::Open(uint32 _size)
 {
-	if (LSendBufferChunk == nullptr)
+	if (tls_SendBufferChunk == nullptr)
 	{
-		LSendBufferChunk = SendBufferManager::Pop(); // WRITE_LOCK
-		LSendBufferChunk->Reset();
+		tls_SendBufferChunk = SendBufferManager::Pop(); // WRITE_LOCK
+		tls_SendBufferChunk->Reset();
 	}		
 
-	ASSERT_CRASH(LSendBufferChunk->IsOpen() == false);
+	ASSERT_CRASH(tls_SendBufferChunk->IsOpen() == false);
 
 	// 다 썼으면 버리고 새거로 교체
-	if (LSendBufferChunk->FreeSize() < _size)
+	if (tls_SendBufferChunk->FreeSize() < _size)
 	{
-		LSendBufferChunk = SendBufferManager::Pop(); // WRITE_LOCK
-		LSendBufferChunk->Reset();
+		tls_SendBufferChunk = SendBufferManager::Pop(); // WRITE_LOCK
+		tls_SendBufferChunk->Reset();
 	}
 
-	return LSendBufferChunk->Open(_size);
+	return tls_SendBufferChunk->Open(_size);
 }
 
 SendBufferChunkRef SendBufferManager::Pop()
