@@ -46,7 +46,7 @@ public:
 	MemoryHeader*	Pop();
 
 private:
-	SLIST_HEADER	_header; // Microsoft에서 만든 SLIST_HEADER
+	SLIST_HEADER	_header; // MS windows가 제공하는 Interlocked Singly-Linked-List
 	int32			_allocSize = 0;
 	atomic<int32>	_allocCount = 0;
 };

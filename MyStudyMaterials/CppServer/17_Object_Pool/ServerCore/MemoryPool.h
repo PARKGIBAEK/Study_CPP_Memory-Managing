@@ -42,14 +42,14 @@ public:
 	MemoryPool(int32 allocSize);
 	~MemoryPool();
 
-	// 메모리 풀에 반환하기(넣어주기)
-	void			Push(MemoryHeader* ptr);
-	// 메모리 풀에서 꺼내오기
+	// 사용할 Memory Pool에서 꺼내오기
 	MemoryHeader*	Pop();
+	// 사용이 끝난 메모리를 Memory Pool에 반납하기(넣어주기)
+	void			Push(MemoryHeader* ptr);
 
 private:
-	SLIST_HEADER	_header;//메모리 풀로 사용될 컨테이너(SLIST_HEADER는 MS사에서 만든 Lock-Free Stack의 시작 노드이다, 내부에서 사용되는 노드는 SLIST_ENTRY를 사용한다)
-	int32			_allocSize = 0;
+	SLIST_HEADER	_header;//메모리 풀 컨테이너( SLIST_HEADER는 MS사에서 만든 Lock-Free Stack의 시작 노드이다, 내부에서 사용되는 노드는 SLIST_ENTRY이다 )
+	int32			allocSize = 0; // allocSize크기의 메모리를 풀링 한다
 	atomic<int32>	_useCount = 0;//메모리 풀에서 꺼내어 사용 중인 객체의 갯수
 	atomic<int32>	_reserveCount = 0;// 메모리 풀에서 생성된 객체의 갯수
 };

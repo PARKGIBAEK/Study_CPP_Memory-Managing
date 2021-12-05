@@ -11,6 +11,10 @@ Memory::Memory()
 	int32 size = 0;
 	int32 tableIndex = 0;
 
+	/* 32 byte, 64 byte, 96 byte, 128 byte... 1024 byte 크기의
+	 메모리 풀을 각각 생성한다
+	 32 byte짜리는 32 byte 크기의 메모리 풀 전용, 64 byte 는 64 byte 전용 이런 방식이다.
+	*/
 	for (size = 32; size <= 1024; size += 32)
 	{
 		MemoryPool* pool = new MemoryPool(size);

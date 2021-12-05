@@ -7,7 +7,7 @@
 
 MemoryPool::MemoryPool(int32 allocSize) : _allocSize(allocSize)
 {
-	::InitializeSListHead(&_header);//header 초기화
+	::InitializeSListHead(&_header);// header 초기화
 }
 
 MemoryPool::~MemoryPool()

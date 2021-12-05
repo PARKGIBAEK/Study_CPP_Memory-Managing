@@ -22,7 +22,7 @@
 	SListEntry는 연결된 다음 노드를 가리키기 위한 포인터이다
 
 	※ 데이터 Push 과정
-	
+
 	최초로 SListHeader를 만들고,
 	Data를 만든다음 SListHeader에 연결해준다.
 
@@ -121,8 +121,8 @@ struct SListHeader
 	{
 		struct
 		{
-			uint64 alignment;
-			uint64 region;
+			uint64 alignment;// 스레드 경합 확인을 위한 counter로 활용
+			uint64 region;// 데이터의 포인터 저장
 		} DUMMYSTRUCTNAME;
 
 		struct
