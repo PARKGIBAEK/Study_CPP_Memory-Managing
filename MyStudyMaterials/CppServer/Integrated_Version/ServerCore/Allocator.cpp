@@ -22,16 +22,23 @@ void BaseAllocator::ReleaseMemory(void* ptr)
 
 void* StompAllocator::AllocateMemory(int32 size)
 {
-	//최소 할당 단위를 PAGE_SIZE로 하기 위한 과정
+	//메모리 할당 단위를 PAGE_SIZE로 하기 위한 과정
 	const int64 pageCount = (size + PAGE_SIZE - 1) / PAGE_SIZE;
-	/* 할당된 메모리 중 size만큼 앞으로 당긴 위치를 반환하기 위함
+	/* 할당한 메모리 중 마지막 메모리의 주소를 기준으로
+		size만큼 앞으로 당긴 위치를 반환하기 위함
+		
+		예시) 4096 byte 할당 받았고, 메모리의 시작점이 0x0000'0000이라고 가정했을 때
+		    사용할 메모리 크기가 16이라면
+			 시작 주소(0000) + 할당받은 메모리 크기(4096) - 사용할 메모리 크기(16) = Offset(4080)
+			 0x0000'0000 + 0x0000'1000 - 0x0000'0010 = 0x0000'0FF0 이 된다.
 
-   base                          base + offset
-	 ↓                                  ↓
-	 [            Allocated memory             ]
-
+	BaseAddress(0000)                      Offset(4080)
+			↓                                  ↓
+			[            Allocated memory             ]
+															 ↑
+														  메모리 끝 주소(4096)
 	*/
-	const int64 dataOffset = pageCount * PAGE_SIZE - size;
+	const int64 offset = pageCount * PAGE_SIZE - size;
 	
 	// pageCount x PAGE_SIZE만큼 할당하고 할당 주소의 시작점을 받아옴
 	/* VirtualAlloc 옵션
@@ -48,15 +55,15 @@ void* StompAllocator::AllocateMemory(int32 size)
 	void* baseAddress = ::VirtualAlloc(NULL, pageCount * PAGE_SIZE, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
 
 	/* VirtualAlloc 함수를 통해 할당받은 메모리의 주소에서 실제 사용할 주소의 위치를 반환 	*/
-	return static_cast<void*>(static_cast<int8*>(baseAddress) + dataOffset);
+	return static_cast<void*>(static_cast<int8*>(baseAddress) + offset);
 }
 
 void StompAllocator::ReleaseMemory(void* ptr)
 {
-	// AllocateMemory 함수에서 할당한 전체 메모리 중 실제 사용할 목적으로 반환받은 주소 ( baseAddress + dataOffset )
+	// AllocateMemory 함수에서 할당한 전체 메모리 중 실제 사용할 목적으로 반환받은 주소 ( baseAddress + offset )
 	const int64 address = reinterpret_cast<int64>(ptr);
-	// 위의 주소에서 data offset을 뺀 주소 ( baseAddress + dataOffset ) - dataOffset
-	// ex) base : 5000, dataOffset : 500, address : 5500
+	// 위의 주소에서 offset을 뺀 주소 ( baseAddress + offset ) - offset
+	// ex) base : 5000, offset : 500, address : 5500
 	//		 5500 - ( 5500 % 4096 ) = 5500 - 1404  = 
 
 	const int64 baseAddress = address - (address % PAGE_SIZE);

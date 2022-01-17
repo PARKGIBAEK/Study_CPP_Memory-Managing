@@ -14,7 +14,7 @@ class Memory
 	{
 		// 0~1024 byte까지 32byte단위, ~2048 byte까지 128 btye단위, ~4096 byte까지 256 byte단위로 할당
 		POOL_COUNT = (1024 / 32) + (1024 / 128) + (2048 / 256),
-		MAX_ALLOC_SIZE = 4096
+		MAX_ALLOC_SIZE = 4096,
 	};
 
 public:
@@ -25,14 +25,14 @@ public:
 	void	Release(void* ptr);
 
 private:
-	vector<MemoryPool*> _pools;
+	vector<MemoryPool*> pools; //할당된 모든 메모리를 해제하기 위해 메모리 참조를 모두 보관
 
-	// 메모리 크기 <-> 메모리 풀
-	// O(1) 빠르게 찾기 위한 테이블
-	MemoryPool* _poolTable[MAX_ALLOC_SIZE + 1];
+	// 할당할 메모리 크기에 맞는 메모리 풀을 빠르게 찾기 위한 테이블(생성자 참고)
+	MemoryPool* poolTable[MAX_ALLOC_SIZE + 1];
 };
 
-// new 연산자 대신 사용
+
+// 할당 연산자 new 대신 사용하는 Customed Allocator
 template<typename Type, typename... Args>
 Type* XNew(Args&&... args)
 {

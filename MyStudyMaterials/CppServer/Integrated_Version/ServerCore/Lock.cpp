@@ -9,15 +9,14 @@ void Lock::WriteLock(const char* name)
 	GDeadLockProfiler->PushLock(name);
 #endif
 
-	// 동일한 쓰레드가 소유하고 있다면 무조건 성공.
 	const uint32 lockThreadId = (_lockFlag.load() & WRITE_THREAD_MASK) >> 16;
 	if (tls_ThreadId == lockThreadId)
-	{
+	{ // 동일한 쓰레드가 WriteLock을 잡고 있는 경우(재귀로 Lock을 잡은 경우)
 		_writeCount++;
 		return;
 	}
 
-	// 아무도 소유 및 공유하고 있지 않을 때, 경합해서 소유권을 얻는다.
+	// WriteLock을 잡기 위한 경합
 	const int64 beginTick = ::GetTickCount64();
 	const uint32 desired = ((tls_ThreadId << 16) & WRITE_THREAD_MASK);
 	while (true)
@@ -60,11 +59,11 @@ void Lock::ReadLock(const char* name)
 	GDeadLockProfiler->PushLock(name);
 #endif
 
-	// 동일한 쓰레드가 소유하고 있다면 무조건 성공.
+	
 	const uint32 lockThreadId = (_lockFlag.load() & WRITE_THREAD_MASK) >> 16;
 	if (tls_ThreadId == lockThreadId)
-	{
-		_lockFlag.fetch_add(1);
+	{// 동일한 쓰레드가 ReadLock을 잡고 있는 경우
+		_lockFlag.fetch_add(1); // ReadLock을 잡은 스레드 갯수 1 증가
 		return;
 	}
 

@@ -7,14 +7,14 @@
 	Session
 ---------------*/
 
-Session::Session() : _recvBuffer(BUFFER_SIZE)
+Session::Session() : recvBuffer(BUFFER_SIZE)
 {
-	_socket = SocketUtils::CreateSocket();
+	socket = SocketUtils::CreateSocket();
 }
 
 Session::~Session()
 {
-	SocketUtils::Close(_socket);
+	SocketUtils::Close(socket);
 }
 
 void Session::Send(SendBufferRef sendBuffer)
@@ -28,9 +28,9 @@ void Session::Send(SendBufferRef sendBuffer)
 	{
 		WRITE_LOCK;
 
-		_sendQueue.push(sendBuffer);
+		sendQueue.push(sendBuffer);
 
-		if (_sendRegistered.exchange(true) == false)
+		if (sendRegistered.exchange(true) == false)
 			registerSend = true;
 	}
 	
@@ -45,7 +45,7 @@ bool Session::Connect()
 
 void Session::Disconnect(const WCHAR* cause)
 {
-	if (_connected.exchange(false) == false)
+	if (connected.exchange(false) == false)
 		return;
 
 	// TEMP
@@ -56,7 +56,7 @@ void Session::Disconnect(const WCHAR* cause)
 
 HANDLE Session::GetHandle()
 {
-	return reinterpret_cast<HANDLE>(_socket);
+	return reinterpret_cast<HANDLE>(socket);
 }
 
 void Session::Dispatch(IocpEvent* iocpEvent, int32 numOfBytes)
@@ -88,23 +88,23 @@ bool Session::RegisterConnect()
 	if (GetService()->GetServiceType() != ServiceType::Client)
 		return false;
 
-	if (SocketUtils::SetReuseAddress(_socket, true) == false)
+	if (SocketUtils::SetReuseAddress(socket, true) == false)
 		return false;
 
-	if (SocketUtils::BindAnyAddress(_socket, 0/*남는거*/) == false)
+	if (SocketUtils::BindAnyAddress(socket, 0/*남는거*/) == false)
 		return false;
 
-	_connectEvent.Init();
-	_connectEvent.owner = shared_from_this(); // ADD_REF
+	connectEvent.Init();
+	connectEvent.owner = shared_from_this(); // ADD_REF
 
 	DWORD numOfBytes = 0;
 	SOCKADDR_IN sockAddr = GetService()->GetNetAddress().GetSockAddr();
-	if (false == SocketUtils::ConnectEx(_socket, reinterpret_cast<SOCKADDR*>(&sockAddr), sizeof(sockAddr), nullptr, 0, &numOfBytes, &_connectEvent))
+	if (false == SocketUtils::ConnectEx(socket, reinterpret_cast<SOCKADDR*>(&sockAddr), sizeof(sockAddr), nullptr, 0, &numOfBytes, &connectEvent))
 	{
 		int32 errorCode = ::WSAGetLastError();
 		if (errorCode != WSA_IO_PENDING)
 		{
-			_connectEvent.owner = nullptr; // RELEASE_REF
+			connectEvent.owner = nullptr; // RELEASE_REF
 			return false;
 		}
 	}
@@ -114,15 +114,15 @@ bool Session::RegisterConnect()
 
 bool Session::RegisterDisconnect()
 {
-	_disconnectEvent.Init();
-	_disconnectEvent.owner = shared_from_this(); // ADD_REF
+	disconnectEvent.Init();
+	disconnectEvent.owner = shared_from_this(); // ADD_REF
 
-	if (false == SocketUtils::DisconnectEx(_socket, &_disconnectEvent, TF_REUSE_SOCKET, 0))
+	if (false == SocketUtils::DisconnectEx(socket, &disconnectEvent, TF_REUSE_SOCKET, 0))
 	{
 		int32 errorCode = ::WSAGetLastError();
 		if (errorCode != WSA_IO_PENDING)
 		{
-			_disconnectEvent.owner = nullptr; // RELEASE_REF
+			disconnectEvent.owner = nullptr; // RELEASE_REF
 			return false;
 		}
 	}
@@ -135,22 +135,22 @@ void Session::RegisterRecv()
 	if (IsConnected() == false)
 		return;
 
-	_recvEvent.Init();
-	_recvEvent.owner = shared_from_this(); // ADD_REF
+	recvEvent.Init();
+	recvEvent.owner = shared_from_this(); // ADD_REF
 
 	WSABUF wsaBuf;
-	wsaBuf.buf = reinterpret_cast<char*>(_recvBuffer.WritePos());
-	wsaBuf.len = _recvBuffer.FreeSize();
+	wsaBuf.buf = reinterpret_cast<char*>(recvBuffer.WritePos());
+	wsaBuf.len = recvBuffer.FreeSize();
 
 	DWORD numOfBytes = 0;
 	DWORD flags = 0;
-	if (SOCKET_ERROR == ::WSARecv(_socket, &wsaBuf, 1, OUT &numOfBytes, OUT &flags, &_recvEvent, nullptr))
+	if (SOCKET_ERROR == ::WSARecv(socket, &wsaBuf, 1, OUT &numOfBytes, OUT &flags, &recvEvent, nullptr))
 	{
 		int32 errorCode = ::WSAGetLastError();
 		if (errorCode != WSA_IO_PENDING)
 		{
 			HandleError(errorCode);
-			_recvEvent.owner = nullptr; // RELEASE_REF
+			recvEvent.owner = nullptr; // RELEASE_REF
 		}
 	}
 }
@@ -160,30 +160,30 @@ void Session::RegisterSend()
 	if (IsConnected() == false)
 		return;
 
-	_sendEvent.Init();
-	_sendEvent.owner = shared_from_this(); // ADD_REF
+	sendEvent.Init();
+	sendEvent.owner = shared_from_this(); // ADD_REF
 
 	// 보낼 데이터를 sendEvent에 등록
 	{
 		WRITE_LOCK;
 
 		int32 writeSize = 0;
-		while (_sendQueue.empty() == false)
+		while (sendQueue.empty() == false)
 		{
-			SendBufferRef sendBuffer = _sendQueue.front();
+			SendBufferRef sendBuffer = sendQueue.front();
 
 			writeSize += sendBuffer->WriteSize();
 			// TODO : 예외 체크
 
-			_sendQueue.pop();
-			_sendEvent.sendBuffers.push_back(sendBuffer);
+			sendQueue.pop();
+			sendEvent.sendBuffers.push_back(sendBuffer);
 		}
 	}
 
 	// Scatter-Gather (흩어져 있는 데이터들을 모아서 한 방에 보낸다)
 	Vector<WSABUF> wsaBufs;
-	wsaBufs.reserve(_sendEvent.sendBuffers.size());
-	for (SendBufferRef sendBuffer : _sendEvent.sendBuffers)
+	wsaBufs.reserve(sendEvent.sendBuffers.size());
+	for (SendBufferRef sendBuffer : sendEvent.sendBuffers)
 	{
 		WSABUF wsaBuf;
 		wsaBuf.buf = reinterpret_cast<char*>(sendBuffer->Buffer());
@@ -192,24 +192,24 @@ void Session::RegisterSend()
 	}
 
 	DWORD numOfBytes = 0;
-	if (SOCKET_ERROR == ::WSASend(_socket, wsaBufs.data(), static_cast<DWORD>(wsaBufs.size()), OUT &numOfBytes, 0, &_sendEvent, nullptr))
+	if (SOCKET_ERROR == ::WSASend(socket, wsaBufs.data(), static_cast<DWORD>(wsaBufs.size()), OUT &numOfBytes, 0, &sendEvent, nullptr))
 	{
 		int32 errorCode = ::WSAGetLastError();
 		if (errorCode != WSA_IO_PENDING)
 		{
 			HandleError(errorCode);
-			_sendEvent.owner = nullptr; // RELEASE_REF
-			_sendEvent.sendBuffers.clear(); // RELEASE_REF
-			_sendRegistered.store(false);
+			sendEvent.owner = nullptr; // RELEASE_REF
+			sendEvent.sendBuffers.clear(); // RELEASE_REF
+			sendRegistered.store(false);
 		}
 	}
 }
 
 void Session::ProcessConnect()
 {
-	_connectEvent.owner = nullptr; // RELEASE_REF
+	connectEvent.owner = nullptr; // RELEASE_REF
 
-	_connected.store(true);
+	connected.store(true);
 
 	// 세션 등록
 	GetService()->AddSession(GetSessionRef());
@@ -223,7 +223,7 @@ void Session::ProcessConnect()
 
 void Session::ProcessDisconnect()
 {
-	_disconnectEvent.owner = nullptr; // RELEASE_REF
+	disconnectEvent.owner = nullptr; // RELEASE_REF
 
 	OnDisconnected(); // 컨텐츠 코드에서 재정의
 	GetService()->ReleaseSession(GetSessionRef());
@@ -231,7 +231,7 @@ void Session::ProcessDisconnect()
 
 void Session::ProcessRecv(int32 numOfBytes)
 {
-	_recvEvent.owner = nullptr; // RELEASE_REF
+	recvEvent.owner = nullptr; // RELEASE_REF
 
 	if (numOfBytes == 0)
 	{
@@ -239,22 +239,22 @@ void Session::ProcessRecv(int32 numOfBytes)
 		return;
 	}
 
-	if (_recvBuffer.OnWrite(numOfBytes) == false)
+	if (recvBuffer.OnWrite(numOfBytes) == false)
 	{
 		Disconnect(L"OnWrite Overflow");
 		return;
 	}
 
-	int32 dataSize = _recvBuffer.DataSize();
-	int32 processLen = OnRecv(_recvBuffer.ReadPos(), dataSize); // 컨텐츠 코드에서 재정의
-	if (processLen < 0 || dataSize < processLen || _recvBuffer.OnRead(processLen) == false)
+	int32 dataSize = recvBuffer.DataSize();
+	int32 processLen = OnRecv(recvBuffer.ReadPos(), dataSize); // 컨텐츠 코드에서 재정의
+	if (processLen < 0 || dataSize < processLen || recvBuffer.OnRead(processLen) == false)
 	{
 		Disconnect(L"OnRead Overflow");
 		return;
 	}
 	
 	// 커서 정리
-	_recvBuffer.Clean();
+	recvBuffer.Clean();
 
 	// 수신 등록
 	RegisterRecv();
@@ -262,8 +262,8 @@ void Session::ProcessRecv(int32 numOfBytes)
 
 void Session::ProcessSend(int32 numOfBytes)
 {
-	_sendEvent.owner = nullptr; // RELEASE_REF
-	_sendEvent.sendBuffers.clear(); // RELEASE_REF
+	sendEvent.owner = nullptr; // RELEASE_REF
+	sendEvent.sendBuffers.clear(); // RELEASE_REF
 
 	if (numOfBytes == 0)
 	{
@@ -275,8 +275,8 @@ void Session::ProcessSend(int32 numOfBytes)
 	OnSend(numOfBytes);
 
 	WRITE_LOCK;
-	if (_sendQueue.empty())
-		_sendRegistered.store(false);
+	if (sendQueue.empty())
+		sendRegistered.store(false);
 	else
 		RegisterSend();
 }

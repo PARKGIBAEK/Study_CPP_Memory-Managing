@@ -24,7 +24,7 @@ public:
 	void	Release(void* ptr);
 
 private:
-	vector<MemoryPool*> _pools;
+	vector<MemoryPool*> _pools; // 생성자에서 생성한 메모리 풀의 포인터를 저장
 
 	// 메모리 크기 <-> 메모리 풀
 	// O(1) 빠르게 찾기 위한 테이블

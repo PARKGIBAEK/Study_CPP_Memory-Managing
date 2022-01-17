@@ -19,22 +19,21 @@ public:
 	template<typename... Args>
 	static Type* Pop(Args&&... args)
 	{
-		// Stomp Allocator와 Base Allocator 선택 분기 매크로
-#ifdef _STOMP
+#ifdef _STOMP_ALLOCATOR
 		MemoryHeader* ptr = reinterpret_cast<MemoryHeader*>(StompAllocator::AllocateMemory(s_allocSize));
 		Type* memory = static_cast<Type*>(MemoryHeader::AttachHeader(ptr, s_allocSize));
 #else
-		// 풀에서 메모리를 꺼내올 때 메모리 크기를 같이 전달해 준다
+		// 메모리풀에서 메모리를 꺼내올 때 메모리 크기를 같이 전달해 준다
 		Type* memory = static_cast<Type*>(MemoryHeader::AttachHeader(s_pool.Pop(), s_allocSize));
 #endif		
-		new(memory)Type(forward<Args>(args)...); // placement new
+		new(memory)Type(std::forward<Args>(args)...); // placement new
 		return memory;
 	}
 
 	static void Push(Type* obj)
 	{
 		obj->~Type();
-#ifdef _STOMP
+#ifdef _STOMP_ALLOCATOR
 		StompAllocator::ReleaseMemory(MemoryHeader::DetachHeader(obj));
 #else
 		s_pool.Push(MemoryHeader::DetachHeader(obj));
@@ -42,9 +41,9 @@ public:
 	}
 
 	template<typename... Args>
-	static shared_ptr<Type> MakeShared(Args&&... args)
+	static std::shared_ptr<Type> MakeShared(Args&&... args)
 	{
-		shared_ptr<Type> ptr = { Pop(forward<Args>(args)...), Push };
+		std::shared_ptr<Type> ptr = { Pop(std::forward<Args>(args)...), Push };
 		return ptr;
 	}
 

@@ -8,7 +8,7 @@
 	- Memory Pooling : Memory Pool을 여러 Class가 공유하는 방식이며
 							 메모리 오염이 발생했을 경우 원인을 찾기 어렵다.
 
-	- Object Pooling : 각 Class마다 독립적으로 Memory Pooling을 하는 방식이며
+	- Object Pooling : 각 <Type>마다 독립적으로 Memory Pooling을 하는 방식이며
 							 메모리 오염이 발생 시 어떤 Class의 Object Pool에서 발생한 것인지  파악하여 문제 발생 지점을 유추할 수 있다.
 */
 
