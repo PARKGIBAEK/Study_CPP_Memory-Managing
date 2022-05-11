@@ -1,0 +1,141 @@
+* [33mcommit 508c301d6a4ce4e689002ffb5ae5b128d6941e0f[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+[31m|[m Author: PARKGIBAEK <tkdring@naver.com>
+[31m|[m Date:   Mon Dec 6 00:54:49 2021 +0900
+[31m|[m 
+[31m|[m     Add comments
+[31m|[m 
+* [33mcommit bd1bdf9e53f8c8d082c87725ceada10d94cc945f[m
+[31m|[m Author: PARKGIBAEK <tkdring@naver.com>
+[31m|[m Date:   Wed Nov 17 15:13:46 2021 +0900
+[31m|[m 
+[31m|[m     no message
+[31m|[m 
+* [33mcommit 5e13d1c6730f8ab1d669d65e71f5cf0bc99845a4[m
+[31m|[m Author: PARKGIBAEK <tkdring@naver.com>
+[31m|[m Date:   Wed Nov 17 04:29:37 2021 +0900
+[31m|[m 
+[31m|[m     no message
+[31m|[m 
+* [33mcommit eb2c0c3f8892c9401646d1019f376db6fc3bee6d[m
+[31m|[m Author: PARKGIBAEK <tkdring@naver.com>
+[31m|[m Date:   Wed Nov 10 14:40:03 2021 +0900
+[31m|[m 
+[31m|[m     no message
+[31m|[m 
+* [33mcommit 26a1aced1e2213ec1aea77e07733ecfdbe360485[m
+[31m|[m Author: PARKGIBAEK <tkdring@naver.com>
+[31m|[m Date:   Wed Nov 10 14:28:52 2021 +0900
+[31m|[m 
+[31m|[m     no message
+[31m|[m 
+* [33mcommit 8b43049482f57d7cbfe16c17ec07f964308b7b4e[m
+[31m|[m Author: PARKGIBAEK <tkdring@naver.com>
+[31m|[m Date:   Wed Nov 10 14:21:03 2021 +0900
+[31m|[m 
+[31m|[m     Move the ReadMe.md file to the super directory
+[31m|[m 
+* [33mcommit 3116c0bd43440da4fc724d9375d8a4035eccf313[m
+[31m|[m Author: PARKGIBAEK <tkdring@naver.com>
+[31m|[m Date:   Wed Nov 10 14:05:59 2021 +0900
+[31m|[m 
+[31m|[m     no message
+[31m|[m 
+* [33mcommit 286be9af4cff8cdfcfa89ab4367737f7a3e8c0f3[m
+[31m|[m Author: PARKGIBAEK <tkdring@naver.com>
+[31m|[m Date:   Sun Oct 17 14:04:16 2021 +0900
+[31m|[m 
+[31m|[m     no message
+[31m|[m 
+* [33mcommit cde91ff9250f9e58e2d58a5f0f7ee376227c40d5[m
+[31m|[m Author: PARKGIBAEK <tkdring@naver.com>
+[31m|[m Date:   Thu Oct 14 22:23:14 2021 +0900
+[31m|[m 
+[31m|[m     Added comments.
+[31m|[m 
+* [33mcommit 4c298e2db339015dad52c7302715359f62ec1cac[m
+[31m|[m Author: PARKGIBAEK <tkdring@naver.com>
+[31m|[m Date:   Tue Oct 12 03:27:20 2021 +0900
+[31m|[m 
+[31m|[m     Changed the variable name to resolve compilation errors.
+[31m|[m     Added a class diagram of server core part.
+[31m|[m 
+* [33mcommit 71524b30eb10a6de4ac36d509608aa3d6aa12aad[m
+[31m|[m Author: PARKGIBAEK <tkdring@naver.com>
+[31m|[m Date:   Fri Oct 8 14:31:21 2021 +0900
+[31m|[m 
+[31m|[m     no message
+[31m|[m 
+* [33mcommit 7c774518a383f24e93eb6f967482976a956a59a2[m
+[31m|[m Author: PARKGIBAEK <tkdring@naver.com>
+[31m|[m Date:   Fri Oct 8 14:30:15 2021 +0900
+[31m|[m 
+[31m|[m     Changed all directory names to English.
+[31m|[m     Changing the proto buffer version to solve the proto buffer string issue.
+[31m|[m 
+* [33mcommit 169ef52ddcae8f17670ba67ba92a145bc4d9a7e3[m
+[31m|[m Author: PARKGIBAEK <tkdring@naver.com>
+[31m|[m Date:   Mon Sep 13 21:00:29 2021 +0900
+[31m|[m 
+[31m|[m     Changing the folder name due to Visual Studio's Build-Events error problem.
+[31m|[m 
+* [33mcommit 2569aec3f4fd7be84c8add0ccaef9b65af76a087[m
+[31m|[m Author: PARKGIBAEK <tkdring@naver.com>
+[31m|[m Date:   Mon Sep 13 20:41:22 2021 +0900
+[31m|[m 
+[31m|[m     Changing the folder name due to Visual Studio's Build-Events error problem.
+[31m|[m 
+* [33mcommit c8f31b49439ce05180a43ca2849a633e483f45df[m
+[31m|[m Author: PARKGIBAEK <tkdring@naver.com>
+[31m|[m Date:   Sat Aug 21 21:02:13 2021 +0900
+[31m|[m 
+[31m|[m     설명 주석 추가
+[31m|[m 
+* [33mcommit 4df3331711b21e04c152c445dbf5ef7f0e1a6d9c[m
+[31m|[m Author: DESKTOP-99AMGUA\oskwz(소영이 집) <tkdring@naver.com>
+[31m|[m Date:   Sat Jul 31 16:34:27 2021 +0900
+[31m|[m 
+[31m|[m     설명 주석 추가
+[31m|[m 
+* [33mcommit 0c2717895811fa294633e653d2964c9d6c234ce6[m
+[31m|[m Author: DESKTOP-99AMGUA\oskwz(소영이 집) <tkdring@naver.com>
+[31m|[m Date:   Mon Jul 26 14:57:58 2021 +0900
+[31m|[m 
+[31m|[m     UDP & Non-Blocking Socket communication
+[31m|[m     Add SQL Folder
+[31m|[m 
+* [33mcommit 045aaf9608e459e2d9460b804fe3cd1424f44c90[m
+[31m|[m Author: DESKTOP-99AMGUA\oskwz(소영이 집) <tkdring@naver.com>
+[31m|[m Date:   Sat Jul 24 23:55:38 2021 +0900
+[31m|[m 
+[31m|[m     Added comments & Included header
+[31m|[m 
+* [33mcommit f943a4334ae299a65b0976184191c0d72a3eee6a[m
+[31m|[m Author: DESKTOP-99AMGUA\oskwz(소영이 집) <tkdring@naver.com>
+[31m|[m Date:   Fri Jul 23 12:41:14 2021 +0900
+[31m|[m 
+[31m|[m     넘버링
+[31m|[m 
+* [33mcommit 8464d3857ff0d772d64e6aa2b51deb28d5d4cfa1[m
+[31m|[m Author: DESKTOP-99AMGUA\oskwz(소영이 집) <tkdring@naver.com>
+[31m|[m Date:   Fri Jul 23 12:40:34 2021 +0900
+[31m|[m 
+[31m|[m     no message
+[31m|[m 
+* [33mcommit e3f8c623d8517766291956ee24c024a52dac79ac[m
+[31m|[m Author: DESKTOP-99AMGUA\oskwz(소영이 집) <tkdring@naver.com>
+[31m|[m Date:   Fri Jul 23 12:26:27 2021 +0900
+[31m|[m 
+[31m|[m     챕터 넘버링
+[31m|[m 
+* [33mcommit 9da87867329064e8eeeec9693868aff5cffe8bd8[m
+[31m|[m Author: DESKTOP-99AMGUA\oskwz(소영이 집) <tkdring@naver.com>
+[31m|[m Date:   Fri Jul 23 01:03:08 2021 +0900
+[31m|[m 
+[31m|[m     xalloc 중복으로 인한 빌드 에러 수정
+[31m|[m     LockFreeStack 주석 설명 추가
+[31m|[m 
+* [33mcommit 11c8517198819efa9ea89137f4694d77e0dec118[m
+  Author: DESKTOP-99AMGUA\oskwz(소영이 집) <tkdring@naver.com>
+  Date:   Thu Jul 22 00:52:24 2021 +0900
+  
+      Sample Codes
