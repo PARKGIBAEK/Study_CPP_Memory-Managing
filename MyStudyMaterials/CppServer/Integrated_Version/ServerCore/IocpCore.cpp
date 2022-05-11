@@ -18,20 +18,24 @@ IocpCore::~IocpCore()
 	::CloseHandle(iocpHandle);
 }
 
-bool IocpCore::Register(IocpObjectRef _iocpObject)
+bool IocpCore::RegisterSockToIOCP(IocpObjectRef _iocpObject)
 {
-	return ::CreateIoCompletionPort(_iocpObject->GetHandle(), iocpHandle, /*key*/0, 0);
+	// GQCS에서 overlapped를 받아올 때 event
+	return ::CreateIoCompletionPort(
+		_iocpObject->GetHandle(), iocpHandle, /*key*/0, 0);
 }
 
 bool IocpCore::Dispatch(uint32 _timeoutMs)
 {
 	DWORD numOfBytes = 0;
-	ULONG_PTR key = 0;	
-	IocpEvent* iocpEvent = nullptr;
+	ULONG_PTR key = 0;
+	IocpEvent* iocpEvent = nullptr; // 각종 ~Event 클래스는 OVERLAPPED구조체를 상속 받음
 
-	if (::GetQueuedCompletionStatus(iocpHandle, OUT &numOfBytes, OUT &key, OUT reinterpret_cast<LPOVERLAPPED*>(&iocpEvent), _timeoutMs))
+	if (::GetQueuedCompletionStatus(
+		iocpHandle, OUT &numOfBytes, OUT &key,
+		OUT reinterpret_cast<LPOVERLAPPED*>(&iocpEvent), _timeoutMs))
 	{
-		IocpObjectRef iocpObject = iocpEvent->owner;
+		IocpObjectRef iocpObject = iocpEvent->owner; // 모든 Event는 ownerIocpObject를 가짐
 		iocpObject->Dispatch(iocpEvent, numOfBytes);
 	}
 	else

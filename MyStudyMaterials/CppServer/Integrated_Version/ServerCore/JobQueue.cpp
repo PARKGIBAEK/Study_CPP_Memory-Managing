@@ -14,7 +14,12 @@ void JobQueue::Push(JobRef job, bool pushOnly)
 	// 첫번째 Job을 넣은 쓰레드가 실행까지 담당
 	if (prevCount == 0)
 	{
-		// 이미 실행중인 JobQueue가 없으면 실행
+		/*
+		* tls_CurrentJobQueue가 nullptr이 아닌 경우는 Job::Execute()에서
+		  JobQueue::Push가 발생한 경우이다.
+		
+		* pushOnly==true Job실행하지 않고 GlobalQueue에 넣어서 다른 쓰레드가 가져갈 수 있게 함
+		*/ 
 		if (tls_CurrentJobQueue == nullptr && pushOnly == false)
 		{
 			Execute();
@@ -41,13 +46,16 @@ void JobQueue::Execute()
 		for (int32 i = 0; i < jobCount; i++)
 			jobs[i]->Execute();
 
-		// 남은 일감이 0개라면 종료
+		// 가져온 Job을 제외하고 남은 일감이 0개라면 종료
 		if (_jobCount.fetch_sub(jobCount) == jobCount)
 		{
 			tls_CurrentJobQueue = nullptr;
 			return;
 		}
 
+		/* 처리해야할 일감이 남았지만 
+			현재 쓰레드에서 일감 처리에 시간을 너무 오래 할애 했다면
+			GlobalQueue에 넘겨 다른 쓰레드에서 처리할 수 있도록한다*/
 		const uint64 now = ::GetTickCount64();
 		if (now >= tls_EndTickCount)
 		{
@@ -55,6 +63,6 @@ void JobQueue::Execute()
 			// 여유 있는 다른 쓰레드가 실행하도록 GlobalQueue에 넘긴다
 			GGlobalQueue->Push(shared_from_this());
 			break;
-		}			
+		}
 	}
 }

@@ -44,7 +44,7 @@ void* StompAllocator::AllocateMemory(int32 size)
 	/* VirtualAlloc 옵션
 	- MEM_RESERVE : 메모리 할당 예약(페이징 파일에 실제 물리적 저장공간을 할당하지 않고, 프로세스의 가상 주소 공간 범위를 예약)
 	 
-	- MEM_COMMIT : 예약된 메모리 페이지에 Memory Charge(할당한 메모리의 크기와 페이징 파일의 크기)를 할당. 가상 주소에 실제로 엑세스하지 않는 한 실제 물리적 페이지는 할당되지 않는다.
+	- MEM_COMMIT : 예약된 메모리 페이지에 MemoryManager Charge(할당한 메모리의 크기와 페이징 파일의 크기)를 할당. 가상 주소에 실제로 엑세스하지 않는 한 실제 물리적 페이지는 할당되지 않는다.
 	
 	※ 페이지를 예약하자 마자 사용할 것이라면?
 	  MEM_COMMIT | MEM_RESERVE 옵션을 사용해야한다.
@@ -62,10 +62,10 @@ void StompAllocator::ReleaseMemory(void* ptr)
 {
 	// AllocateMemory 함수에서 할당한 전체 메모리 중 실제 사용할 목적으로 반환받은 주소 ( baseAddress + offset )
 	const int64 address = reinterpret_cast<int64>(ptr);
+
 	// 위의 주소에서 offset을 뺀 주소 ( baseAddress + offset ) - offset
 	// ex) base : 5000, offset : 500, address : 5500
-	//		 5500 - ( 5500 % 4096 ) = 5500 - 1404  = 
-
+	//		 5500 - ( 5500 % 4096 ) = 5500 - 1404  = 4096
 	const int64 baseAddress = address - (address % PAGE_SIZE);
 	// MEM_RELEASE옵션을 사용할 경우 VirtualAlloc함수를 통해 할당한 메모리의 base address를 인자로 넣어주어야한다
 	::VirtualFree(reinterpret_cast<void*>(baseAddress), 0, MEM_RELEASE);
@@ -77,10 +77,10 @@ void StompAllocator::ReleaseMemory(void* ptr)
 
 void* PoolAllocator::AllocateMemory(int32 size)
 {
-	return GMemory->Allocate(size);
+	return GMemoryManager->Allocate(size);
 }
 
 void PoolAllocator::ReleaseMemory(void* ptr)
 {
-	GMemory->Release(ptr);
+	GMemoryManager->Release(ptr);
 }

@@ -12,10 +12,10 @@ public:
 	SendBuffer(SendBufferChunkRef _owner, BYTE* _buffer, uint32 _allocSize);
 	~SendBuffer();
 
-	BYTE*		Buffer() { return buffer; }
-	uint32		AllocSize() { return allocSize; }
-	uint32		WriteSize() { return writeSize; }
-	void		Close(uint32 _writeSize);
+	BYTE*				Buffer() { return buffer; }
+	uint32				AllocSize() { return allocSize; }
+	uint32				WriteSize() { return writeSize; }
+	void				Close(uint32 _writeSize);
 
 private:
 	BYTE*				buffer;
@@ -40,35 +40,38 @@ public:
 	~SendBufferChunk();
 
 	void					Reset();
-	SendBufferRef		Open(uint32 _allocSize);
+	SendBufferRef			Open(uint32 _allocSize);
 	void					Close(uint32 _writeSize);
 
 	bool					IsOpen() { return isOpen; }
 	BYTE*					Buffer() { return &buffer[usedSize]; }
-	uint32				FreeSize() { return static_cast<uint32>(buffer.size()) - usedSize; }
+	uint32					FreeSize() { return static_cast<uint32>(buffer.size()) - usedSize; }
 
 private:
 	Array<BYTE, SEND_BUFFER_CHUNK_SIZE>		buffer = {};
-	bool												isOpen = false;
-	uint32											usedSize = 0;
+	bool									isOpen = false;
+	uint32									usedSize = 0;
 };
 
 /*---------------------
 	SendBufferManager
 ----------------------*/
 
+/*
+	vector 컨테이너인 sendBufferChunks가 Pooling역할을 함.
+	Pop시 sendBuffferChunks에 여유분 있으면 꺼내주고, 없으면 XNew로 새로 생성
+*/
 class SendBufferManager
 {
 public:
-	SendBufferRef		Open(uint32 _size);
+	SendBufferRef				Open(uint32 _size);
 
 private:
-	SendBufferChunkRef	Pop();
-	void					Push(SendBufferChunkRef _buffer);
-
-	static void			PushGlobal(SendBufferChunk* _buffer);
+	SendBufferChunkRef			Pop();
+	void						Push(SendBufferChunkRef _buffer);
+	static void					PushGlobal(SendBufferChunk* _buffer);
 
 private:
 	USE_LOCK;
-	Vector<SendBufferChunkRef> sendBufferChunks;
+	Vector<SendBufferChunkRef>	sendBufferChunks;
 };

@@ -4,6 +4,9 @@
 #include "Room.h"
 #include "GameSession.h"
 
+/*
+	using PacketHandlerFunc = std::function<bool(PacketSessionRef&, BYTE*, int32)>;
+*/
 PacketHandlerFunc GPacketHandler[UINT16_MAX];
 
 // 직접 컨텐츠 작업자

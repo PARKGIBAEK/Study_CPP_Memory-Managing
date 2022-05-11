@@ -20,7 +20,7 @@ public:
 	void CloseSocket();
 
 	/* 인터페이스 구현 */
-	virtual HANDLE GetHandle() override;
+	virtual HANDLE GetHandle() override;// 소켓 반환
 	virtual void Dispatch(class IocpEvent* _iocpEvent, int32 _numOfBytes = 0) override;
 
 private:
@@ -29,8 +29,8 @@ private:
 	void ProcessAccept(AcceptEvent* _acceptEvent);
 
 protected:
-	SOCKET socket = INVALID_SOCKET;
+	SOCKET listenSocket = INVALID_SOCKET;
 	Vector<AcceptEvent*> acceptEvents;
-	ServerServiceRef service;
+	ServerServiceRef ownerService;
 };
 

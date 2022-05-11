@@ -19,7 +19,7 @@ public:
 	BYTE*			ReadPos() { return &buffer[readCursor]; }
 	BYTE*			WritePos() { return &buffer[writeCursor]; }
 	int32			DataSize() { return writeCursor - readCursor; }
-	int32			FreeSize() { return capacity - writeCursor; }
+	int32			FreeSize () { return capacity - writeCursor; }
 
 private:
 	int32			capacity = 0;

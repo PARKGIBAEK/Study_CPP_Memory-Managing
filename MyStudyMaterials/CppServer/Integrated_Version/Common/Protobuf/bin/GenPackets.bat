@@ -28,4 +28,4 @@ DEL /Q /F *.pb.h
 DEL /Q /F *.pb.cc
 DEL /Q /F *.h
 
-PAUSE
+::PAUSE

@@ -124,7 +124,7 @@ namespace rapidxml
 #endif
 
 #ifndef RAPIDXML_ALIGNMENT
-    // Memory allocation alignment.
+    // MemoryManager allocation alignment.
     // Define RAPIDXML_ALIGNMENT before including rapidxml.hpp if you want to override the default value, which is the size of pointer.
     // All memory allocations for nodes, attributes and strings will be aligned to this value.
     // This must be a power of 2 and at least 1, otherwise memory_pool will not work.
@@ -339,7 +339,7 @@ namespace rapidxml
     //! \endcond
 
     ///////////////////////////////////////////////////////////////////////
-    // Memory pool
+    // MemoryManager pool
     
     //! This class is used by the parser to create new nodes and attributes, without overheads of dynamic memory allocation.
     //! In most cases, you will not need to use this class directly. 

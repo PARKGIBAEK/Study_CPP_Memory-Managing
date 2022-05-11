@@ -27,7 +27,7 @@ void JobQueue::Push(JobRef job, bool pushOnly)
 	}
 }
 
-// 1) 일감이 너~무 몰리면?
+
 void JobQueue::Execute()
 {
 	LCurrentJobQueue = this;
@@ -47,7 +47,7 @@ void JobQueue::Execute()
 			LCurrentJobQueue = nullptr;
 			return;
 		}
-
+		// 일감이 너무 많이 몰려서 할당 시간을 초과한 경우
 		const uint64 now = ::GetTickCount64();
 		if (now >= LEndTickCount)
 		{

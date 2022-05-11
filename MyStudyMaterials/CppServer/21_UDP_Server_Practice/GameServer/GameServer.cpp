@@ -20,6 +20,7 @@ void HandleError(const char* cause)
 
 int main()
 {
+	std::cout << "===========================                 Start Server                 ===========================\n\n";
 	WSAData wsaData;
 	if (::WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
 		return 0;
@@ -50,11 +51,11 @@ int main()
 		::memset(&clientAddr, 0, sizeof(clientAddr));
 		int32 addrLen = sizeof(clientAddr);
 		this_thread::sleep_for(1s);
-		
+
 		/*
 		* UDP통신에서는 TCP통신에서 처럼 accept하여 클라용 소켓을 생성해주는 과정이 없다.
-		
-		SOCKET clientSocket = ::accept(listenSocket, (SOCKADDR*)&clientAddr, &addrLen);
+
+		SOCKET clientSocket = ::accept(listenSocket, (SOCKADDR*)&clientAddr, &addrLen); // TCP에서 accept로 connection established
 		if (clientSocket == INVALID_SOCKET)
 		{
 			int32 errCode = ::WSAGetLastError();
@@ -68,7 +69,9 @@ int main()
 		cout << "Client Connected! IP = " << ipAddress << endl;
 		*/
 
-		/* UDP는 accept를 하여 클라측 소켓을 생성할 필요가 없고, recvfrom메서드 내부에서 송신측의 주소를 읽어 clientAddr에 저장하기 때문에 송신 시 sendto메서드를 통해 clientAddr 주소로 데이터를 바로 전달하면된다*/
+		/* UDP는 accept를 통하여 연결을 맺지 않으므로 클라 소켓을 생성할 필요가 없고,
+			recvfrom메서드 내부에서 TCP프로토콜의 송신측의 주소를 읽어 clientAddr에 저장하기 때문에
+			송신 시 sendto메서드를 통해 clientAddr 주소로 데이터를 바로 전달하면된다*/
 		char recvBuffer[1000];
 		int32 recvLen = ::recvfrom(serverSocket, recvBuffer, sizeof(recvBuffer), 0,
 			(SOCKADDR*)&clientAddr, &addrLen);
@@ -79,8 +82,10 @@ int main()
 			return 0;
 		}
 
-		cout << "Recv Data! Data = " << recvBuffer << endl;
+		cout << "Recv from client : " << recvBuffer << endl;
 		cout << "Recv Data! Len = " << recvLen << endl;
+		char strBuf[16];
+		cout << "Client Address : " << inet_ntop(clientAddr.sin_family, &clientAddr.sin_addr, strBuf, sizeof(strBuf)) << std::endl;
 
 		int32 errorCode = ::sendto(serverSocket, recvBuffer, recvLen, 0,
 			(SOCKADDR*)&clientAddr, sizeof(clientAddr));

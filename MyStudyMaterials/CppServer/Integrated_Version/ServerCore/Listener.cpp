@@ -11,7 +11,7 @@
 
 Listener::~Listener()
 {
-	SocketUtils::Close(socket);
+	SocketUtils::Close(listenSocket);
 
 	for (AcceptEvent* acceptEvent : acceptEvents)
 	{
@@ -23,33 +23,37 @@ Listener::~Listener()
 
 bool Listener::StartAccept(ServerServiceRef _service)
 {
-	_service = _service;
+	ownerService = _service;
 	if (_service == nullptr)
 		return false;
 
-	socket = SocketUtils::CreateSocket();
-	if (socket == INVALID_SOCKET)
+	listenSocket = SocketUtils::CreateSocket();
+	if (listenSocket == INVALID_SOCKET)
 		return false;
 
-	if (_service->GetIocpCore()->Register(shared_from_this()) == false)
+	// Listening 소켓을 IOCP에 등록
+	if (ownerService->GetIocpCore()->RegisterSockToIOCP(shared_from_this()) == false)
 		return false;
 
-	if (SocketUtils::SetReuseAddress(socket, true) == false)
+	if (SocketUtils::SetReuseAddress(listenSocket, true) == false)
 		return false;
 
-	if (SocketUtils::SetLinger(socket, 0, 0) == false)
+	if (SocketUtils::SetLinger(listenSocket, 0, 0) == false)
 		return false;
 
-	if (SocketUtils::Bind(socket, _service->GetNetAddress()) == false)
+	if (SocketUtils::Bind(listenSocket, ownerService->GetNetAddress()) == false)
 		return false;
 
-	if (SocketUtils::Listen(socket) == false)
+	if (SocketUtils::Listen(listenSocket) == false)
 		return false;
 
-	const int32 acceptCount = _service->GetMaxSessionCount();
+	// 최대 동접수 만큼 AcceptEvent생성 & RegisterAccept 호출
+	const int32 acceptCount = ownerService->GetMaxSessionCount();
 	for (int32 i = 0; i < acceptCount; i++)
 	{
+		// IOCP 사용을 위한 OVERLAPPED 구조체를 상속받은 AcceptEvent를 MaxSessionCount만큼 미리 등록해두기
 		AcceptEvent* acceptEvent = XNew<AcceptEvent>();
+
 		acceptEvent->owner = shared_from_this();
 		acceptEvents.push_back(acceptEvent);
 		RegisterAccept(acceptEvent);
@@ -60,14 +64,15 @@ bool Listener::StartAccept(ServerServiceRef _service)
 
 void Listener::CloseSocket()
 {
-	SocketUtils::Close(socket);
+	SocketUtils::Close(listenSocket);
 }
 
 HANDLE Listener::GetHandle()
 {
-	return reinterpret_cast<HANDLE>(socket);
+	return reinterpret_cast<HANDLE>(listenSocket);
 }
 
+// 사용 안함
 void Listener::Dispatch(IocpEvent* _iocpEvent, int32 _numOfBytes)
 {
 	ASSERT_CRASH(_iocpEvent->eventType == EventType::Accept);
@@ -77,16 +82,26 @@ void Listener::Dispatch(IocpEvent* _iocpEvent, int32 _numOfBytes)
 
 void Listener::RegisterAccept(AcceptEvent* _acceptEvent)
 {
-	SessionRef session = service->CreateSession(); // Register IOCP
+	SessionRef session = ownerService->CreateSession(); // Register IOCP
 
-	_acceptEvent->Init();
-	_acceptEvent->session = session;
+	_acceptEvent->Init();// OVERLAPPED 구조체 초기화
+	_acceptEvent->ownerSession = session;
 
 	DWORD bytesReceived = 0;
-	if (false == SocketUtils::AcceptEx(socket, session->GetSocket(), session->recvBuffer.WritePos(), 0, sizeof(SOCKADDR_IN) + 16, sizeof(SOCKADDR_IN) + 16, OUT & bytesReceived, static_cast<LPOVERLAPPED>(_acceptEvent)))
+	/* AcceptEx함수를 통해 접속을 받으면 OS가 IOCP로 통지 해주기 때문에 
+	   GQCS함수를 통해 후처리를 할 수 있다.
+	  	  
+	   AcceptEx 함수 인자 요약
+	   : ListenSocket, AcceptSocket, outputBuffer주소, receiveDataLength, LocalAddressLength, BytesReceived, Overlapped
+	  */
+	if (false == 
+		SocketUtils::AcceptEx(listenSocket, session->GetSocket(),
+		session->recvBuffer.WritePos(), 0, sizeof(SOCKADDR_IN) + 16,
+		sizeof(SOCKADDR_IN) + 16, OUT & bytesReceived,
+		static_cast<LPOVERLAPPED>(_acceptEvent)))
 	{
 		const int32 errorCode = ::WSAGetLastError();
-		if (errorCode != WSA_IO_PENDING)
+		if (errorCode != WSA_IO_PENDING)// IO_PENDING이 아닌경우 문제가 
 		{
 			// 일단 다시 Accept 걸어준다
 			RegisterAccept(_acceptEvent);
@@ -94,11 +109,12 @@ void Listener::RegisterAccept(AcceptEvent* _acceptEvent)
 	}
 }
 
+// 사용 안함
 void Listener::ProcessAccept(AcceptEvent* _acceptEvent)
 {
-	SessionRef session = _acceptEvent->session;
-
-	if (false == SocketUtils::SetUpdateAcceptSocket(session->GetSocket(), socket))
+	SessionRef session = _acceptEvent->ownerSession;
+	// ListenSocket의 특성을 ClientSocket에 그대로 적용하기
+	if (false == SocketUtils::SyncSocketContext(session->GetSocket(), listenSocket))
 	{
 		RegisterAccept(_acceptEvent);
 		return;
@@ -106,7 +122,9 @@ void Listener::ProcessAccept(AcceptEvent* _acceptEvent)
 
 	SOCKADDR_IN sockAddress;
 	int32 sizeOfSockAddr = sizeof(sockAddress);
-	if (SOCKET_ERROR == ::getpeername(session->GetSocket(), OUT reinterpret_cast<SOCKADDR*>(&sockAddress), &sizeOfSockAddr))
+	// getpeername함수는 accepted socket의 local address를 조회
+	if (SOCKET_ERROR == ::getpeername(session->GetSocket(), 
+		OUT reinterpret_cast<SOCKADDR*>(&sockAddress), &sizeOfSockAddr))
 	{
 		RegisterAccept(_acceptEvent);
 		return;

@@ -27,7 +27,7 @@ public:
 	BufferWriter&	operator<<(T&& src);
 
 private:
-	BYTE*				buffer = nullptr;
+	BYTE*			buffer = nullptr;
 	uint32			size = 0;
 	uint32			pos = 0;
 };

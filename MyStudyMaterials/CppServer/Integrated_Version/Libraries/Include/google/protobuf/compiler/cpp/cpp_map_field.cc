@@ -84,8 +84,11 @@ void SetMessageVariables(const FieldDescriptor* descriptor,
 }
 
 MapFieldGenerator::MapFieldGenerator(const FieldDescriptor* descriptor,
-                                     const Options& options)
-    : FieldGenerator(descriptor, options) {
+                                     const Options& options,
+                                     MessageSCCAnalyzer* scc_analyzer)
+    : FieldGenerator(descriptor, options),
+      has_required_fields_(
+          scc_analyzer->HasRequiredFields(descriptor->message_type())) {
   SetMessageVariables(descriptor, &variables_, options);
 }
 
@@ -129,7 +132,7 @@ void MapFieldGenerator::GenerateInlineAccessorDefinitions(
       "}\n"
       "inline const ::$proto_ns$::Map< $key_cpp$, $val_cpp$ >&\n"
       "$classname$::$name$() const {\n"
-      "$annotate_accessor$"
+      "$annotate_get$"
       "  // @@protoc_insertion_point(field_map:$full_name$)\n"
       "  return _internal_$name$();\n"
       "}\n"
@@ -139,7 +142,7 @@ void MapFieldGenerator::GenerateInlineAccessorDefinitions(
       "}\n"
       "inline ::$proto_ns$::Map< $key_cpp$, $val_cpp$ >*\n"
       "$classname$::mutable_$name$() {\n"
-      "$annotate_accessor$"
+      "$annotate_mutable$"
       "  // @@protoc_insertion_point(field_mutable_map:$full_name$)\n"
       "  return _internal_mutable_$name$();\n"
       "}\n");
@@ -291,6 +294,15 @@ void MapFieldGenerator::GenerateByteSize(io::Printer* printer) const {
       "  total_size += $map_classname$::Funcs::ByteSizeLong(it->first, "
       "it->second);\n"
       "}\n");
+}
+
+void MapFieldGenerator::GenerateIsInitialized(io::Printer* printer) const {
+  if (!has_required_fields_) return;
+
+  Formatter format(printer, variables_);
+  format(
+      "if (!::$proto_ns$::internal::AllAreInitialized($name$_)) return "
+      "false;\n");
 }
 
 void MapFieldGenerator::GenerateConstinitInitializer(

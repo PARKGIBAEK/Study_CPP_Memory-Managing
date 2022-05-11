@@ -1,12 +1,12 @@
 #include "pch.h"
 #include "NetAddress.h"
-
 /*--------------
 	NetAddress
 ---------------*/
 
 NetAddress::NetAddress(SOCKADDR_IN _sockAddr) : sockAddr(_sockAddr)
 {
+	
 }
 
 NetAddress::NetAddress(wstring _ip, uint16 _port)

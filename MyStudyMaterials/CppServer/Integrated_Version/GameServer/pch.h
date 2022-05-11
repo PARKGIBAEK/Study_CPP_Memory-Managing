@@ -12,7 +12,7 @@
 #pragma comment(lib, "Protobuf\\Release\\libprotobuf.lib")
 #endif
 
-#include "CorePch.h"
+#include "Core.h"
 #include "Enum.pb.h"
 
 using GameSessionRef = shared_ptr<class GameSession>;

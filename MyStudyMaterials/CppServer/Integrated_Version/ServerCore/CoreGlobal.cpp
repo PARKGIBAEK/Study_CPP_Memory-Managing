@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "CoreGlobal.h"
 #include "ThreadManager.h"
-#include "Memory.h"
+#include "MemoryManager.h"
 #include "DeadLockProfiler.h"
 #include "SocketUtils.h"
 #include "SendBuffer.h"
@@ -11,7 +11,7 @@
 #include "ConsoleLog.h"
 
 ThreadManager*		GThreadManager = nullptr;
-Memory*				GMemory = nullptr;
+MemoryManager*		GMemoryManager = nullptr;
 SendBufferManager*	GSendBufferManager = nullptr;
 GlobalQueue*		GGlobalQueue = nullptr;
 JobTimer*			GJobTimer = nullptr;
@@ -26,11 +26,13 @@ public:
 	CoreGlobal()
 	{
 		GThreadManager = new ThreadManager();
-		GMemory = new Memory();
+		GMemoryManager = new MemoryManager();
 		GSendBufferManager = new SendBufferManager();
 		GGlobalQueue = new GlobalQueue();
 		GJobTimer = new JobTimer();
 		GDeadLockProfiler = new DeadLockProfiler();
+
+
 		GDBConnectionPool = new DBConnectionPool();
 		GConsoleLogger = new ConsoleLog();
 		SocketUtils::Init();
@@ -39,11 +41,13 @@ public:
 	~CoreGlobal()
 	{
 		delete GThreadManager;
-		delete GMemory;
+		delete GMemoryManager;
 		delete GSendBufferManager;
 		delete GGlobalQueue;
 		delete GJobTimer;
 		delete GDeadLockProfiler;
+
+
 		delete GDBConnectionPool;
 		delete GConsoleLogger;
 		SocketUtils::Clear();

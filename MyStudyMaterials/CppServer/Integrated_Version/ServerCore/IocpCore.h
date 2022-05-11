@@ -4,6 +4,8 @@
 	IocpObject
 -----------------*/
 
+/* Every class carrying out 'Overlapped I/O', like Listener or Session, inherit this abstract class.
+The function 'Dispatch()' processes the event corresponding to the purpose of its concrete class.*/
 class IocpObject : public std::enable_shared_from_this<IocpObject>
 {
 public:
@@ -19,12 +21,14 @@ public:
 class IocpCore
 {
 public:
+	// IOCP 생성 
 	IocpCore();
+	// IOCP 자원 해제
 	~IocpCore();
 
-	HANDLE		GetHandle() { return iocpHandle; }
+	HANDLE		GetIOCPHandle() { return iocpHandle; }
 
-	bool		Register(IocpObjectRef iocpObject);
+	bool		RegisterSockToIOCP(IocpObjectRef iocpObject);
 	bool		Dispatch(uint32 timeoutMs = INFINITE);
 
 private:

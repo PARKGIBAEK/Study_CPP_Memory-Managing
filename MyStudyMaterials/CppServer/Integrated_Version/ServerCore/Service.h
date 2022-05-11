@@ -14,12 +14,13 @@ enum class ServiceType : uint8
 	Service
 --------------*/
 
-using SessionFactory = function<SessionRef(void)>;
+using SessionFactory = std::function<SessionRef(void)>;
 
 class Service : public enable_shared_from_this<Service>
 {
 public:
-	Service(ServiceType _type, NetAddress _address, IocpCoreRef _core, SessionFactory _factory, int32 _maxSessionCount = 1);
+	Service(ServiceType _type, NetAddress _address, IocpCoreRef _core, 
+		SessionFactory _factory, int32 _maxSessionCount = 1);
 	virtual ~Service();
 
 	virtual bool		Start() =0;
@@ -42,14 +43,14 @@ public:
 
 protected:
 	USE_LOCK;
-	ServiceType				type;
-	NetAddress				netAddress = {};
-	IocpCoreRef				iocpCore;
+	ServiceType			type;
+	NetAddress			netAddress = {};
+	IocpCoreRef			iocpCore;
 
 	Set<SessionRef>		sessions;
-	int32						sessionCount = 0;
-	int32						maxSessionCount = 0;
-	SessionFactory			sessionFactory;
+	int32				sessionCount = 0;
+	int32				maxSessionCount = 0;// listener 동접자 수
+	SessionFactory		sessionFactory;
 };
 
 /*-----------------
@@ -59,7 +60,8 @@ protected:
 class ClientService : public Service
 {
 public:
-	ClientService(NetAddress _targetAddress, IocpCoreRef _core, SessionFactory _factory, int32 _maxSessionCount = 1);
+	ClientService(NetAddress _targetAddress, IocpCoreRef _core,
+		SessionFactory _factory, int32 _maxSessionCount = 1);
 	virtual ~ClientService() {}
 
 	virtual bool	Start() override;
@@ -73,7 +75,8 @@ public:
 class ServerService : public Service
 {
 public:
-	ServerService(NetAddress targetAddress, IocpCoreRef core, SessionFactory factory, int32 maxSessionCount = 1);
+	ServerService(NetAddress _targetAddress, IocpCoreRef _core, 
+		SessionFactory _factory, int32 _maxSessionCount = 1);
 	virtual ~ServerService() {}
 
 	virtual bool	Start() override;

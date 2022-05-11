@@ -30,7 +30,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CorePch.h">
+    <ClInclude Include="Core.h">
       <Filter>Main</Filter>
     </ClInclude>
     <ClInclude Include="pch.h">
@@ -60,7 +60,7 @@
     <ClInclude Include="Allocator.h">
       <Filter>Memory</Filter>
     </ClInclude>
-    <ClInclude Include="Memory.h">
+    <ClInclude Include="MemoryManager.h">
       <Filter>Memory</Filter>
     </ClInclude>
     <ClInclude Include="Container.h">
@@ -170,7 +170,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CorePch.cpp">
+    <ClCompile Include="Core.cpp">
       <Filter>Main</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
@@ -194,7 +194,7 @@
     <ClCompile Include="Allocator.cpp">
       <Filter>Memory</Filter>
     </ClCompile>
-    <ClCompile Include="Memory.cpp">
+    <ClCompile Include="MemoryManager.cpp">
       <Filter>Memory</Filter>
     </ClCompile>
     <ClCompile Include="MemoryPool.cpp">
@@ -275,7 +275,7 @@
     <ClCompile Include="ConcurrentStack.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
-    <ClCompile Include="LcokFreeQueue.cpp">
+    <ClCompile Include="LockFreeQueue.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
     <ClCompile Include="LockFreeStack.cpp">

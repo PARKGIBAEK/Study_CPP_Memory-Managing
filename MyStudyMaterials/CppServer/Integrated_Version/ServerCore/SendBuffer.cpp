@@ -17,7 +17,7 @@ SendBuffer::~SendBuffer()
 void SendBuffer::Close(uint32 _writeSize)
 {
 	ASSERT_CRASH(allocSize >= _writeSize);
-	_writeSize = _writeSize;
+	writeSize = _writeSize;
 	owner->Close(_writeSize);
 }
 
@@ -48,7 +48,8 @@ SendBufferRef SendBufferChunk::Open(uint32 _allocSize)
 		return nullptr;
 
 	isOpen = true;
-	return ObjectPool<SendBuffer>::MakeShared(shared_from_this(), Buffer(), _allocSize);
+
+	return ObjectPool<SendBuffer>::MakeShared(shared_from_this(), Buffer(),  _allocSize);
 }
 
 void SendBufferChunk::Close(uint32 _writeSize)
@@ -58,9 +59,10 @@ void SendBufferChunk::Close(uint32 _writeSize)
 	usedSize += _writeSize;
 }
 
-/*--------------------------------------
+
+/*-----------------------------------------------
 				SendBufferManager
---------------------------------------*/
+-----------------------------------------------*/
 
 SendBufferRef SendBufferManager::Open(uint32 _size)
 {
@@ -94,18 +96,18 @@ SendBufferChunkRef SendBufferManager::Pop()
 		}
 	}
 
-	return SendBufferChunkRef(XNew<SendBufferChunk>(), PushGlobal);
+	/*PushGlobal은 SendBufferChunk를 SendBufferManager::sendBufferChunks에 다시 반환(push_back)*/
+	return SendBufferChunkRef(XNew<SendBufferChunk>(), PushGlobal); 
 }
 
 void SendBufferManager::Push(SendBufferChunkRef _buffer)
 {
 	WRITE_LOCK;
-	sendBufferChunks.push_back(_buffer);
+	sendBufferChunks.emplace_back(_buffer);
 }
 
 void SendBufferManager::PushGlobal(SendBufferChunk* _buffer)
 {
-	cout << "PushGlobal SENDBUFFERCHUNK" << endl;
-
+	cout << "Log : PushGlobal SendBufferChunkRef" << endl;
 	GSendBufferManager->Push(SendBufferChunkRef(_buffer, PushGlobal));
 }

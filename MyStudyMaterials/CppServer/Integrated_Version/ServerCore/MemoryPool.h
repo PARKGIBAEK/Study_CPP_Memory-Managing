@@ -24,6 +24,7 @@ struct MemoryHeader : public SLIST_ENTRY
 		return reinterpret_cast<void*>(++header);
 	}
 
+	// 주소를 MemoryHeader 사이즈 만큼 앞으로 당겨서 반환
 	static MemoryHeader* DetachHeader(void* ptr)
 	{
 		/* 실사용 메모리 영역(Data)의 시작 주소(ptr)앞에는 MemoryHeader가 붙어있고 해당위치가 메모리할당 시작 점이다
@@ -48,13 +49,13 @@ public:
 	MemoryPool(int32 allocSize);
 	~MemoryPool();
 
-	void			Push(MemoryHeader* ptr);
-	MemoryHeader* Pop();
+	void				Push(MemoryHeader* ptr);
+	MemoryHeader*		Pop();
 
 private:
 
-	SLIST_HEADER	header;//메모리 풀 컨테이너( SLIST_HEADER는 MS사에서 만든 Interlocked Singly-Linked List의 시작 노드이다, 내부에서 사용되는 노드는 SLIST_ENTRY이다 )
-	int32			allocSize = 0;// allocSize크기의 메모리를 풀링 한다
+	SLIST_HEADER		header;//메모리 풀 컨테이너( SLIST_HEADER는 MS사에서 만든 Interlocked Singly-Linked List의 시작 노드이다, 내부에서 사용되는 노드는 SLIST_ENTRY이다 )
+	int32				allocSize = 0;// allocSize크기의 메모리를 풀링 한다
 	std::atomic<int32>	usedCount = 0; // 메모리 풀에서 꺼내어 사용 중인 객체의 갯수
 	std::atomic<int32>	reservedCount = 0; // 메모리 풀에서 생성된 객체의 갯수
 };

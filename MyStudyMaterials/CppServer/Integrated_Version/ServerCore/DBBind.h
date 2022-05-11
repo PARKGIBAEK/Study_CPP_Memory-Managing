@@ -2,7 +2,7 @@
 #include "DBConnection.h"
 
 template<int32 C>
-struct FullBits { enum { value = (1 << (C - 1)) | FullBits<C-1>::value }; };
+struct FullBits { enum { value = (1 << (C - 1)) | FullBits<C - 1>::value }; };
 
 template<>
 struct FullBits<1> { enum { value = 1 }; };
@@ -96,8 +96,8 @@ public:
 	}
 
 protected:
-	DBConnection&	_dbConnection;
-	const WCHAR*	_query;
+	DBConnection& _dbConnection;
+	const WCHAR* _query;
 	SQLLEN			_paramIndex[ParamCount > 0 ? ParamCount : 1];
 	SQLLEN			_columnIndex[ColumnCount > 0 ? ColumnCount : 1];
 	uint64			_paramFlag;

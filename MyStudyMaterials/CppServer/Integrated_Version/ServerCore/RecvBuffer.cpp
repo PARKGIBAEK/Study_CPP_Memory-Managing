@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "RecvBuffer.h"
-#include <iterator>
+//#include <iterator> // 필요 없어보여서 제거 함, 추후 확인
+
+
 /*--------------
 	RecvBuffer
 ----------------*/
@@ -18,6 +20,7 @@ RecvBuffer::~RecvBuffer()
 void RecvBuffer::Clean()
 {
 	int32 dataSize = DataSize();
+	
 	if (dataSize == 0)
 	{
 		// 딱 마침 읽기+쓰기 커서가 동일한 위치라면, 둘 다 리셋.

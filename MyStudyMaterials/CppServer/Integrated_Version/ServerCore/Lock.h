@@ -7,7 +7,7 @@
 
 /*--------------------------------------------
 32비트 변수(비트 플래그 용도) : [WWWWWWWW][WWWWWWWW][RRRRRRRR][RRRRRRRR]
-W : WriteFlag (Exclusive Lock Owner ThreadId)
+W : WriteFlag (Exclusive-lock Owner ThreadId)
 R : ReadFlag (Shared Lock Count)
 ---------------------------------------------*/
 
@@ -29,8 +29,8 @@ public:
 	void ReadUnlock(const char* name);
 
 private:
-	Atomic<uint32> _lockFlag = EMPTY_FLAG;
-	uint16 _writeCount = 0;
+	Atomic<uint32> lockFlag = EMPTY_FLAG;
+	uint16 writeCount = 0;
 };
 
 /*----------------
@@ -40,21 +40,27 @@ private:
 class ReadLockGuard
 {
 public:
-	ReadLockGuard(Lock& _lock, const char* name) : lock(_lock), _name(name) { lock.ReadLock(name); }
-	~ReadLockGuard() { lock.ReadUnlock(_name); }
+	ReadLockGuard(Lock& _lock, const char* _name) : lock(_lock), name(_name) 
+	{
+		lock.ReadLock(_name);
+	}
+	~ReadLockGuard()
+	{
+		lock.ReadUnlock(name);
+	}
 
 private:
 	Lock& lock;
-	const char* _name;
+	const char* name;
 };
 
 class WriteLockGuard
 {
 public:
-	WriteLockGuard(Lock& lock, const char* name) : lock(lock), _name(name) { lock.WriteLock(name); }
-	~WriteLockGuard() { lock.WriteUnlock(_name); }
+	WriteLockGuard(Lock& _lock, const char* _name) : lock(_lock), name(_name) { _lock.WriteLock(_name); }
+	~WriteLockGuard() { lock.WriteUnlock(name); }
 
 private:
 	Lock& lock;
-	const char* _name;
+	const char* name;
 };

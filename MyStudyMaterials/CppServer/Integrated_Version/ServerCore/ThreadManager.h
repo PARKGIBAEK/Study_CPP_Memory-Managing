@@ -28,6 +28,6 @@ public:
 
 private:
 	Mutex			mtxLock;
-	vector<thread>	threads;
+	std::vector<std::thread>	threads;
 };
 
