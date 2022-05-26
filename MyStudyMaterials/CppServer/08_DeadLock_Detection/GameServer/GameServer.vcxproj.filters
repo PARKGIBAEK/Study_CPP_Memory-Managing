@@ -21,6 +21,9 @@
     <ClCompile Include="PlayerManager.cpp">
       <Filter>Main</Filter>
     </ClCompile>
+    <ClCompile Include="ItemManager.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -30,6 +33,9 @@
       <Filter>Main</Filter>
     </ClInclude>
     <ClInclude Include="PlayerManager.h">
+      <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemManager.h">
       <Filter>Main</Filter>
     </ClInclude>
   </ItemGroup>

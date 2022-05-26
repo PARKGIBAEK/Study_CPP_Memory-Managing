@@ -4,7 +4,7 @@
 
 AccountManager GAccountManager;
 
-void AccountManager::AccountThenPlayer() 
+void AccountManager::Account2Player() 
 {
 	WRITE_LOCK;
 	GPlayerManager.Lock();

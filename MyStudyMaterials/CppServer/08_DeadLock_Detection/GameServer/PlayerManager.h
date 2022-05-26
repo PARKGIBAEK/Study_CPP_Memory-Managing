@@ -3,11 +3,9 @@
 class PlayerManager
 {
 	USE_LOCK;
-
 public:
-	void PlayerThenAccount();
+	void Player2Item();
 	void Lock();
 };
 
 extern PlayerManager GPlayerManager;
-

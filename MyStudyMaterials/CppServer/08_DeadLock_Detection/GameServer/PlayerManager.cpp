@@ -1,13 +1,13 @@
 #include "pch.h"
 #include "PlayerManager.h"
-#include "AccountManager.h"
+#include "ItemManager.h"
 
 PlayerManager GPlayerManager;
 
-void PlayerManager::PlayerThenAccount()
+void PlayerManager::Player2Item()
 {
 	WRITE_LOCK;
-	GAccountManager.Lock();
+	GItemManager.Lock();
 }
 
 void PlayerManager::Lock()

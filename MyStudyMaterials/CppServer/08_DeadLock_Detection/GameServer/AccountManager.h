@@ -3,9 +3,8 @@
 class AccountManager
 {
 	USE_LOCK;
-
 public:
-	void AccountThenPlayer();
+	void Account2Player();
 	void Lock();
 };
 

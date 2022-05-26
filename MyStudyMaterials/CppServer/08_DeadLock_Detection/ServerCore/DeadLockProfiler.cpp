@@ -81,14 +81,15 @@ void DeadLockProfiler::Dfs(int32 here)
 
 	_discoveredOrder[here] = _discoveredCount++;
 
-	// 모든 인접한 정점을 순회한다.
+	// here에서 방문가능한 모든 노드 조회
 	auto findIt = _lockHistory.find(here);
 	if (findIt == _lockHistory.end())
-	{
+	{// 방문 가능한 노드가 없으면 탐색 종료 처리
 		_finished[here] = true;
 		return;
 	}
-
+	
+	// here에서 방문가능한 노드가 있으면
 	set<int32>& nextSet = findIt->second;
 	for (int32 there : nextSet)
 	{

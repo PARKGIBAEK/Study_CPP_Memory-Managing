@@ -31,7 +31,7 @@ void DeadLockProfiler::PushLock(const char* _name)
 		// 잡고 있는 락 중에서 직전에 잡은 락의 ID 조회
 		const int32 prevId = tls_LockStack.top();
 		// 기존에 발견되지 않은 케이스라면 데드락 여부 다시 확인한다.
-		if (lockId != prevId)//지금 잡으려는 락이 바로 직전에 잡은 락이 아닌경우 
+		if (lockId != prevId)// 지금 잡으려는 락이 바로 직전에 잡은 락이 아닌경우
 		{
 			set<int32>& history = lockHistory[prevId];
 			if (history.find(lockId) == history.end())
