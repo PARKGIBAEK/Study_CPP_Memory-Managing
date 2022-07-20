@@ -8,7 +8,7 @@
 
 - 참고 자료 :  Flow chart, Class diagram( draw.io로 작성)
 
-- 기타 :  00 ~ 58은 유닛 테스트 용입니다. 
+- 기타 :  00 ~ 58은 모듈 테스트 용입니다. 
             메인 프로젝트는 Integrated_Version입니다.
 
 ------
