@@ -29,7 +29,7 @@ String Index::GetUniqueName()
 	ret += _uniqueConstraint ? L"UK " : L" ";
 	ret += (_type == IndexType::Clustered ? L"C " : L"NC ");
 
-	for (const ColumnRef& column : _columns)
+	for (const std::shared_ptr<Column>& column : _columns)
 	{
 		ret += L"*";
 		ret += column->_name;
@@ -43,7 +43,7 @@ String Index::CreateName(const String& tableName)
 {
 	String ret = L"IX_" + tableName;
 
-	for (const ColumnRef& column : _columns)
+	for (const std::shared_ptr<Column>& column : _columns)
 	{
 		ret += L"_";
 		ret += column->_name;
@@ -87,7 +87,7 @@ String Index::CreateColumnsText()
 bool Index::DependsOn(const String& columnName)
 {
 	auto findIt = std::find_if(_columns.begin(), _columns.end(),
-		[&](const ColumnRef& column) { return column->_name == columnName; });
+		[&](const std::shared_ptr<Column>& column) { return column->_name == columnName; });
 
 	return findIt != _columns.end();
 }
@@ -96,10 +96,10 @@ bool Index::DependsOn(const String& columnName)
 	Table
 ------------*/
 
-ColumnRef Table::FindColumn(const String& columnName)
+std::shared_ptr<Column> Table::FindColumn(const String& columnName)
 {
 	auto findIt = std::find_if(_columns.begin(), _columns.end(),
-		[&](const ColumnRef& column) { return column->_name == columnName; });
+		[&](const std::shared_ptr<Column>& column) { return column->_name == columnName; });
 
 	if (findIt != _columns.end())
 		return *findIt;

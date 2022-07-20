@@ -5,9 +5,21 @@
 	MemoryPool
 ------------------*/
 
-MemoryPool::MemoryPool(int32 allocSize) : allocSize(allocSize)
+MemoryPool::MemoryPool(int32 _allocSize) : allocSize(_allocSize)
 {
 	::InitializeSListHead(&header); // SLIST_HEADER의 바이너리를 모두 0으로 초기화
+
+	/*
+	// 미리 만들어 놓기
+	int32 initialCount = 4096 / _allocSize;
+	for (size_t i = 0; i < initialCount; i++)
+	{
+		MemoryHeader* memory = reinterpret_cast<MemoryHeader*>(
+			::_aligned_malloc(allocSize, SLIST_ALIGNMENT));
+		::InterlockedPushEntrySList(&header, memory);
+		reservedCount.fetch_add(1);
+	}
+	*/
 }
 
 MemoryPool::~MemoryPool()

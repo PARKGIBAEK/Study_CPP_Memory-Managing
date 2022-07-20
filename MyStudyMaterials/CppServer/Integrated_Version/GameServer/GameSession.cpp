@@ -3,9 +3,16 @@
 #include "GameSessionManager.h"
 #include "ClientPacketHandler.h"
 #include "Room.h"
+#include "Player.h"
 
 void GameSession::OnConnected()
 {
+	/*
+	auto t = GetNetAddress();
+	auto ip = t.GetIpAddress();
+	auto port = t.GetPort();
+	printf("[port : %d][ ip : %s] is connected\n", port, ip);
+	*/
 	GSessionManager.Add(static_pointer_cast<GameSession>(shared_from_this()));
 }
 
@@ -25,7 +32,7 @@ void GameSession::OnDisconnected()
 
 void GameSession::OnRecvPacket(BYTE* buffer, int32 len)
 {
-	PacketSessionRef session = GetPacketSessionRef();
+	std::shared_ptr< PacketSession> session = GetPacketSessionRef();
 	PacketHeader* header = reinterpret_cast<PacketHeader*>(buffer);
 
 	// TODO : packetId 대역 체크

@@ -60,7 +60,7 @@ void ThreadManager::DoGlobalQueueWork()
 		if (now > tls_EndTickCount)
 			break;
 
-		JobQueueRef jobQueue = GGlobalQueue->Pop();
+		std::shared_ptr<JobQueue> jobQueue = GGlobalQueue->Pop();
 		if (jobQueue == nullptr)
 			break;
 

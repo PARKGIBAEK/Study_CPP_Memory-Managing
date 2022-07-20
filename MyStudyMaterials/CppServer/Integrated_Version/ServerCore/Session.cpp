@@ -17,7 +17,7 @@ Session::~Session()
 	SocketUtils::Close(socket);
 }
 
-void Session::Send(SendBufferRef sendBuffer)
+void Session::Send(std::shared_ptr<SendBuffer> sendBuffer)
 {
 	if (IsConnected() == false)
 		return;
@@ -59,7 +59,7 @@ HANDLE Session::GetHandle()
 	return reinterpret_cast<HANDLE>(socket);
 }
 
-void Session::Dispatch(IocpEvent* iocpEvent, int32 numOfBytes)
+void Session::DispatchEvent(IocpEvent* iocpEvent, int32 numOfBytes)
 {
 	switch (iocpEvent->eventType)
 	{
@@ -95,7 +95,7 @@ bool Session::RegisterConnect()
 		return false;
 
 	connectEvent.Init();
-	connectEvent.owner = shared_from_this(); // ADD_REF
+	connectEvent.ownerSession = shared_from_this(); // ADD_REF
 
 	DWORD numOfBytes = 0;
 	SOCKADDR_IN sockAddr = GetService()->GetNetAddress().GetSockAddr();
@@ -107,7 +107,7 @@ bool Session::RegisterConnect()
 		int32 errorCode = ::WSAGetLastError();
 		if (errorCode != WSA_IO_PENDING)
 		{
-			connectEvent.owner = nullptr; // RELEASE_REF
+			connectEvent.ownerSession = nullptr; // RELEASE_REF
 			return false;
 		}
 	}
@@ -118,7 +118,7 @@ bool Session::RegisterConnect()
 bool Session::RegisterDisconnect()
 {
 	disconnectEvent.Init();
-	disconnectEvent.owner = shared_from_this(); // ADD_REF
+	disconnectEvent.ownerSession = shared_from_this(); // ADD_REF
 
 	if (false == SocketUtils::DisconnectEx(socket, &disconnectEvent,
 		TF_REUSE_SOCKET, 0))
@@ -126,7 +126,7 @@ bool Session::RegisterDisconnect()
 		int32 errorCode = ::WSAGetLastError();
 		if (errorCode != WSA_IO_PENDING)
 		{
-			disconnectEvent.owner = nullptr; // RELEASE_REF
+			disconnectEvent.ownerSession = nullptr; // RELEASE_REF
 			return false;
 		}
 	}
@@ -140,7 +140,7 @@ void Session::RegisterRecv()
 		return;
 
 	recvEvent.Init();
-	recvEvent.owner = shared_from_this(); // ADD_REF
+	recvEvent.ownerSession = shared_from_this(); // ADD_REF
 
 	WSABUF wsaBuf;
 	wsaBuf.buf = reinterpret_cast<char*>(recvBuffer.WritePos());
@@ -155,7 +155,7 @@ void Session::RegisterRecv()
 		if (errorCode != WSA_IO_PENDING)
 		{
 			HandleError(errorCode);
-			recvEvent.owner = nullptr; // RELEASE_REF
+			recvEvent.ownerSession = nullptr; // RELEASE_REF
 		}
 	}
 }
@@ -166,7 +166,7 @@ void Session::RegisterSend()
 		return;
 
 	sendEvent.Init();
-	sendEvent.owner = shared_from_this(); // ADD_REF
+	sendEvent.ownerSession = shared_from_this(); // ADD_REF
 
 	// 보낼 데이터를 sendEvent에 등록
 	{
@@ -175,7 +175,7 @@ void Session::RegisterSend()
 		int32 writeSize = 0;
 		while (sendQueue.empty() == false)
 		{
-			SendBufferRef sendBuffer = sendQueue.front();
+			std::shared_ptr<SendBuffer> sendBuffer = sendQueue.front();
 
 			writeSize += sendBuffer->WriteSize();
 			// TODO : 예외 체크
@@ -188,7 +188,7 @@ void Session::RegisterSend()
 	/* Gathering write(모아 보내기)*/
 	Vector<WSABUF> wsaBufs;
 	wsaBufs.reserve(/*보낼 패킷 수*/sendEvent.sendBuffers.size());
-	for (SendBufferRef sendBuffer : sendEvent.sendBuffers)
+	for (std::shared_ptr<SendBuffer> sendBuffer : sendEvent.sendBuffers)
 	{
 		WSABUF wsaBuf;
 		wsaBuf.buf = reinterpret_cast<char*>(sendBuffer->Buffer());
@@ -205,7 +205,7 @@ void Session::RegisterSend()
 		if (errorCode != WSA_IO_PENDING)
 		{
 			HandleError(errorCode);
-			sendEvent.owner = nullptr; // RELEASE_REF
+			sendEvent.ownerSession = nullptr; // RELEASE_REF
 			sendEvent.sendBuffers.clear(); // RELEASE_REF
 			isSendRegistered.store(false);
 		}
@@ -214,7 +214,7 @@ void Session::RegisterSend()
 
 void Session::ProcessConnect()
 {
-	connectEvent.owner = nullptr; // RELEASE_REF
+	connectEvent.ownerSession = nullptr; // RELEASE_REF
 
 	isConnected.store(true);
 
@@ -230,7 +230,7 @@ void Session::ProcessConnect()
 
 void Session::ProcessDisconnect()
 {
-	disconnectEvent.owner = nullptr; // RELEASE_REF
+	disconnectEvent.ownerSession = nullptr; // RELEASE_REF
 
 	OnDisconnected(); // 컨텐츠 코드에서 재정의
 	GetService()->ReleaseSession(GetSessionRef());
@@ -238,7 +238,7 @@ void Session::ProcessDisconnect()
 
 void Session::ProcessRecv(int32 numOfBytes)
 {
-	recvEvent.owner = nullptr; // RELEASE_REF
+	recvEvent.ownerSession = nullptr; // RELEASE_REF
 
 	if (numOfBytes == 0)
 	{
@@ -271,7 +271,7 @@ void Session::ProcessRecv(int32 numOfBytes)
 
 void Session::ProcessSend(int32 numOfBytes)
 {
-	sendEvent.owner = nullptr; // RELEASE_REF
+	sendEvent.ownerSession = nullptr; // RELEASE_REF
 	sendEvent.sendBuffers.clear(); // RELEASE_REF
 
 	if (numOfBytes == 0)

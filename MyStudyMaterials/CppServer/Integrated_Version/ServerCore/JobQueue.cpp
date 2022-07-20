@@ -6,7 +6,7 @@
 	JobQueue
 ---------------*/
 
-void JobQueue::Push(JobRef job, bool pushOnly)
+void JobQueue::Push(std::shared_ptr<Job> job, bool pushOnly)
 {
 	const int32 prevCount = _jobCount.fetch_add(1);
 	_jobs.Push(job); // WRITE_LOCK
@@ -38,7 +38,7 @@ void JobQueue::Execute()
 
 	while (true)
 	{
-		Vector<JobRef> jobs;
+		Vector<std::shared_ptr<Job> > jobs;
 		_jobs.PopAll(OUT jobs);
 
 		const int32 jobCount = static_cast<int32>(jobs.size());

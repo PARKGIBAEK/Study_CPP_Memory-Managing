@@ -184,7 +184,7 @@
     <ClInclude Include="DeadLockProfiler.h" />
     <ClInclude Include="FileUtils.h" />
     <ClInclude Include="GlobalQueue.h" />
-    <ClInclude Include="IocpCore.h" />
+    <ClInclude Include="IocpService.h" />
     <ClInclude Include="IocpEvent.h" />
     <ClInclude Include="Job.h" />
     <ClInclude Include="JobTimer.h" />
@@ -228,7 +228,7 @@
     <ClCompile Include="DeadLockProfiler.cpp" />
     <ClCompile Include="FileUtils.cpp" />
     <ClCompile Include="GlobalQueue.cpp" />
-    <ClCompile Include="IocpCore.cpp" />
+    <ClCompile Include="IocpService.cpp" />
     <ClCompile Include="IocpEvent.cpp" />
     <ClCompile Include="Job.cpp" />
     <ClCompile Include="JobTimer.cpp" />

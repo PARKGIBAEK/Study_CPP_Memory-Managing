@@ -35,7 +35,7 @@ public:
 
 	void DoTimer(uint64 tickAfter, CallbackType&& callback)
 	{
-		JobRef job = ObjectPool<Job>::MakeShared(std::move(callback));
+		std::shared_ptr<Job> job = ObjectPool<Job>::MakeShared(std::move(callback));
 		GJobTimer->Reserve(tickAfter, shared_from_this(), job);
 	}
 
@@ -43,7 +43,7 @@ public:
 	void DoTimer(uint64 tickAfter, Ret(T::* memFunc)(Args...), Args... args)
 	{
 		shared_ptr<T> owner = static_pointer_cast<T>(shared_from_this());
-		JobRef job = ObjectPool<Job>::MakeShared(owner, memFunc, std::forward<Args>(args)...);
+		std::shared_ptr<Job> job = ObjectPool<Job>::MakeShared(owner, memFunc, std::forward<Args>(args)...);
 		GJobTimer->Reserve(tickAfter, shared_from_this(), job);
 	}
 
@@ -53,11 +53,11 @@ public:
 	/* _jobs에 job을 넣는다. 단, 바쁘면 
 	pushOnly == false : Job처리까지 수행*/
 
-	void					Push(JobRef job, bool pushOnly = false);
+	void					Push(std::shared_ptr<Job> job, bool pushOnly = false);
 	void					Execute();
 
 protected:
-	LockQueue<JobRef>		_jobs;
+	LockQueue<std::shared_ptr<Job>>		_jobs;
 	Atomic<int32>			_jobCount = 0;
 };
 

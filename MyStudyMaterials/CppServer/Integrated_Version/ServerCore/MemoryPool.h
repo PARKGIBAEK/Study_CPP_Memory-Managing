@@ -9,8 +9,8 @@ enum
 	MemoryHeader
 ------------------*/
 
-DECLSPEC_ALIGN(SLIST_ALIGNMENT)
-struct MemoryHeader : public SLIST_ENTRY
+//DECLSPEC_ALIGN(SLIST_ALIGNMENT)
+struct alignas(SLIST_ALIGNMENT) MemoryHeader : public SLIST_ENTRY
 {
 	// [MemoryHeader][Data] => Data영역이 실 사용 메모리 영역이며, 맨앞에 MemoryHeader영역은 메모리 관련 정보를 저장
 	MemoryHeader(int32 _size) : allocSize(_size) { }
@@ -25,12 +25,12 @@ struct MemoryHeader : public SLIST_ENTRY
 	}
 
 	// 주소를 MemoryHeader 사이즈 만큼 앞으로 당겨서 반환
-	static MemoryHeader* DetachHeader(void* ptr)
+	static MemoryHeader* DetachHeader(void* _ptr)
 	{
 		/* 실사용 메모리 영역(Data)의 시작 주소(NodePtr)앞에는 MemoryHeader가 붙어있고 해당위치가 메모리할당 시작 점이다
 			따라서 ptr에서 MemoryHeader사이즈 만큼을 앞으로 당겨서 반환해주어야
 			메모리 해제가 가능하다 */
-		MemoryHeader* header = reinterpret_cast<MemoryHeader*>(ptr) - 1;
+		MemoryHeader* header = reinterpret_cast<MemoryHeader*>(_ptr) - 1;
 		return header;
 	}
 
@@ -45,10 +45,10 @@ struct MemoryHeader : public SLIST_ENTRY
 class alignas(SLIST_ALIGNMENT) MemoryPool
 {
 public:
-	MemoryPool(int32 allocSize);
+	MemoryPool(int32 _allocSize);
 	~MemoryPool();
 
-	void				Push(MemoryHeader* ptr);
+	void				Push(MemoryHeader* _ptr);
 	MemoryHeader*		Pop();
 
 private:

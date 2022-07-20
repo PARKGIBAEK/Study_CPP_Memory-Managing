@@ -1,31 +1,31 @@
 #include "pch.h"
-#include "IocpCore.h"
+#include "IocpService.h"
 #include "IocpEvent.h"
 
 /*--------------
-	IocpCore
+	IocpService
 ---------------*/
 
-IocpCore::IocpCore()
+IocpService::IocpService()
 {
 	// IOCP 생성
 	iocpHandle = ::CreateIoCompletionPort(INVALID_HANDLE_VALUE, 0, 0, 0);
 	ASSERT_CRASH(iocpHandle != INVALID_HANDLE_VALUE);
 }
 
-IocpCore::~IocpCore()
+IocpService::~IocpService()
 {
 	::CloseHandle(iocpHandle);
 }
 
-bool IocpCore::RegisterSockToIOCP(IocpObjectRef _iocpObject)
+bool IocpService::RegisterSockToIOCP(std::shared_ptr<ISession> _iocpObject)
 {
 	// GQCS에서 overlapped를 받아올 때 event
 	return ::CreateIoCompletionPort(
 		_iocpObject->GetHandle(), iocpHandle, /*key*/0, 0);
 }
 
-bool IocpCore::Dispatch(uint32 _timeoutMs)
+bool IocpService::Dispatch(uint32 _timeoutMs)
 {
 	DWORD numOfBytes = 0;
 	ULONG_PTR key = 0;
@@ -35,8 +35,8 @@ bool IocpCore::Dispatch(uint32 _timeoutMs)
 		iocpHandle, OUT &numOfBytes, OUT &key,
 		OUT reinterpret_cast<LPOVERLAPPED*>(&iocpEvent), _timeoutMs))
 	{
-		IocpObjectRef iocpObject = iocpEvent->owner; // 모든 Event는 ownerIocpObject를 가짐
-		iocpObject->Dispatch(iocpEvent, numOfBytes);
+		std::shared_ptr<ISession> iocpObject = iocpEvent->ownerSession; // 모든 Event는 ownerIocpObject를 가짐
+		iocpObject->DispatchEvent(iocpEvent, numOfBytes);
 	}
 	else
 	{
@@ -47,8 +47,8 @@ bool IocpCore::Dispatch(uint32 _timeoutMs)
 			return false;
 		default:
 			// TODO : 로그 찍기
-			IocpObjectRef iocpObject = iocpEvent->owner;
-			iocpObject->Dispatch(iocpEvent, numOfBytes);
+			std::shared_ptr<ISession> iocpObject = iocpEvent->ownerSession;
+			iocpObject->DispatchEvent(iocpEvent, numOfBytes);
 			break;
 		}
 	}

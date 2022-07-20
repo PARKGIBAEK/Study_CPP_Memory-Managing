@@ -5,7 +5,7 @@
 	SendBuffer
 -----------------*/
 
-SendBuffer::SendBuffer(SendBufferChunkRef _owner, BYTE* _buffer, uint32 _allocSize)
+SendBuffer::SendBuffer(std::shared_ptr<SendBufferChunk>  _owner, BYTE* _buffer, uint32 _allocSize)
 	: owner(_owner), buffer(_buffer), allocSize(_allocSize)
 {
 }
@@ -40,7 +40,7 @@ void SendBufferChunk::ResetBuffer()
 	usedSize = 0;
 }
 
-SendBufferRef SendBufferChunk::Open(uint32 _allocSize)
+std::shared_ptr<SendBuffer> SendBufferChunk::Open(uint32 _allocSize)
 {
 	ASSERT_CRASH(_allocSize <= SEND_BUFFER_CHUNK_SIZE);
 	ASSERT_CRASH(isOpen == false);
@@ -65,7 +65,7 @@ void SendBufferChunk::Close(uint32 _writeSize)
 				SendBufferManager
 -----------------------------------------------*/
 
-SendBufferRef SendBufferManager::Open(uint32 _reqSize)
+std::shared_ptr<SendBuffer> SendBufferManager::Open(uint32 _reqSize)
 {
 	if (tls_SendBufferChunk == nullptr)
 	{
@@ -85,13 +85,13 @@ SendBufferRef SendBufferManager::Open(uint32 _reqSize)
 	return tls_SendBufferChunk->Open(_reqSize);
 }
 
-SendBufferChunkRef SendBufferManager::Pop()
+std::shared_ptr<SendBufferChunk>  SendBufferManager::Pop()
 {
 	{
 		WRITE_LOCK;
 		if (sendBufferChunks.empty() == false)
 		{
-			SendBufferChunkRef sendBufferChunk = sendBufferChunks.back();
+			std::shared_ptr<SendBufferChunk>  sendBufferChunk = sendBufferChunks.back();
 			sendBufferChunks.pop_back();
 			return sendBufferChunk;
 		}
@@ -99,10 +99,10 @@ SendBufferChunkRef SendBufferManager::Pop()
 
 	/*PushGlobal은 shared_ptr의 소멸자
 	- SendBufferChunk를 SendBufferManager::sendBufferChunks에 다시 반환(push_back)*/
-	return SendBufferChunkRef(XNew<SendBufferChunk>(), PushGlobal); 
+	return std::shared_ptr<SendBufferChunk> (XNew<SendBufferChunk>(), PushGlobal); 
 }
 
-void SendBufferManager::Push(SendBufferChunkRef _buffer)
+void SendBufferManager::Push(std::shared_ptr<SendBufferChunk>  _buffer)
 {
 	WRITE_LOCK;
 	sendBufferChunks.emplace_back(_buffer);
@@ -110,6 +110,6 @@ void SendBufferManager::Push(SendBufferChunkRef _buffer)
 
 void SendBufferManager::PushGlobal(SendBufferChunk* _buffer)
 {
-	//cout << "Log : PushGlobal SendBufferChunkRef" << endl;
-	GSendBufferManager->Push(SendBufferChunkRef(_buffer, PushGlobal));
+	//cout << "Log : PushGlobal std::shared_ptr<SendBufferChunk> " << endl;
+	GSendBufferManager->Push(std::shared_ptr<SendBufferChunk> (_buffer, PushGlobal));
 }

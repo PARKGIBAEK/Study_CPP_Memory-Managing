@@ -119,13 +119,13 @@ void DBSynchronizer::ParseXmlDB(const WCHAR* path)
 	Vector<XmlNode> tables = root.FindChildren(L"Table");
 	for (XmlNode& table : tables)
 	{
-		DBModel::TableRef t = MakeShared<DBModel::Table>();
+		std::shared_ptr<Table> t = MakeShared<DBModel::Table>();
 		t->_name = table.GetStringAttr(L"name");
 
 		Vector<XmlNode> columns = table.FindChildren(L"Column");
 		for (XmlNode& column : columns)
 		{
-			DBModel::ColumnRef c = MakeShared<DBModel::Column>();
+			std::shared_ptr<Column> c = MakeShared<DBModel::Column>();
 			c->_name = column.GetStringAttr(L"name");
 			c->_typeText = column.GetStringAttr(L"type");
 			c->_type = DBModel::Helpers::String2DataType(c->_typeText.c_str(), OUT c->_maxLength);
@@ -150,7 +150,7 @@ void DBSynchronizer::ParseXmlDB(const WCHAR* path)
 		Vector<XmlNode> indexes = table.FindChildren(L"Index");
 		for (XmlNode& index : indexes)
 		{
-			DBModel::IndexRef i = MakeShared<DBModel::Index>();
+			std::shared_ptr<Index> i = MakeShared<Index>();
 			const WCHAR* typeStr = index.GetStringAttr(L"type");
 			if (::_wcsicmp(typeStr, L"clustered") == 0)
 				i->_type = DBModel::IndexType::Clustered;
@@ -166,7 +166,7 @@ void DBSynchronizer::ParseXmlDB(const WCHAR* path)
 			for (XmlNode& column : columns)
 			{
 				const WCHAR* nameStr = column.GetStringAttr(L"name");
-				DBModel::ColumnRef c = t->FindColumn(nameStr);
+				std::shared_ptr<Column> c = t->FindColumn(nameStr);
 				ASSERT_CRASH(c != nullptr);
 				i->_columns.push_back(c);
 			}
@@ -180,7 +180,7 @@ void DBSynchronizer::ParseXmlDB(const WCHAR* path)
 	Vector<XmlNode> procedures = root.FindChildren(L"Procedure");
 	for (XmlNode& procedure : procedures)
 	{
-		DBModel::ProcedureRef p = MakeShared<DBModel::Procedure>();
+		std::shared_ptr<Procedure> p = MakeShared<DBModel::Procedure>();
 		p->_name = procedure.GetStringAttr(L"name");
 		p->_body = procedure.FindChild(L"Body").GetStringValue();
 
@@ -239,10 +239,10 @@ bool DBSynchronizer::GatherDBTables()
 
 	while (getDBTables.Fetch())
 	{
-		DBModel::TableRef table;
+		std::shared_ptr<Table> table;
 
 		auto findTable = std::find_if(_dbTables.begin(), _dbTables.end(),
-			[=](const DBModel::TableRef& table) { return table->_objectId == objectId; });
+			[=](const std::shared_ptr<Table>& table) { return table->_objectId == objectId; });
 		if (findTable == _dbTables.end())
 		{
 			table = MakeShared<DBModel::Table>();
@@ -255,7 +255,7 @@ bool DBSynchronizer::GatherDBTables()
 			table = *findTable;
 		}
 
-		DBModel::ColumnRef column = MakeShared<DBModel::Column>();
+		std::shared_ptr<Column> column = MakeShared<DBModel::Column>();
 		{
 			column->_name = columnName;
 			column->_columnId = columnId;
@@ -309,16 +309,16 @@ bool DBSynchronizer::GatherDBIndexes()
 	while (getDBIndexes.Fetch())
 	{
 		auto findTable = std::find_if(_dbTables.begin(), _dbTables.end(),
-			[=](const DBModel::TableRef& table) { return table->_objectId == objectId; }
+			[=](const std::shared_ptr<Table>& table) { return table->_objectId == objectId; }
 		);
 		ASSERT_CRASH(findTable != _dbTables.end());
-		Vector<DBModel::IndexRef>& indexes = (*findTable)->_indexes;
+		Vector<std::shared_ptr<Index>>& indexes = (*findTable)->_indexes;
 		auto findIndex = std::find_if(indexes.begin(), indexes.end(),
-			[indexId](DBModel::IndexRef& index) { return index->_indexId == indexId; }
+			[indexId](std::shared_ptr<Index>& index) { return index->_indexId == indexId; }
 		);
 		if (findIndex == indexes.end())
 		{
-			DBModel::IndexRef index = MakeShared<DBModel::Index>();
+			std::shared_ptr<Index> index = MakeShared<DBModel::Index>();
 			{
 				index->_name = indexName;
 				index->_indexId = indexId;
@@ -331,9 +331,9 @@ bool DBSynchronizer::GatherDBIndexes()
 		}
 
 		// 인덱스가 걸린 column 찾아서 매핑해준다.
-		Vector<DBModel::ColumnRef>& columns = (*findTable)->_columns;
+		Vector<std::shared_ptr<Column>>& columns = (*findTable)->_columns;
 		auto findColumn = std::find_if(columns.begin(), columns.end(),
-			[columnId](DBModel::ColumnRef& column) { return column->_columnId == columnId; }
+			[columnId](std::shared_ptr<Column>& column) { return column->_columnId == columnId; }
 		);
 		ASSERT_CRASH(findColumn != columns.end());
 		(*findIndex)->_columns.push_back(*findColumn);
@@ -356,7 +356,7 @@ bool DBSynchronizer::GatherDBStoredProcedures()
 
 	while (getDBStoredProcedures.Fetch())
 	{
-		DBModel::ProcedureRef proc = MakeShared<DBModel::Procedure>();
+		std::shared_ptr<Procedure> proc = MakeShared<DBModel::Procedure>();
 		{
 			proc->_name = name;
 			proc->_fullBody = String(body.begin(), std::find(body.begin(), body.end(), 0));
@@ -375,17 +375,17 @@ void DBSynchronizer::CompareDBModel()
 		queries.clear();
 
 	// XML에 있는 목록을 우선 갖고 온다.
-	Map<String, DBModel::TableRef> xmlTableMap;
-	for (DBModel::TableRef& xmlTable : _xmlTables)
+	Map<String, std::shared_ptr<Table>> xmlTableMap;
+	for (std::shared_ptr<Table>& xmlTable : _xmlTables)
 		xmlTableMap[xmlTable->_name] = xmlTable;
 
 	// DB에 실존하는 테이블들을 돌면서 XML에 정의된 테이블들과 비교한다.
-	for (DBModel::TableRef& dbTable : _dbTables)
+	for (std::shared_ptr<Table>& dbTable : _dbTables)
 	{
 		auto findTable = xmlTableMap.find(dbTable->_name);
 		if (findTable != xmlTableMap.end())
 		{
-			DBModel::TableRef xmlTable = findTable->second;
+			std::shared_ptr<Table> xmlTable = findTable->second;
 			CompareTables(dbTable, xmlTable);
 			xmlTableMap.erase(findTable);
 		}
@@ -402,7 +402,7 @@ void DBSynchronizer::CompareDBModel()
 	// 맵에서 제거되지 않은 XML 테이블 정의는 새로 추가.
 	for (auto& mapIt : xmlTableMap)
 	{
-		DBModel::TableRef& xmlTable = mapIt.second;
+		std::shared_ptr<Table>& xmlTable = mapIt.second;
 
 		String columnsStr;
 		const int32 size = static_cast<int32>(xmlTable->_columns.size());
@@ -417,7 +417,7 @@ void DBSynchronizer::CompareDBModel()
 		GConsoleLogger->WriteStdOut(Color::YELLOW, L"Creating Table : [dbo].[%s]\n", xmlTable->_name.c_str());
 		_updateQueries[UpdateStep::CreateTable].push_back(DBModel::Helpers::Format(L"CREATE TABLE [dbo].[%s] (%s)", xmlTable->_name.c_str(), columnsStr.c_str()));
 
-		for (DBModel::ColumnRef& xmlColumn : xmlTable->_columns)
+		for (std::shared_ptr<Column>& xmlColumn : xmlTable->_columns)
 		{
 			if (xmlColumn->_default.empty())
 				continue;
@@ -429,7 +429,7 @@ void DBSynchronizer::CompareDBModel()
 				xmlColumn->_name.c_str()));
 		}
 
-		for (DBModel::IndexRef& xmlIndex : xmlTable->_indexes)
+		for (std::shared_ptr<Index>& xmlIndex : xmlTable->_indexes)
 		{
 			GConsoleLogger->WriteStdOut(Color::YELLOW, L"Creating Index : [%s] %s %s [%s]\n", xmlTable->_name.c_str(), xmlIndex->GetKeyText().c_str(), xmlIndex->GetTypeText().c_str(), xmlIndex->GetUniqueName().c_str());
 			if (xmlIndex->_primaryKey || xmlIndex->_uniqueConstraint)
@@ -469,20 +469,20 @@ void DBSynchronizer::ExecuteUpdateQueries()
 	}
 }
 
-void DBSynchronizer::CompareTables(DBModel::TableRef dbTable, DBModel::TableRef xmlTable)
+void DBSynchronizer::CompareTables(std::shared_ptr<Table> dbTable, std::shared_ptr<Table> xmlTable)
 {
 	// XML에 있는 컬럼 목록을 갖고 온다.
-	Map<String, DBModel::ColumnRef> xmlColumnMap;
-	for (DBModel::ColumnRef& xmlColumn : xmlTable->_columns)
+	Map<String, std::shared_ptr<Column>> xmlColumnMap;
+	for (std::shared_ptr<Column>& xmlColumn : xmlTable->_columns)
 		xmlColumnMap[xmlColumn->_name] = xmlColumn;
 
 	// DB에 실존하는 테이블 컬럼들을 돌면서 XML에 정의된 컬럼들과 비교한다.
-	for (DBModel::ColumnRef& dbColumn : dbTable->_columns)
+	for (std::shared_ptr<Column>& dbColumn : dbTable->_columns)
 	{
 		auto findColumn = xmlColumnMap.find(dbColumn->_name);
 		if (findColumn != xmlColumnMap.end())
 		{
-			DBModel::ColumnRef& xmlColumn = findColumn->second;
+			std::shared_ptr<Column>& xmlColumn = findColumn->second;
 			CompareColumns(dbTable, dbColumn, xmlColumn);
 			xmlColumnMap.erase(findColumn);
 		}
@@ -499,7 +499,7 @@ void DBSynchronizer::CompareTables(DBModel::TableRef dbTable, DBModel::TableRef 
 	// 맵에서 제거되지 않은 XML 컬럼 정의는 새로 추가.
 	for (auto& mapIt : xmlColumnMap)
 	{
-		DBModel::ColumnRef& xmlColumn = mapIt.second;
+		std::shared_ptr<Column>& xmlColumn = mapIt.second;
 		DBModel::Column newColumn = *xmlColumn;
 		newColumn._nullable = true;
 
@@ -527,19 +527,19 @@ void DBSynchronizer::CompareTables(DBModel::TableRef dbTable, DBModel::TableRef 
 	}
 
 	// XML에 있는 인덱스 목록을 갖고 온다.
-	Map<String, DBModel::IndexRef> xmlIndexMap;
-	for (DBModel::IndexRef& xmlIndex : xmlTable->_indexes)
+	Map<String, std::shared_ptr<Index>> xmlIndexMap;
+	for (std::shared_ptr<Index>& xmlIndex : xmlTable->_indexes)
 		xmlIndexMap[xmlIndex->GetUniqueName()] = xmlIndex;
 
 	// DB에 실존하는 테이블 인덱스들을 돌면서 XML에 정의된 인덱스들과 비교한다.
-	for (DBModel::IndexRef& dbIndex : dbTable->_indexes)
+	for (std::shared_ptr<Index>& dbIndex : dbTable->_indexes)
 	{
 		auto findIndex = xmlIndexMap.find(dbIndex->GetUniqueName());
 		if (findIndex != xmlIndexMap.end() && _dependentIndexes.find(
 			dbIndex->GetUniqueName()) == _dependentIndexes.end()
 			)
 		{
-			DBModel::IndexRef xmlIndex = findIndex->second;
+			std::shared_ptr<Index> xmlIndex = findIndex->second;
 			xmlIndexMap.erase(findIndex);
 		}
 		else
@@ -561,7 +561,7 @@ void DBSynchronizer::CompareTables(DBModel::TableRef dbTable, DBModel::TableRef 
 	// 맵에서 제거되지 않은 XML 인덱스 정의는 새로 추가.
 	for (auto& mapIt : xmlIndexMap)
 	{
-		DBModel::IndexRef xmlIndex = mapIt.second;
+		std::shared_ptr<Index> xmlIndex = mapIt.second;
 		GConsoleLogger->WriteStdOut(
 			Color::YELLOW, L"Creating Index : [%s] %s %s [%s]\n", dbTable->_name.c_str(),
 			xmlIndex->GetKeyText().c_str(),
@@ -594,7 +594,7 @@ void DBSynchronizer::CompareTables(DBModel::TableRef dbTable, DBModel::TableRef 
 	}
 }
 
-void DBSynchronizer::CompareColumns(DBModel::TableRef dbTable, DBModel::ColumnRef dbColumn, DBModel::ColumnRef xmlColumn)
+void DBSynchronizer::CompareColumns(std::shared_ptr<Table> dbTable, std::shared_ptr<Column> dbColumn, std::shared_ptr<Column> xmlColumn)
 {
 	uint8 flag = 0;
 
@@ -617,7 +617,7 @@ void DBSynchronizer::CompareColumns(DBModel::TableRef dbTable, DBModel::ColumnRe
 	// 연관된 인덱스가 있으면 나중에 삭제하기 위해 기록한다.
 	if (flag & (ColumnFlag::Type | ColumnFlag::Length | ColumnFlag::Nullable))
 	{
-		for (DBModel::IndexRef& dbIndex : dbTable->_indexes)
+		for (std::shared_ptr<Index>& dbIndex : dbTable->_indexes)
 			if (dbIndex->DependsOn(dbColumn->_name))
 				_dependentIndexes.insert(dbIndex->GetUniqueName());
 
@@ -686,17 +686,17 @@ void DBSynchronizer::CompareColumns(DBModel::TableRef dbTable, DBModel::ColumnRe
 void DBSynchronizer::CompareStoredProcedures()
 {
 	// XML에 있는 프로시저 목록을 갖고 온다.
-	Map<String, DBModel::ProcedureRef> xmlProceduresMap;
-	for (DBModel::ProcedureRef& xmlProcedure : _xmlProcedures)
+	Map<String, std::shared_ptr<Procedure>> xmlProceduresMap;
+	for (std::shared_ptr<Procedure>& xmlProcedure : _xmlProcedures)
 		xmlProceduresMap[xmlProcedure->_name] = xmlProcedure;
 
 	// DB에 실존하는 테이블 프로시저들을 돌면서 XML에 정의된 프로시저들과 비교한다.
-	for (DBModel::ProcedureRef& dbProcedure : _dbProcedures)
+	for (std::shared_ptr<Procedure>& dbProcedure : _dbProcedures)
 	{
 		auto findProcedure = xmlProceduresMap.find(dbProcedure->_name);
 		if (findProcedure != xmlProceduresMap.end())
 		{
-			DBModel::ProcedureRef xmlProcedure = findProcedure->second;
+			std::shared_ptr<Procedure> xmlProcedure = findProcedure->second;
 			String xmlBody = xmlProcedure->GenerateCreateQuery();
 			if (DBModel::Helpers::RemoveWhiteSpace(dbProcedure->_fullBody) != DBModel::Helpers::RemoveWhiteSpace(xmlBody))
 			{

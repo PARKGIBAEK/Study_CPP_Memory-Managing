@@ -1,6 +1,6 @@
 #pragma once
 #include "NetAddress.h"
-#include "IocpCore.h"
+#include "IocpService.h"
 #include "Listener.h"
 #include <functional>
 
@@ -14,12 +14,13 @@ enum class ServiceType : uint8
 	Service
 --------------*/
 
-using SessionFactory = std::function<SessionRef(void)>;
+using SessionFactory = std::function< std::shared_ptr<Session>(void) >;
 
 class Service : public enable_shared_from_this<Service>
 {
 public:
-	Service(ServiceType _type, NetAddress _address, IocpCoreRef _core, 
+
+	Service(ServiceType _type, NetAddress _address, std::shared_ptr<IocpService> _iocpService,
 		SessionFactory _factory, int32 _maxSessionCount = 1);
 	virtual ~Service();
 
@@ -29,25 +30,25 @@ public:
 	virtual void		CloseService();
 	void				SetSessionFactory(SessionFactory _func) { sessionFactory = _func; }
 
-	void				Broadcast(SendBufferRef _sendBuffer);
-	SessionRef			CreateSession();
-	void				AddSession(SessionRef _session);
-	void				ReleaseSession(SessionRef _session);
+	void				Broadcast(std::shared_ptr<SendBuffer> _sendBuffer);
+	std::shared_ptr<Session>			CreateSession();
+	void				AddSession(std::shared_ptr<Session> _session);
+	void				ReleaseSession(std::shared_ptr<Session> _session);
 	int32				GetCurrentSessionCount() { return sessionCount; }
 	int32				GetMaxSessionCount() { return maxSessionCount; }
 
 public:
 	ServiceType			GetServiceType() { return type; }
 	NetAddress			GetNetAddress() { return netAddress; }
-	IocpCoreRef&		GetIocpCore() { return iocpCore; }
+	std::shared_ptr<IocpService>&		GetIocpCore() { return iocpService; }
 
 protected:
 	USE_LOCK;
 	ServiceType			type;
 	NetAddress			netAddress = {};
-	IocpCoreRef			iocpCore;
+	std::shared_ptr<IocpService>			iocpService;
 
-	Set<SessionRef>		sessions;
+	Set<std::shared_ptr<Session>>		sessions;
 	int32				sessionCount = 0;
 	int32				maxSessionCount = 0;// listener 동접자 수
 	SessionFactory		sessionFactory;
@@ -61,7 +62,7 @@ class ClientService : public Service
 {
 public:
 	// _masSessionCount는 client 갯수
-	ClientService(NetAddress _targetAddress, IocpCoreRef _core,
+	ClientService(NetAddress _targetAddress, std::shared_ptr<IocpService> _core,
 		SessionFactory _factory, int32 _maxSessionCount = 1);
 	virtual ~ClientService() {}
 
@@ -77,7 +78,7 @@ class ServerService : public Service
 {
 public:
 	// _masSessionCount는 AcceptEx함수 동시 호출 유지 갯수
-	ServerService(NetAddress _targetAddress, IocpCoreRef _core, 
+	ServerService(NetAddress _targetAddress, std::shared_ptr<IocpService> _core, 
 		SessionFactory _factory, int32 _maxSessionCount = 1);
 	virtual ~ServerService() {}
 
@@ -85,5 +86,5 @@ public:
 	virtual void	CloseService() override;
 
 private:
-	ListenerRef		listener = nullptr;
+	std::shared_ptr<Listener>		listener = nullptr;
 };

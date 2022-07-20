@@ -15,8 +15,8 @@ public:
 	virtual void OnSend(int32 len) override;
 
 public:
-	Vector<PlayerRef> _players;
+	Vector<std::shared_ptr<class Player>> _players;
 
-	PlayerRef _currentPlayer;
+	std::shared_ptr<class Player> _currentPlayer;
 	weak_ptr<class Room> _room;
 };

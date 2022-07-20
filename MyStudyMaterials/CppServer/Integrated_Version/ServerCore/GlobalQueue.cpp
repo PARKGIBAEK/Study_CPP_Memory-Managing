@@ -15,12 +15,12 @@ GlobalQueue::~GlobalQueue()
 
 }
 
-void GlobalQueue::Push(JobQueueRef jobQueue)
+void GlobalQueue::Push(std::shared_ptr<JobQueue> jobQueue)
 {
 	_jobQueues.Push(jobQueue);
 }
 
-JobQueueRef GlobalQueue::Pop()
+std::shared_ptr<JobQueue> GlobalQueue::Pop()
 {
 	return _jobQueues.Pop();
 }

@@ -9,7 +9,7 @@ class SendBufferChunk;
 class SendBuffer
 {
 public:
-	SendBuffer(SendBufferChunkRef _owner, BYTE* _buffer, uint32 _allocSize);
+	SendBuffer(std::shared_ptr<SendBufferChunk> _owner, BYTE* _buffer, uint32 _allocSize);
 	~SendBuffer();
 
 	BYTE*				Buffer() { return buffer; }
@@ -21,7 +21,7 @@ private:
 	BYTE*				buffer;
 	uint32				allocSize = 0;
 	uint32				writeSize = 0;
-	SendBufferChunkRef	owner;
+	std::shared_ptr<SendBufferChunk>	owner;
 };
 
 /*--------------------
@@ -40,7 +40,7 @@ public:
 	~SendBufferChunk();
 
 	void					ResetBuffer();
-	SendBufferRef			Open(uint32 _allocSize);
+	std::shared_ptr<SendBuffer>			Open(uint32 _allocSize);
 	void					Close(uint32 _writeSize);
 
 	bool					IsOpen() { return isOpen; }
@@ -64,14 +64,14 @@ private:
 class SendBufferManager
 {
 public:
-	SendBufferRef				Open(uint32 _size);
+	std::shared_ptr<SendBuffer>				Open(uint32 _size);
 
 private:
-	SendBufferChunkRef			Pop();
-	void						Push(SendBufferChunkRef _buffer);
+	std::shared_ptr<SendBufferChunk> 			Pop();
+	void						Push(std::shared_ptr<SendBufferChunk>  _buffer);
 	static void					PushGlobal(SendBufferChunk* _buffer);
 
 private:
 	USE_LOCK;
-	Vector<SendBufferChunkRef>	sendBufferChunks;
+	Vector<std::shared_ptr<SendBufferChunk> >	sendBufferChunks;
 };

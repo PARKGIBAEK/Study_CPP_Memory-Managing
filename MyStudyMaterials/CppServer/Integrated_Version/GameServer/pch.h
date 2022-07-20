@@ -15,5 +15,5 @@
 #include "Core.h"
 #include "Enum.pb.h"
 
-using GameSessionRef = shared_ptr<class GameSession>;
-using PlayerRef = shared_ptr<class Player>;
+//using std::shared_ptr<GameSession> = shared_ptr<class GameSession>;
+//using std::shared_ptr<Player> = shared_ptr<class Player>;

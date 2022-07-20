@@ -1,5 +1,5 @@
 #pragma once
-#include "IocpCore.h"
+#include "IocpService.h"
 #include "IocpEvent.h"
 #include "NetAddress.h"
 #include "RecvBuffer.h"
@@ -12,12 +12,12 @@ class Service;
 	Session
 ---------------*/
 
-class Session : public IocpObject
+class Session : public ISession
 {
 	friend class Listener;
-	friend class IocpCore;
+	friend class IocpService;
 	friend class Service;
-	
+
 	enum
 	{
 		BUFFER_SIZE = 0x10000, // 64KB
@@ -28,7 +28,7 @@ public:
 	virtual ~Session();
 
 public:				/* 외부에서 사용 */
-	void						Send(SendBufferRef sendBuffer);
+	void						Send(std::shared_ptr<SendBuffer> sendBuffer);
 	bool						Connect();
 	void						Disconnect(const WCHAR* cause);
 
@@ -39,16 +39,19 @@ public:				/* 정보 관련 */
 	void						SetNetAddress(NetAddress address) { netAddress = address; }
 	NetAddress					GetNetAddress() { return netAddress; }
 	SOCKET						GetSocket() { return socket; }
-	SessionRef					GetSessionRef() { return static_pointer_cast<Session>(shared_from_this()); }
+	std::shared_ptr<Session>	GetSessionRef() 
+	{
+		return static_pointer_cast<Session>(shared_from_this());
+	}
 	bool						IsConnected() { return isConnected; }
 
 private:				/* 인터페이스 구현 */
-						
+
 	virtual HANDLE				GetHandle() override;
-	virtual void				Dispatch(class IocpEvent* iocpEvent, int32 numOfBytes = 0) override;
+	virtual void				DispatchEvent(class IocpEvent* iocpEvent, int32 numOfBytes = 0) override;
 
 private:
-						/* 전송 관련 */
+	/* 전송 관련 */
 	bool						RegisterConnect();
 	bool						RegisterDisconnect();
 	void						RegisterRecv();
@@ -62,12 +65,21 @@ private:
 	void						HandleError(int32 errorCode);
 
 protected:
-						/* 컨텐츠 코드에서 재정의 */
-	virtual void				OnConnected() { }
+	/* 컨텐츠 코드에서 재정의 */
+	virtual void				OnConnected()
+	{
+		PrintAddress();
+	}
 	virtual int32				OnRecv(BYTE* buffer, int32 len) { return len; }
 	virtual void				OnSend(int32 len) { }
 	virtual void				OnDisconnected() { }
-
+	virtual void				 PrintAddress() 
+	{
+		auto t = GetNetAddress();
+		auto ip = t.GetIpAddress();
+		auto port = t.GetPort();
+		wprintf(L"[port : %d][ ip : %ls] is connected \n", port, ip.c_str());
+	}
 private:
 	weak_ptr<Service>			service;
 	SOCKET						socket = INVALID_SOCKET;
@@ -77,15 +89,15 @@ private:
 private:
 	USE_LOCK;
 
-								/* 수신 관련 */
+	/* 수신 관련 */
 	RecvBuffer					recvBuffer;
 
-								/* 송신 관련 */
-	Queue<SendBufferRef>		sendQueue;
-	Atomic<bool>				isSendRegistered  = false;
+	/* 송신 관련 */
+	Queue<std::shared_ptr<SendBuffer>>		sendQueue;
+	Atomic<bool>				isSendRegistered = false;
 
 private:
-								/* IocpEvent 재사용 */
+	/* IocpEvent 재사용 */
 	ConnectEvent				connectEvent;
 	DisconnectEvent				disconnectEvent;
 	RecvEvent					recvEvent;
@@ -109,11 +121,13 @@ public:
 	PacketSession();
 	virtual ~PacketSession();
 
-	PacketSessionRef	GetPacketSessionRef() 
-	{ return static_pointer_cast<PacketSession>(shared_from_this()); }
+	std::shared_ptr<PacketSession>	GetPacketSessionRef()
+	{
+		return static_pointer_cast<PacketSession>(shared_from_this());
+	}
 
 protected:
 	virtual int32		OnRecv(BYTE* buffer, int32 len) sealed;
-	virtual void		OnRecvPacket(BYTE* buffer, int32 len) =0;
-	
+	virtual void		OnRecvPacket(BYTE* buffer, int32 len) = 0;
+
 };

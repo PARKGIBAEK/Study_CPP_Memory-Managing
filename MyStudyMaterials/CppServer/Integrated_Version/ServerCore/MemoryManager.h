@@ -27,7 +27,7 @@ public:
 	void	Release(void* ptr);
 
 private:
-	vector<MemoryPool*> pools; //할당된 모든 메모리를 해제하기 위해 메모리 참조를 모두 보관
+	std::vector<MemoryPool*> pools; //할당된 모든 메모리를 해제하기 위해 메모리 참조를 모두 보관
 
 	// 할당할 메모리 크기에 맞는 메모리 풀을 빠르게 찾기 위한 테이블(생성자 참고)
 	MemoryPool* poolTable[MAX_ALLOC_SIZE + 1];
@@ -72,13 +72,13 @@ void XDelete(T* _obj)
 
 
 template<typename T, typename... Args>
-std::shared_ptr<T> MakeShared(Args&&... args)
+std::shared_ptr<T> MakeShared(Args&&... _args)
 {
 	// shared_ptr로 반환해 주기
-	return std::shared_ptr<T>{ XNew<T>(forward<Args>(args)...),
+	return std::shared_ptr<T>{ XNew<T>(forward<Args>(_args)...),
 								XDelete<T> };
 
 	// 이걸로하면 오류 남
-	//return std::make_shared<Type>( XNew<Type>(forward<Args>(args)...), XDelete<Type> );
+	//return std::make_shared<Type>( XNew<Type>(forward<Args>(_args)...), XDelete<Type> );
 }
 #endif

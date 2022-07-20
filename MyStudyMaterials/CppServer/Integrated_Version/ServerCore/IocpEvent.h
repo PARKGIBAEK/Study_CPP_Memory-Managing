@@ -28,8 +28,8 @@ public:
 	/* onwer pointer를 들고있는 이유
 	- GetQueuedCompletionStatus함수에서 CompletionKey로 IocpObject를 꺼내서 무언가를 하려고 할 때
 	  해당 Session이 소멸해버렸다면 잘못된 동작을 하게 될 것이다.
-	  따라서 owner 포인터가 유효한지 검증한 뒤 Event를 처리하는 방식을 채용할 목적으로 owner pointer 사용.*/
-	IocpObjectRef	owner;
+	  따라서 ownerSession 포인터가 유효한지 검증한 뒤 Event를 처리하는 방식을 채용할 목적으로 ownerSession pointer 사용.*/
+	std::shared_ptr<ISession>	ownerSession;
 };
 
 /*----------------
@@ -62,9 +62,6 @@ class AcceptEvent : public IocpEvent
 {
 public:
 	AcceptEvent() : IocpEvent(EventType::Accept) { }
-
-public:
-	SessionRef	ownerSession = nullptr;
 };
 
 
@@ -88,6 +85,6 @@ class SendEvent : public IocpEvent
 public:
 	SendEvent() : IocpEvent(EventType::Send) { }
 	 
-	//Vector<SendBufferRef> sendBuffers;
-	Vector<SendBufferRef> sendBuffers;
+	//Vector<std::shared_ptr<SendBuffer>> sendBuffers;
+	Vector<std::shared_ptr<SendBuffer>> sendBuffers;
 };

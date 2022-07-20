@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "MemoryManager.h"
 #include "MemoryPool.h"
-
+#include "CoreGlobal.h"
 /*-------------
 	MemoryManager
 ---------------*/
@@ -69,6 +69,9 @@ MemoryManager::~MemoryManager()
 
 void* MemoryManager::Allocate(int32 size)
 {
+	//G_CoreGlobal = new CoreGlobal();
+
+	static CoreGlobal init;
 	MemoryHeader* header = nullptr;
 	const int32 allocSize = size + sizeof(MemoryHeader);// 메모리 헤더를 붙이기 위해 할당 사이즈를 보다 크게 가져감
 

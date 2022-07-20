@@ -5,17 +5,17 @@
 
 shared_ptr<Room> GRoom = std::make_shared<Room>();
 
-void Room::Enter(PlayerRef player)
+void Room::Enter(std::shared_ptr<Player> player)
 {
 	_players[player->playerId] = player;
 }
 
-void Room::Leave(PlayerRef player)
+void Room::Leave(std::shared_ptr<Player> player)
 {
 	_players.erase(player->playerId);
 }
 
-void Room::Broadcast(SendBufferRef sendBuffer)
+void Room::Broadcast(std::shared_ptr<SendBuffer> sendBuffer)
 {
 	for (auto& p : _players)
 	{

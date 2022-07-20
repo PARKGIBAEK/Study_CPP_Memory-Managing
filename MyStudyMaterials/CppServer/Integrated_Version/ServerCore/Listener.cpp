@@ -21,7 +21,7 @@ Listener::~Listener()
 	}
 }
 
-bool Listener::StartAccept(ServerServiceRef _service)
+bool Listener::StartAccept(std::shared_ptr<ServerService>_service)
 {
 	ownerService = _service;
 	if (_service == nullptr)
@@ -54,7 +54,7 @@ bool Listener::StartAccept(ServerServiceRef _service)
 		// IOCP 사용을 위한 OVERLAPPED 구조체를 상속받은 AcceptEvent를 MaxSessionCount만큼 미리 등록해두기
 		AcceptEvent* acceptEvent = XNew<AcceptEvent>();
 
-		acceptEvent->owner = shared_from_this();
+		acceptEvent->ownerSession = shared_from_this();
 		acceptEvents.push_back(acceptEvent);
 		RegisterAccept(acceptEvent);
 	}
@@ -73,7 +73,7 @@ HANDLE Listener::GetHandle()
 }
 
 // 사용 안함
-void Listener::Dispatch(IocpEvent* _iocpEvent, int32 _numOfBytes)
+void Listener::DispatchEvent(IocpEvent* _iocpEvent, int32 _numOfBytes)
 {
 	ASSERT_CRASH(_iocpEvent->eventType == EventType::Accept);
 	AcceptEvent* acceptEvent = static_cast<AcceptEvent*>(_iocpEvent);
@@ -82,7 +82,7 @@ void Listener::Dispatch(IocpEvent* _iocpEvent, int32 _numOfBytes)
 
 void Listener::RegisterAccept(AcceptEvent* _acceptEvent)
 {
-	SessionRef session = ownerService->CreateSession(); // Register IOCP
+	std::shared_ptr<Session> session = ownerService->CreateSession(); // Register IOCP
 
 	_acceptEvent->Init();// OVERLAPPED 구조체 초기화
 	_acceptEvent->ownerSession = session;
@@ -112,7 +112,8 @@ void Listener::RegisterAccept(AcceptEvent* _acceptEvent)
 // 사용 안함
 void Listener::ProcessAccept(AcceptEvent* _acceptEvent)
 {
-	SessionRef session = _acceptEvent->ownerSession;
+	std::shared_ptr<Session> session = 
+		static_pointer_cast<Session>(_acceptEvent->ownerSession);
 	// ListenSocket의 특성을 ClientSocket에 그대로 적용하기
 	if (false == SocketUtils::SyncSocketContext(session->GetSocket(), listenSocket))
 	{

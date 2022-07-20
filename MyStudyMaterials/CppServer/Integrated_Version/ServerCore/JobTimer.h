@@ -2,13 +2,13 @@
 
 struct JobData
 {
-	JobData(std::weak_ptr<JobQueue> owner, JobRef job) : owner(owner), job(job)
+	JobData(std::weak_ptr<JobQueue> owner, std::shared_ptr<Job> job) : owner(owner), job(job)
 	{
 		
 	}
 
-	std::weak_ptr<JobQueue>	owner;// Job을 실행해야할 JobQueue
-	JobRef				job;
+	std::weak_ptr<JobQueue>		owner;// Job을 실행해야할 JobQueue
+	std::shared_ptr<Job>		job;
 };
 
 struct TimerItem
@@ -35,7 +35,7 @@ class JobTimer
 {
 public:
 	/* Priority_Queue에 Job을 executeTick기준으로 넣기*/
-	void			Reserve(uint64 tickAfter, std::weak_ptr<JobQueue> owner, JobRef job);
+	void			Reserve(uint64 tickAfter, std::weak_ptr<JobQueue> owner, std::shared_ptr<Job> job);
 	// Job 실행 시각이 지났으면 owner(JobQueue)에게 전달
 	void			Distribute(uint64 now);
 

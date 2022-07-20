@@ -14,9 +14,9 @@ int main()
 
 	this_thread::sleep_for(1s);
 
-	ClientServiceRef service = MakeShared<ClientService>(
+	std::shared_ptr<ClientService> service = MakeShared<ClientService>(
 		NetAddress(L"127.0.0.1", 7777),
-		MakeShared<IocpCore>(),
+		MakeShared<IocpService>(),
 		MakeShared<ServerSession>, // TODO : SessionManager 등
 		500);
 

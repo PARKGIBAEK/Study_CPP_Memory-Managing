@@ -12,9 +12,9 @@ public:
 	GlobalQueue();
 	~GlobalQueue();
 
-	void					Push(JobQueueRef jobQueue);
-	JobQueueRef				Pop();
+	void					Push(std::shared_ptr<JobQueue> jobQueue);
+	std::shared_ptr<JobQueue> 				Pop();
 
 private: 
-	LockQueue<JobQueueRef> _jobQueues;
+	LockQueue<std::shared_ptr<JobQueue> > _jobQueues;
 };

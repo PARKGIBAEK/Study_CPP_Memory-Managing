@@ -1,7 +1,6 @@
 ﻿#include "pch.h"
 #include "ThreadManager.h"
-//#include "CoreGlobal.h"
-#include "CoreGlobal.cpp"
+#include "CoreGlobal.h"
 #include "Service.h"
 #include "Session.h"
 #include "GameSession.h"
@@ -26,7 +25,7 @@ enum
 
 //GameSessionManager GSessionManager;
 //shared_ptr<Room> GRoom = make_shared<Room>();
-void DoWorkerJob(ServerServiceRef& service)
+void DoWorkerJob(std::shared_ptr<ServerService>& service)
 {
 	while (true)
 	{
@@ -52,6 +51,7 @@ int main()
 	dbSync.Synchronize(L"GameDB.xml");
 
 	// DB Test Code
+	/*
 	{
 		WCHAR name[] = L"Test";
 
@@ -84,12 +84,12 @@ int main()
 				L"ID[%d] Gold[%d] Name[%s]\n", id, gold, name);
 		}
 	}
-
+	*/
 	ClientPacketHandler::Init();
 
-	ServerServiceRef service = MakeShared<ServerService>(
+	std::shared_ptr<ServerService>service = MakeShared<ServerService>(
 		NetAddress(L"127.0.0.1", 7777),
-		MakeShared<IocpCore>(),
+		MakeShared<IocpService>(),
 		MakeShared<GameSession>, // TODO : SessionManager 등
 		100);
 

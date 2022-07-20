@@ -81,7 +81,7 @@
     <ClInclude Include="SocketUtils.h">
       <Filter>Network</Filter>
     </ClInclude>
-    <ClInclude Include="IocpCore.h">
+    <ClInclude Include="IocpService.h">
       <Filter>Network</Filter>
     </ClInclude>
     <ClInclude Include="IocpEvent.h">
@@ -200,7 +200,7 @@
     <ClCompile Include="SocketUtils.cpp">
       <Filter>Network</Filter>
     </ClCompile>
-    <ClCompile Include="IocpCore.cpp">
+    <ClCompile Include="IocpService.cpp">
       <Filter>Network</Filter>
     </ClCompile>
     <ClCompile Include="IocpEvent.cpp">

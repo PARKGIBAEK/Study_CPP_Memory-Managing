@@ -19,7 +19,7 @@ public:
 
 	virtual void OnRecvPacket(BYTE* buffer, int32 len) override
 	{
-		PacketSessionRef session = GetPacketSessionRef();
+		std::shared_ptr<PacketSession> session = GetPacketSessionRef();
 		PacketHeader* header = reinterpret_cast<PacketHeader*>(buffer);
 
 		// TODO : packetId 대역 체크
@@ -28,11 +28,11 @@ public:
 
 	virtual void OnSend(int32 len) override
 	{
-		//cout << "OnSend Len = " << len << endl;
+		cout << "OnSend Len = " << len << endl;
 	}
 
 	virtual void OnDisconnected() override
 	{
-		//cout << "Disconnected" << endl;
+		cout << "Disconnected" << endl;
 	}
 };

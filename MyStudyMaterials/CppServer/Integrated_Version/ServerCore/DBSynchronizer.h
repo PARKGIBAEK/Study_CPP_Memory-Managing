@@ -6,6 +6,15 @@
 	DBSynchronizer
 ---------------------*/
 
+using Table = DBModel::Table;
+using Column = DBModel::Column;
+using Procedure = DBModel::Procedure;
+using Index = DBModel::Index;
+using IndexType = DBModel::IndexType;
+using Param = DBModel::Param;
+using DataType = DBModel::DataType;
+using Helpers = DBModel::Helpers;
+
 class DBSynchronizer
 {
 	enum
@@ -37,14 +46,7 @@ class DBSynchronizer
 		Length = 1 << 4,
 	};
 
-	using Table = DBModel::Table;
-	using Column = DBModel::Column;
-	using Procedure = DBModel::Procedure;
-	using Index = DBModel::Index;
-	using IndexType = DBModel::IndexType;
-	using Param = DBModel::Param;
-	using DataType = DBModel::DataType;
-	using Helpers = DBModel::Helpers;
+	
 
 public:
 	DBSynchronizer(DBConnection& conn) : _dbConn(conn) { }
@@ -59,8 +61,8 @@ private:
 	bool		GatherDBStoredProcedures();
 
 	void		CompareDBModel();
-	void		CompareTables(DBModel::TableRef dbTable, DBModel::TableRef xmlTable);
-	void		CompareColumns(DBModel::TableRef dbTable, DBModel::ColumnRef dbColumn, DBModel::ColumnRef xmlColumn);
+	void		CompareTables(std::shared_ptr<Table> dbTable, std::shared_ptr<Table> xmlTable);
+	void		CompareColumns(std::shared_ptr<Table> dbTable, std::shared_ptr<Column> dbColumn, std::shared_ptr<Column> xmlColumn);
 	void		CompareStoredProcedures();
 
 	void		ExecuteUpdateQueries();
@@ -69,14 +71,14 @@ private:
 	DBConnection& _dbConn;
 
 	// XML상의 Table & Stored Procedure 정보
-	Vector<DBModel::TableRef>			_xmlTables;
-	Vector<DBModel::ProcedureRef>		_xmlProcedures;
+	Vector<std::shared_ptr<Table>>			_xmlTables;
+	Vector<std::shared_ptr<Procedure>>		_xmlProcedures;
 	// 삭제되어야 할 항목
 	Set<String>							_xmlRemovedTables;
 
 	// DB의 현재 Table & Stored Procedure 정보
-	Vector<DBModel::TableRef>			_dbTables;
-	Vector<DBModel::ProcedureRef>		_dbProcedures;
+	Vector<std::shared_ptr<Table>>			_dbTables;
+	Vector<std::shared_ptr<Procedure>>		_dbProcedures;
 
 private:
 	Set<String>							_dependentIndexes;

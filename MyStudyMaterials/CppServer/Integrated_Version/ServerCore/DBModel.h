@@ -4,10 +4,6 @@
 
 NAMESPACE_BEGIN(DBModel)
 
-USING_SHARED_PTR(Column);
-USING_SHARED_PTR(Index);
-USING_SHARED_PTR(Table);
-USING_SHARED_PTR(Procedure);
 
 /*-------------
 	DataType
@@ -80,7 +76,7 @@ public:
 	IndexType			_type = IndexType::NonClustered;
 	bool				_primaryKey = false;
 	bool				_uniqueConstraint = false;
-	Vector<ColumnRef>	_columns;
+	Vector<std::shared_ptr<Column>>	_columns;
 };
 
 /*-----------
@@ -90,13 +86,13 @@ public:
 class Table
 {
 public:
-	ColumnRef			FindColumn(const String& columnName);
+	std::shared_ptr<Column>			FindColumn(const String& columnName);
 
 public:
 	int32				_objectId = 0; // DB
 	String				_name;
-	Vector<ColumnRef>	_columns;
-	Vector<IndexRef>	_indexes;
+	Vector<std::shared_ptr<Column>>	_columns;
+	Vector<std::shared_ptr<Index>>	_indexes;
 };
 
 /*----------------
