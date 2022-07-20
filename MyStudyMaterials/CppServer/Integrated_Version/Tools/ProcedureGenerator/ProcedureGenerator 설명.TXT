@@ -1,0 +1,7 @@
+※ ProcedureGenerator 설명
+
+1) DB형식이 적혀있는 XML파일을 파싱
+
+2) Template폴더에 Procedure.h파일을 템플릿으로 사용하여
+    Stored Procedure Call을 수행하는데 필요한 C++ 소스파일을 생성한다.
+   

@@ -68,6 +68,7 @@ public:
 
 	template<typename Other>
 	STL_Allocator(const STL_Allocator<Other>&) { }
+
 	// STL_Container에서 메모리 할당을 위해 내부적으로 호출하게될 함수
 	T* allocate(size_t count)
 	{

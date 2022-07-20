@@ -24,7 +24,7 @@ public:
 	static void  DestroyTLS();
 
 	static void DoGlobalQueueWork();
-	static void DistributeReservedJobs();
+	static void CheckJobTimer();
 
 private:
 	Mutex			mtxLock;

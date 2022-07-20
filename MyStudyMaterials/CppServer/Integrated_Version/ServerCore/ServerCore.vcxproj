@@ -170,7 +170,6 @@
     <ClInclude Include="Allocator.h" />
     <ClInclude Include="BufferReader.h" />
     <ClInclude Include="BufferWriter.h" />
-    <ClInclude Include="ConcurrentStack.h" />
     <ClInclude Include="ConsoleLog.h" />
     <ClInclude Include="Container.h" />
     <ClInclude Include="CoreGlobal.h" />
@@ -189,7 +188,6 @@
     <ClInclude Include="IocpEvent.h" />
     <ClInclude Include="Job.h" />
     <ClInclude Include="JobTimer.h" />
-    <ClInclude Include="LockFreeQueue.h" />
     <ClInclude Include="LockFreeStack.h" />
     <ClInclude Include="LockQueue.h" />
     <ClInclude Include="JobQueue.h" />
@@ -218,7 +216,6 @@
     <ClCompile Include="Allocator.cpp" />
     <ClCompile Include="BufferReader.cpp" />
     <ClCompile Include="BufferWriter.cpp" />
-    <ClCompile Include="ConcurrentStack.cpp" />
     <ClCompile Include="ConsoleLog.cpp" />
     <ClCompile Include="CoreGlobal.cpp" />
     <ClCompile Include="Core.cpp" />
@@ -235,7 +232,6 @@
     <ClCompile Include="IocpEvent.cpp" />
     <ClCompile Include="Job.cpp" />
     <ClCompile Include="JobTimer.cpp" />
-    <ClCompile Include="LockFreeQueue.cpp" />
     <ClCompile Include="LockFreeStack.cpp" />
     <ClCompile Include="LockQueue.cpp" />
     <ClCompile Include="JobQueue.cpp" />

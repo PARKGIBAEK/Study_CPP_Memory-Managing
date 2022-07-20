@@ -3,7 +3,7 @@
 #include "Player.h"
 #include "GameSession.h"
 
-shared_ptr<Room> GRoom = make_shared<Room>();
+shared_ptr<Room> GRoom = std::make_shared<Room>();
 
 void Room::Enter(PlayerRef player)
 {

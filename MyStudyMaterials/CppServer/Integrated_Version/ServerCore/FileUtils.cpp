@@ -32,9 +32,14 @@ String FileUtils::Convert(string str)
 	if (srcLen == 0)
 		return ret;
 
-	const int32 retLen = ::MultiByteToWideChar(CP_UTF8, 0, reinterpret_cast<char*>(&str[0]), srcLen, NULL, 0);
+	// str길이 확인
+	const int32 retLen = ::MultiByteToWideChar(CP_UTF8, 0, 
+		reinterpret_cast<char*>(&str[0]), srcLen, NULL, 0);
 	ret.resize(retLen);
-	::MultiByteToWideChar(CP_UTF8, 0, reinterpret_cast<char*>(&str[0]), srcLen, &ret[0], retLen);
+
+	// str을 wide string으로 변환
+	::MultiByteToWideChar(CP_UTF8, 0, 
+		reinterpret_cast<char*>(&str[0]), srcLen, &ret[0], retLen);
 
 	return ret;
 }

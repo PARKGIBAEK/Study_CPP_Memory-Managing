@@ -24,7 +24,7 @@ namespace rapidxml
     public:
         
         //! Loads file into the memory. Data will be automatically destroyed by the destructor.
-        //! \param filename Filename to load.
+        //! \param filename : Filename to load.
         file(const char *filename)
         {
             using namespace std;
@@ -47,7 +47,7 @@ namespace rapidxml
         }
 
         //! Loads file into the memory. Data will be automatically destroyed by the destructor
-        //! \param stream Stream to load from
+        //! \param stream : Stream to load from
         file(std::basic_istream<Ch> &stream)
         {
             using namespace std;

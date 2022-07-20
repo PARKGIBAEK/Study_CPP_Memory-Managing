@@ -1,0 +1,5 @@
+※ PacketGenerator 설명
+
+1) 소켓 통신에 사용되는 공용 패킷관련 proto buf파일을 파싱
+
+2) 

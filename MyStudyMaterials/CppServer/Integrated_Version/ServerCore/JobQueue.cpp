@@ -14,12 +14,12 @@ void JobQueue::Push(JobRef job, bool pushOnly)
 	// 첫번째 Job을 넣은 쓰레드가 실행까지 담당
 	if (prevCount == 0)
 	{
-		/*
-		* tls_CurrentJobQueue가 nullptr이 아닌 경우는 Job::Execute()에서
-		  JobQueue::Push가 발생한 경우이다.
+		/* tls_CurrentJobQueue가 nullptr이 아니라면 로직 오류(다른 Thread에서 간섭)발생.
+		  JobQueue::Execute()가 정상적으로 반환했다면 
+		  tls_CurrentJobQueue는 nullptr이어야 한다.
 		
-		* pushOnly==true Job실행하지 않고 GlobalQueue에 넣어서 다른 쓰레드가 가져갈 수 있게 함
-		*/ 
+		* pushOnly == true이면
+		  Job실행하지 않고 GlobalQueue에 넣어서 다른 쓰레드가 가져갈 수 있게 함*/ 
 		if (tls_CurrentJobQueue == nullptr && pushOnly == false)
 		{
 			Execute();
@@ -32,7 +32,6 @@ void JobQueue::Push(JobRef job, bool pushOnly)
 	}
 }
 
-// 1) 일감이 너~무 몰리면?
 void JobQueue::Execute()
 {
 	tls_CurrentJobQueue = this;

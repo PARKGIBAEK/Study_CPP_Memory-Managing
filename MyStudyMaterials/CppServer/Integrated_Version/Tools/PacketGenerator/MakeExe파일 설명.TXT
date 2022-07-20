@@ -1,0 +1,31 @@
+※MakeExe.bat 파일 명령어 설명
+
+- 명령어  pushd %~dp0 
+   :   스크립트 위치로 이동하기 임
+
+- 명령어  pyinstaller --onefile 파일명
+   :   pyinstaller을 사용하여 build폴더와 dist폴더를 생성하지 않고 
+       깔끔하게 exe파일만 생성할 수 있음.
+       배포하기 용이함.
+       --onefile 뒤에는 main함수가 들어있는 소스 파일명을 인자로 전달해주어야 한다.
+
+- 명령어  MOVE .\dist\PacketGenerator.exe .\GenPackets.exe
+   :   MOVE는 파일/경로 이동시키기
+       .\는 현재 경로를 의미
+       .\dist\PacketGenerator.exe 경로에 있는 파일을 .\GenPackets.exe 경로로 이동(파일명도 변경)
+
+- 명령어  @RD /S /Q .\build
+   : @RD는 경로 삭제를 의미
+     /S 옵션은 하위 경로(sub-directory)에 있는 파일까지 모두 삭제
+     /Q 옵션은 파일 삭제 시 별 문제가 없으면 묻지 않음(조용 모드)
+
+
+- 명령어  DEL /S /F /Q .\PacketGenerator.spec
+   : DEL는 파일 하나 삭제하기
+     /S 옵션은 위와 같음
+     /F 읽기 전용 파일을 삭제함
+     /Q 옵션은 조용 모드
+
+- 명령어  PAUSE
+   : 배치파일 실행 후 종료 시키지 않음
+     실행 관련 메시지를 확인하기 위한 용도

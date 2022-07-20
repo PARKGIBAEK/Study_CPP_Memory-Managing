@@ -11,15 +11,20 @@ public:
 	DBConnectionPool();
 	~DBConnectionPool();
 
-	bool					Connect(int32 connectionCount, const WCHAR* connectionString);
+	// Create the DB Connection as many as connectionCount
+	bool					Connect(int32 connectionCount, 
+									const WCHAR* connectionString);
 	void					Clear();
 
+	// get remaining DB connection in 'connection pool'
 	DBConnection*			Pop();
+	// return the DB connection to the 'connection pool'
 	void					Push(DBConnection* connection);
 
 private:
 	USE_LOCK;
+	// SQL handle for environment
 	SQLHENV					_environment = SQL_NULL_HANDLE;
-	Vector<DBConnection*>	_connections;
+	Vector<DBConnection*>	_connectionPool;
 };
 

@@ -1,0 +1,5 @@
+../../GameDB.xml경로의 파일(DB 형식을 파싱하여
+DB 를 Sync할 Procedure와 관련된 C++ 소스코드를 생성한다.
+
+생성된 소스코드를 포함하는 파일명은 'GenProcedures.h'이며
+../../GameServer 경로에

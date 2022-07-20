@@ -30,12 +30,12 @@
     <Folder Include="Templates\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Templates\GenProcedures.h">
+    <None Include="Templates\GenProcedures.h">
       <SubType>Code</SubType>
-    </Content>
-    <Content Include="Templates\Procedure.h">
+    </None>
+    <None Include="Templates\Procedure.h">
       <SubType>Code</SubType>
-    </Content>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

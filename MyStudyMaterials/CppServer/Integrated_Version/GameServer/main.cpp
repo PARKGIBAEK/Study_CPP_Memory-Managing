@@ -1,9 +1,10 @@
 ﻿#include "pch.h"
 #include "ThreadManager.h"
+//#include "CoreGlobal.h"
+#include "CoreGlobal.cpp"
 #include "Service.h"
 #include "Session.h"
 #include "GameSession.h"
-#include "GameSessionManager.h"
 #include "BufferWriter.h"
 #include "ClientPacketHandler.h"
 #include <tchar.h>
@@ -16,12 +17,15 @@
 #include "XmlParser.h"
 #include "DBSynchronizer.h"
 #include "GenProcedures.h"
+#include "GameSessionManager.h"
 
 enum
 {
 	WORKER_TICK = 64
 };
 
+//GameSessionManager GSessionManager;
+//shared_ptr<Room> GRoom = make_shared<Room>();
 void DoWorkerJob(ServerServiceRef& service)
 {
 	while (true)
@@ -29,12 +33,12 @@ void DoWorkerJob(ServerServiceRef& service)
 		tls_EndTickCount = ::GetTickCount64() + WORKER_TICK;
 
 		// 네트워크 입출력 처리 -> 인게임 로직까지 (패킷 핸들러에 의해)
-		service->GetIocpCore()->Dispatch(10);
+		service->GetIocpCore()->Dispatch(10); // GQCS에서 최대 10ms까지 기다림
 
 		// 예약된 일감 처리
-		ThreadManager::DistributeReservedJobs();
+		ThreadManager::CheckJobTimer();
 
-		// 글로벌 큐
+		// GlobalQueue
 		ThreadManager::DoGlobalQueueWork();
 	}
 }
@@ -47,8 +51,9 @@ int main()
 	DBSynchronizer dbSync(*dbConn);
 	dbSync.Synchronize(L"GameDB.xml");
 
+	// DB Test Code
 	{
-		WCHAR name[] = L"Rookiss";
+		WCHAR name[] = L"Test";
 
 		SP::InsertGold insertGold(*dbConn);
 		insertGold.In_Gold(100);

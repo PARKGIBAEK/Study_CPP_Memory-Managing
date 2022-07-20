@@ -11,6 +11,7 @@
 class DeadLockProfiler
 {
 public:
+
 	void PushLock(const char* _name);
 	void PopLock(const char* _name);
 	void CheckCycle();
@@ -23,7 +24,7 @@ private:
 	unordered_map<int32, const char*>	idToName;
 	map<int32, set<int32>>				lockHistory;
 
-	Mutex mtxLock;
+	std::mutex mtxLock{};
 
 private:
 	vector<int32>	discoveredOrder; // 노드가 발견된 순서를 기록하는 배열

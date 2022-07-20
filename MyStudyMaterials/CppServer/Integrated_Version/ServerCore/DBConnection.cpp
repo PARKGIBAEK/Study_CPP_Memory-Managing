@@ -11,9 +11,9 @@ bool DBConnection::Connect(SQLHENV henv, const WCHAR* connectionString)
 		return false;
 
 	WCHAR stringBuffer[MAX_PATH] = { 0 };
-	::wcscpy_s(stringBuffer, connectionString);
+	::wcscpy_s(stringBuffer, connectionString);// connectionString복사
 
-	WCHAR resultString[MAX_PATH] = { 0 };
+	WCHAR resultString[MAX_PATH] = { 0 };// 결과 저장할 버퍼
 	SQLSMALLINT resultStringLen = 0;
 
 	SQLRETURN ret = ::SQLDriverConnectW(
@@ -26,7 +26,7 @@ bool DBConnection::Connect(SQLHENV henv, const WCHAR* connectionString)
 		OUT & resultStringLen,
 		SQL_DRIVER_NOPROMPT
 	);
-
+	// SQL Statement 핸들 할당
 	if (::SQLAllocHandle(SQL_HANDLE_STMT, _connection, &_statement) != SQL_SUCCESS)
 		return false;
 
@@ -36,7 +36,7 @@ bool DBConnection::Connect(SQLHENV henv, const WCHAR* connectionString)
 void DBConnection::Clear()
 {
 	if (_connection != SQL_NULL_HANDLE)
-	{
+	{	// DB Connection 핸들 닫기
 		::SQLFreeHandle(SQL_HANDLE_DBC, _connection);
 		_connection = SQL_NULL_HANDLE;
 	}
@@ -50,6 +50,7 @@ void DBConnection::Clear()
 
 bool DBConnection::Execute(const WCHAR* query)
 {
+	// statement 핸들을 통해 쿼리를 넘겨준다
 	SQLRETURN ret = ::SQLExecDirectW(_statement, (SQLWCHAR*)query, SQL_NTSL);
 	if (ret == SQL_SUCCESS || ret == SQL_SUCCESS_WITH_INFO)
 		return true;
@@ -214,7 +215,30 @@ bool DBConnection::BindCol(int32 columnIndex, BYTE* bin, int32 size, SQLLEN* ind
 
 bool DBConnection::BindParam(SQLUSMALLINT paramIndex, SQLSMALLINT cType, SQLSMALLINT sqlType, SQLULEN len, SQLPOINTER ptr, SQLLEN* index)
 {
-	SQLRETURN ret = ::SQLBindParameter(_statement, paramIndex, SQL_PARAM_INPUT, cType, sqlType, len, 0, ptr, 0, index);
+	/*
+	* SQLHSTMT        StatementHandle : statement핸들,  
+      SQLUSMALLINT    ParameterNumber : 인자 순서(1번부터 시작),  
+      SQLSMALLINT     InputOutputType : 인자의 종류 ,  
+      SQLSMALLINT     ValueType : C데이터 타입,  
+      SQLSMALLINT     ParameterType : SQL 데이터 타입,  
+      SQLULEN         ColumnSize : 컬럼 or 표현식 사이즈,  
+      SQLSMALLINT     DecimalDigits : ,  
+      SQLPOINTER      ParameterValuePtr : 인자의 데이터 버퍼에 대한 포인터,  
+      SQLLEN          BufferLength : 위 버퍼 길이,  
+      SQLLEN *        StrLen_or_IndPtr) : ;  
+	* paramIndex : 몇번째 인자를 선택할 것인지
+	* SQL_PARAM_INPUT : 인자 입력 옵션 선택
+	* cType : SQL의 특정 자료형과 매칭되는 C언어의 타입
+	* sqlType : cType과 매칭되는 SQL의 자료형
+	* len : sqlType의 크기
+	* ptr : 데이터가 있는 곳의 메모리 주소
+	* index : 가변길이일 경우 마지막 정보를 넘겨 줌(가변길이가 아닌 경우에는 0을 담은 정수 포인터 전달)
+	*/
+	// statement핸들에 인자를 바인드 시키기
+	SQLRETURN ret = ::SQLBindParameter(
+		_statement, paramIndex, SQL_PARAM_INPUT, 
+		cType, sqlType, len, 0, ptr, 0, index);
+
 	if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO)
 	{
 		HandleError(ret);
@@ -226,7 +250,8 @@ bool DBConnection::BindParam(SQLUSMALLINT paramIndex, SQLSMALLINT cType, SQLSMAL
 
 bool DBConnection::BindCol(SQLUSMALLINT columnIndex, SQLSMALLINT cType, SQLULEN len, SQLPOINTER value, SQLLEN* index)
 {
-	SQLRETURN ret = ::SQLBindCol(_statement, columnIndex, cType, value, len, index);
+	SQLRETURN ret = ::SQLBindCol(_statement, columnIndex, cType, 
+		value, len, index);
 	if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO)
 	{
 		HandleError(ret);

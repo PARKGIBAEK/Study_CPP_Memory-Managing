@@ -184,7 +184,11 @@ bool XmlParser::ParseFromFile(const WCHAR* path, OUT XmlNode& root)
 		return false;
 
 	_document = MakeShared<XmlDocumentType>();
+	
+	// parse a zero-terminated string 
 	_document->parse<0>(reinterpret_cast<WCHAR*>(&_data[0]));
+
 	root = XmlNode(_document->first_node());
+
 	return true;
 }

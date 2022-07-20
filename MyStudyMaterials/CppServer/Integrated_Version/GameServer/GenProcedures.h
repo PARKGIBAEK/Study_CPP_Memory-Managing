@@ -12,8 +12,10 @@ namespace SP
     	InsertGold(DBConnection& conn) : DBBind(conn, L"{CALL dbo.spInsertGold(?,?,?)}") { }
     	void In_Gold(int32& v) { BindParam(0, v); };
     	void In_Gold(int32&& v) { _gold = std::move(v); BindParam(0, _gold); };
-    	template<int32 N> void In_Name(WCHAR(&v)[N]) { BindParam(1, v); };
-    	template<int32 N> void In_Name(const WCHAR(&v)[N]) { BindParam(1, v); };
+    	template<int32 N> 
+        void In_Name(WCHAR(&v)[N]) { BindParam(1, v); };
+    	template<int32 N> 
+        void In_Name(const WCHAR(&v)[N]) { BindParam(1, v); };
     	void In_Name(WCHAR* v, int32 count) { BindParam(1, v, count); };
     	void In_Name(const WCHAR* v, int32 count) { BindParam(1, v, count); };
     	void In_CreateDate(TIMESTAMP_STRUCT& v) { BindParam(2, v); };
@@ -38,7 +40,4 @@ namespace SP
     private:
     	int32 _gold = {};
     };
-
-
-     
 };

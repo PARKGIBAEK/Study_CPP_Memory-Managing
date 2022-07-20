@@ -42,8 +42,8 @@ public:
 		node.externalCount = 1;//외부 참조 카운트 1로 생성
 
 		node.ptr->next = head;// head는 가장 top 노드
-		/*head == node.ptr->next 일 경우(다른 스레드의 간섭을 받지 않은 상황), head = node , true 반환,
-		  head != node.ptr->next 일 경우(다른 스레드의 간섭을 받은 상황), node.ptr->next = head , false 반환(루프 재 진입하게되고 이번에 간섭받지 않았다면 통과)*/
+		/*head == node.NodePtr->next 일 경우(다른 스레드의 간섭을 받지 않은 상황), head = node , true 반환,
+		  head != node.NodePtr->next 일 경우(다른 스레드의 간섭을 받은 상황), node.NodePtr->next = head , false 반환(루프 재 진입하게되고 이번에 간섭받지 않았다면 통과)*/
 		while (head.compare_exchange_weak(node.ptr->next, node) == false)
 		{
 		}
@@ -63,7 +63,7 @@ public:
 			if (ptr == nullptr)// 데이터 없을 시
 				return std::shared_ptr<T>();
 
-			// 소유권 획득 (head를 ptr->next로 변경한 Thread가 이김)
+			// 소유권 획득 (head를 NodePtr->next로 변경한 Thread가 이김)
 			if (head.compare_exchange_strong(oldHead, ptr->next))//처음부터 head와 oldHead가 같은 경우 : 아직 다른 스레드에서 stack에 손을 대지 않은 상황
 			{
 				std::shared_ptr<T> res;

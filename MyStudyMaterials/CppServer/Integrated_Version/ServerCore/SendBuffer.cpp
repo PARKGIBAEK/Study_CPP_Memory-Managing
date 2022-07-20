@@ -31,9 +31,10 @@ SendBufferChunk::SendBufferChunk()
 
 SendBufferChunk::~SendBufferChunk()
 {
+
 }
 
-void SendBufferChunk::Reset()
+void SendBufferChunk::ResetBuffer()
 {
 	isOpen = false;
 	usedSize = 0;
@@ -64,24 +65,24 @@ void SendBufferChunk::Close(uint32 _writeSize)
 				SendBufferManager
 -----------------------------------------------*/
 
-SendBufferRef SendBufferManager::Open(uint32 _size)
+SendBufferRef SendBufferManager::Open(uint32 _reqSize)
 {
 	if (tls_SendBufferChunk == nullptr)
 	{
 		tls_SendBufferChunk = SendBufferManager::Pop(); // WRITE_LOCK
-		tls_SendBufferChunk->Reset();
+		tls_SendBufferChunk->ResetBuffer();
 	}		
 
 	ASSERT_CRASH(tls_SendBufferChunk->IsOpen() == false);
 
-	// 다 썼으면 버리고 새거로 교체
-	if (tls_SendBufferChunk->FreeSize() < _size)
+	// 다 썼으면 버리고 새걸 교체
+	if (tls_SendBufferChunk->FreeSize() < _reqSize)
 	{
 		tls_SendBufferChunk = SendBufferManager::Pop(); // WRITE_LOCK
-		tls_SendBufferChunk->Reset();
+		tls_SendBufferChunk->ResetBuffer();
 	}
 
-	return tls_SendBufferChunk->Open(_size);
+	return tls_SendBufferChunk->Open(_reqSize);
 }
 
 SendBufferChunkRef SendBufferManager::Pop()
@@ -96,7 +97,8 @@ SendBufferChunkRef SendBufferManager::Pop()
 		}
 	}
 
-	/*PushGlobal은 SendBufferChunk를 SendBufferManager::sendBufferChunks에 다시 반환(push_back)*/
+	/*PushGlobal은 shared_ptr의 소멸자
+	- SendBufferChunk를 SendBufferManager::sendBufferChunks에 다시 반환(push_back)*/
 	return SendBufferChunkRef(XNew<SendBufferChunk>(), PushGlobal); 
 }
 
@@ -108,6 +110,6 @@ void SendBufferManager::Push(SendBufferChunkRef _buffer)
 
 void SendBufferManager::PushGlobal(SendBufferChunk* _buffer)
 {
-	cout << "Log : PushGlobal SendBufferChunkRef" << endl;
+	//cout << "Log : PushGlobal SendBufferChunkRef" << endl;
 	GSendBufferManager->Push(SendBufferChunkRef(_buffer, PushGlobal));
 }

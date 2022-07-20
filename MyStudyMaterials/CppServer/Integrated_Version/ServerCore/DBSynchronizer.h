@@ -37,6 +37,15 @@ class DBSynchronizer
 		Length = 1 << 4,
 	};
 
+	using Table = DBModel::Table;
+	using Column = DBModel::Column;
+	using Procedure = DBModel::Procedure;
+	using Index = DBModel::Index;
+	using IndexType = DBModel::IndexType;
+	using Param = DBModel::Param;
+	using DataType = DBModel::DataType;
+	using Helpers = DBModel::Helpers;
+
 public:
 	DBSynchronizer(DBConnection& conn) : _dbConn(conn) { }
 	~DBSynchronizer();
@@ -59,10 +68,13 @@ private:
 private:
 	DBConnection& _dbConn;
 
+	// XML상의 Table & Stored Procedure 정보
 	Vector<DBModel::TableRef>			_xmlTables;
 	Vector<DBModel::ProcedureRef>		_xmlProcedures;
+	// 삭제되어야 할 항목
 	Set<String>							_xmlRemovedTables;
 
+	// DB의 현재 Table & Stored Procedure 정보
 	Vector<DBModel::TableRef>			_dbTables;
 	Vector<DBModel::ProcedureRef>		_dbProcedures;
 

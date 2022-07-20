@@ -146,9 +146,9 @@ void Session::RegisterRecv()
 	wsaBuf.buf = reinterpret_cast<char*>(recvBuffer.WritePos());
 	wsaBuf.len = recvBuffer.FreeSize();
 
-	DWORD numOfBytes = 0;
+	DWORD bytesReceived = 0;
 	DWORD flags = 0;
-	if (SOCKET_ERROR == ::WSARecv(socket, &wsaBuf, 1, OUT &numOfBytes, 
+	if (SOCKET_ERROR == ::WSARecv(socket, &wsaBuf, 1, OUT &bytesReceived, 
 		OUT &flags, &recvEvent, nullptr))
 	{
 		int32 errorCode = ::WSAGetLastError();
@@ -185,9 +185,9 @@ void Session::RegisterSend()
 		}
 	}
 
-	// Scatter-Gather (흩어져 있는 데이터들을 모아서 한 방에 보낸다)
+	/* Gathering write(모아 보내기)*/
 	Vector<WSABUF> wsaBufs;
-	wsaBufs.reserve(sendEvent.sendBuffers.size());
+	wsaBufs.reserve(/*보낼 패킷 수*/sendEvent.sendBuffers.size());
 	for (SendBufferRef sendBuffer : sendEvent.sendBuffers)
 	{
 		WSABUF wsaBuf;
@@ -195,9 +195,11 @@ void Session::RegisterSend()
 		wsaBuf.len = static_cast<LONG>(sendBuffer->WriteSize());
 		wsaBufs.push_back(wsaBuf);
 	}
-
-	DWORD numOfBytes = 0;
-	if (SOCKET_ERROR == ::WSASend(socket, wsaBufs.data(), static_cast<DWORD>(wsaBufs.size()), OUT &numOfBytes, 0, &sendEvent, nullptr))
+	DWORD bytesTransferred = 0;
+	if (SOCKET_ERROR ==
+		::WSASend(socket, wsaBufs.data(), static_cast<DWORD>(wsaBufs.size()),
+			OUT &bytesTransferred, 0, &sendEvent, nullptr)
+		)
 	{
 		int32 errorCode = ::WSAGetLastError();
 		if (errorCode != WSA_IO_PENDING)
@@ -252,7 +254,8 @@ void Session::ProcessRecv(int32 numOfBytes)
 
 	int32 dataSize = recvBuffer.DataSize();
 	int32 processLen = OnRecv(recvBuffer.ReadPos(), dataSize); // 컨텐츠 코드에서 재정의
-	if (processLen < 0 || dataSize < processLen || recvBuffer.OnRead(processLen) == false)
+	if (processLen < 0 || dataSize < processLen ||
+		recvBuffer.OnRead(processLen) == false)
 	{
 		Disconnect(L"OnRead Overflow");
 		return;

@@ -57,7 +57,8 @@ private:
 class WriteLockGuard
 {
 public:
-	WriteLockGuard(Lock& _lock, const char* _name) : lock(_lock), name(_name) { _lock.WriteLock(_name); }
+	WriteLockGuard(Lock& _lock, const char* _name)
+		: lock(_lock), name(_name) { _lock.WriteLock(_name); }
 	~WriteLockGuard() { lock.WriteUnlock(name); }
 
 private:

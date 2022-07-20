@@ -1,14 +1,15 @@
-# C++ IOCP 채팅 서버 프로젝트
+# C++ IOCP 채팅 서버
 
 
+- 목적 :
 
-- 이 프로젝트의 목적 :
-
-  C++ MMORPG 게임 서버의 코어 라이브러리 중 기본적인 것들을 배우는 것입니다.
+  C++ MMORPG 게임 서버의 코어 라이브러리 중 기본적인 것들을 배우는 것.
 
 
-- Flow chart와 Class diagram은 draw.io에서 작성하였습니다.
+- 참고 자료 :  Flow chart, Class diagram( draw.io로 작성)
 
+- 기타 :  00 ~ 58은 유닛 테스트 용입니다. 
+            메인 프로젝트는 Integrated_Version입니다.
 
 ------
 
@@ -17,8 +18,6 @@
 
 
 ## 1. ServerCore(코어 라이브러리)
-
-
 
 ### Main
 
@@ -84,7 +83,7 @@
 
 ### XML ( xml Parser)
 
-
+- rapidxml 라이브러리
 
 
 
@@ -93,9 +92,14 @@
 - ClientPakcetHandler
 - GameSession
 - GameSessionManager
-- GameServer ( 메인 )
+- GameServer ( main )
 
 ## 3. DummyClient(더미 테스트 용)
 
 - ServerPacketHandler
 - DummyClient ( 메인 )
+
+## 외부 라이브러리
+
+- Protobuf
+- RapidXML(XML Parser)

@@ -73,6 +73,7 @@ void* Memory::Allocate(int32 size)
 	{
 		// 메모리 풀에서 꺼내온다
 		header = _poolTable[allocSize]->Pop();
+		auto t = _countof
 	}
 #endif	
 

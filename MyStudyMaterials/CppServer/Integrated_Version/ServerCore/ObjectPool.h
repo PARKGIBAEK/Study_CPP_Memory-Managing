@@ -21,34 +21,18 @@ template<typename Type>
 class ObjectPool
 {
 public:
-	// 호출할 Type 생성자에 맞는 인자를 전달해주는 것 잊지 말기
 	template<typename... Args>
 	static Type* Pop(Args&&... args)
 	{
-#ifdef _STOMP_ALLOCATOR
-		MemoryHeader* ptr = reinterpret_cast<MemoryHeader*>(
-			StompAllocator::AllocateMemory(s_allocSize));
-
-		Type* memory = static_cast<Type*>(
-			MemoryHeader::AttachHeader(ptr, s_allocSize));
-#else
-		// 메모리풀에서 메모리를 꺼내올 때 메모리 크기를 같이 전달해 준다
 		Type* memory = static_cast<Type*>(
 			MemoryHeader::AttachHeader(s_pool.Pop(), s_allocSize));
-#endif
-		// Type 생성자에 맞는 인자를 전달
-		new(memory)Type(std::forward<Args>(args)...); // placement new
+		new(memory) Type(std::forward<Args>(args)...); // placement new
 		return memory;
 	}
-	// 사용이 끝난 객체를 ObjectPool에 반납
 	static void Push(Type* obj)
 	{
-		obj->~Type();
-#ifdef _STOMP_ALLOCATOR
-		StompAllocator::ReleaseMemory(MemoryHeader::DetachHeader(obj));
-#else
+		obj->~Type(); // 소멸자 호출
 		s_pool.Push(MemoryHeader::DetachHeader(obj));
-#endif
 	}
 	
 	template<typename... Args>
@@ -59,8 +43,6 @@ public:
 	}
 
 private:
-	/* template class는 static 속성이 붙었다고해서 전역으로 단 하나만 존재할 수 있는 것이 아니라
-	 선언된 <Type>별로 각 하나씩 존재할 수 있다 */
 	static int32		s_allocSize;
 	static MemoryPool	s_pool;
 };

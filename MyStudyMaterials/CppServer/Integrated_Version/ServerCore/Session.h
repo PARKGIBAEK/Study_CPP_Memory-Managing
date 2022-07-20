@@ -52,7 +52,7 @@ private:
 	bool						RegisterConnect();
 	bool						RegisterDisconnect();
 	void						RegisterRecv();
-	void						RegisterSend();
+	void						RegisterSend();// Gathering write
 
 	void						ProcessConnect();
 	void						ProcessDisconnect();
@@ -109,7 +109,8 @@ public:
 	PacketSession();
 	virtual ~PacketSession();
 
-	PacketSessionRef	GetPacketSessionRef() { return static_pointer_cast<PacketSession>(shared_from_this()); }
+	PacketSessionRef	GetPacketSessionRef() 
+	{ return static_pointer_cast<PacketSession>(shared_from_this()); }
 
 protected:
 	virtual int32		OnRecv(BYTE* buffer, int32 len) sealed;

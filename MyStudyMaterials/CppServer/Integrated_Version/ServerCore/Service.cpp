@@ -15,6 +15,7 @@ Service::Service(ServiceType _type, NetAddress _address, IocpCoreRef _core, Sess
 
 Service::~Service()
 {
+
 }
 
 void Service::CloseService()

@@ -6,7 +6,8 @@
 void Lock::WriteLock(const char* name)
 {
 #if _DEBUG
-	GDeadLockProfiler->PushLock(name);
+	if (GDeadLockProfiler)
+		GDeadLockProfiler->PushLock(name);
 #endif
 
 	const uint32 lockThreadId = (lockFlag.load() & WRITE_THREAD_MASK) >> 16;
@@ -41,7 +42,8 @@ void Lock::WriteLock(const char* name)
 void Lock::WriteUnlock(const char* name)
 {
 #if _DEBUG
-	GDeadLockProfiler->PopLock(name);
+	if (GDeadLockProfiler)
+		GDeadLockProfiler->PopLock(name);
 #endif
 
 	// WriteLock이 잡혀 있는 상태에서 ReadLock이 함께 잡혀있다면 로직 오류
@@ -56,10 +58,11 @@ void Lock::WriteUnlock(const char* name)
 void Lock::ReadLock(const char* name)
 {
 #if _DEBUG
-	GDeadLockProfiler->PushLock(name);
+	if (GDeadLockProfiler)
+		GDeadLockProfiler->PushLock(name);
 #endif
 
-	
+
 	const uint32 lockThreadId = (lockFlag.load() & WRITE_THREAD_MASK) >> 16;
 	if (tls_ThreadId == lockThreadId)
 	{ // WriteLock을 잡고있는 쓰레드가 ReadLock도 잡으려고 하는 경우
@@ -88,7 +91,8 @@ void Lock::ReadLock(const char* name)
 void Lock::ReadUnlock(const char* name)
 {
 #if _DEBUG
-	GDeadLockProfiler->PopLock(name);
+	if (GDeadLockProfiler)
+		GDeadLockProfiler->PopLock(name);
 #endif
 
 	if ((lockFlag.fetch_sub(1) & READ_COUNT_MASK) == 0)

@@ -60,6 +60,7 @@ protected:
 class ClientService : public Service
 {
 public:
+	// _masSessionCount는 client 갯수
 	ClientService(NetAddress _targetAddress, IocpCoreRef _core,
 		SessionFactory _factory, int32 _maxSessionCount = 1);
 	virtual ~ClientService() {}
@@ -75,6 +76,7 @@ public:
 class ServerService : public Service
 {
 public:
+	// _masSessionCount는 AcceptEx함수 동시 호출 유지 갯수
 	ServerService(NetAddress _targetAddress, IocpCoreRef _core, 
 		SessionFactory _factory, int32 _maxSessionCount = 1);
 	virtual ~ServerService() {}

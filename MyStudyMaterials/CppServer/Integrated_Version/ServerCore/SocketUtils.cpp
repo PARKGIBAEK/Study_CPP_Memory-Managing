@@ -17,12 +17,28 @@ void SocketUtils::Init()
 	
 	/* 런타임에 주소 얻어오는 API */
 	SOCKET dummySocket = CreateSocket();
+
 	// 윈속 connect함수의 확장 함수 ConnectEx함수의 포인터를 받아 옴
-	ASSERT_CRASH(BindWindowsFunction(dummySocket, WSAID_CONNECTEX, reinterpret_cast<LPVOID*>(&ConnectEx)));
+	ASSERT_CRASH(
+		BindWindowsFunction(
+			dummySocket, WSAID_CONNECTEX, 
+			reinterpret_cast<LPVOID*>(&ConnectEx))
+	);
+
 	// 윈속 disconnect함수의 확장 함수 DisconnectEx함수의 포인터를 받아 옴
-	ASSERT_CRASH(BindWindowsFunction(dummySocket, WSAID_DISCONNECTEX, reinterpret_cast<LPVOID*>(&DisconnectEx)));
+	ASSERT_CRASH(
+		BindWindowsFunction(
+			dummySocket, WSAID_DISCONNECTEX, 
+			reinterpret_cast<LPVOID*>(&DisconnectEx))
+	);
+
 	// 윈속 accept함수의 확장 함수 AcceptEx함수의 포인터를 받아 옴
-	ASSERT_CRASH(BindWindowsFunction(dummySocket, WSAID_ACCEPTEX, reinterpret_cast<LPVOID*>(&AcceptEx)));
+	ASSERT_CRASH(
+		BindWindowsFunction(
+			dummySocket, WSAID_ACCEPTEX,
+			reinterpret_cast<LPVOID*>(&AcceptEx))
+	);
+
 	Close(dummySocket);
 }
 
@@ -99,7 +115,7 @@ bool SocketUtils::SetTcpNoDelay(SOCKET socket, bool flag)
 
 
 bool SocketUtils::SyncSocketContext(SOCKET socket, SOCKET listenSocket)
-{// listenSocket의 속성을 socket(클라 소켓)에 그대로 적용하기(이걸 안하면 local/remote address 받아오는 과정 복잡해 짐)
+{ // listenSocket의 속성을 socket(클라 소켓)에 그대로 적용하기(이걸 안하면 local/remote address 받아오는 과정 복잡해 짐)
 	return SetSockOpt(socket, SOL_SOCKET, SO_UPDATE_ACCEPT_CONTEXT, listenSocket);
 }
 

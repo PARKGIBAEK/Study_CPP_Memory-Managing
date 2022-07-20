@@ -35,7 +35,8 @@ public:
 };
 
 template<typename T>
-static inline bool SetSockOpt(SOCKET socket, int32 level, int32 optName,T optVal)
+static inline bool SetSockOpt(SOCKET socket, int32 level,
+								int32 optName,T optVal)
 {// 家南 可记 函版窍绰 api
 	return SOCKET_ERROR != ::setsockopt(socket, level, optName,
 		reinterpret_cast<char*>(&optVal), sizeof(T));

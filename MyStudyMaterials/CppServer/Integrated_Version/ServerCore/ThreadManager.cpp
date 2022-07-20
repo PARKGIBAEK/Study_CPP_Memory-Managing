@@ -68,7 +68,7 @@ void ThreadManager::DoGlobalQueueWork()
 	}
 }
 
-void ThreadManager::DistributeReservedJobs()
+void ThreadManager::CheckJobTimer()
 {
 	const uint64 now = ::GetTickCount64();
 

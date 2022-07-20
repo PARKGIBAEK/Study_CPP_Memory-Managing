@@ -39,7 +39,7 @@ public:
 	SendBufferChunk();
 	~SendBufferChunk();
 
-	void					Reset();
+	void					ResetBuffer();
 	SendBufferRef			Open(uint32 _allocSize);
 	void					Close(uint32 _writeSize);
 
@@ -50,7 +50,7 @@ public:
 private:
 	Array<BYTE, SEND_BUFFER_CHUNK_SIZE>		buffer = {};
 	bool									isOpen = false;
-	uint32									usedSize = 0;
+	uint32									usedSize = 0; // buffer cursor
 };
 
 /*---------------------

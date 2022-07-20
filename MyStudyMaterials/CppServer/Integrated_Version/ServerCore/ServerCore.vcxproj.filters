@@ -159,12 +159,6 @@
     <ClInclude Include="DBSynchronizer.h">
       <Filter>DB</Filter>
     </ClInclude>
-    <ClInclude Include="ConcurrentStack.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="LockFreeQueue.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
     <ClInclude Include="LockFreeStack.h">
       <Filter>Utils</Filter>
     </ClInclude>
@@ -271,12 +265,6 @@
     </ClCompile>
     <ClCompile Include="DBSynchronizer.cpp">
       <Filter>DB</Filter>
-    </ClCompile>
-    <ClCompile Include="ConcurrentStack.cpp">
-      <Filter>Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="LockFreeQueue.cpp">
-      <Filter>Utils</Filter>
     </ClCompile>
     <ClCompile Include="LockFreeStack.cpp">
       <Filter>Utils</Filter>

@@ -11,10 +11,14 @@
 class JobQueue : public enable_shared_from_this<JobQueue>
 {
 public:
+	JobQueue()
+	{
+		
+	}
 	// CallbackType = std::function<void()>
 	void DoAsync(CallbackType&& callback)
 	{
-		Push(ObjectPool<Job>::MakeShared(std::move(callback)));
+		Push( ObjectPool<Job>::MakeShared(std::move(callback)) );
 	}
 
 	/* 
@@ -46,7 +50,9 @@ public:
 	void					ClearJobs() { _jobs.Clear(); }
 
 public:
-	// pushOnly == false : Job처리까지 수행
+	/* _jobs에 job을 넣는다. 단, 바쁘면 
+	pushOnly == false : Job처리까지 수행*/
+
 	void					Push(JobRef job, bool pushOnly = false);
 	void					Execute();
 

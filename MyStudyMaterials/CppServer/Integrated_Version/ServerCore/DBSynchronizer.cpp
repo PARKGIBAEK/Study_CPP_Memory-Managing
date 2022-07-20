@@ -11,6 +11,7 @@
 
 namespace SP
 {
+	// 테이블 & 컬럼 얻어오기
 	const WCHAR* QTablesAndColumns =
 		L"	SELECT c.object_id, t.name AS tableName, c.name AS columnName, c.column_id, c.user_type_id, c.max_length,"
 		"		c.is_nullable, c.is_identity, CAST(ic.seed_value AS BIGINT) AS seedValue, CAST(ic.increment_value AS BIGINT) AS incValue,"
@@ -45,6 +46,7 @@ namespace SP
 		template<int32 N> void Out_DefaultConstraintName(OUT WCHAR(&value)[N]) { BindCol(12, value); }
 	};
 
+	// 인덱스 정보 얻어오기
 	const WCHAR* QIndexes =
 		L"	SELECT i.object_id, i.name as indexName, i.index_id, i.type, i.is_primary_key,"
 		"		i.is_unique_constraint, ic.column_id, COL_NAME(ic.object_id, ic.column_id) as columnName"
@@ -69,6 +71,7 @@ namespace SP
 		template<int32 N> void Out_ColumnName(OUT WCHAR(&value)[N]) { BindCol(7, value); }
 	};
 
+	// Stored Procedure 정보 얻어오기
 	const WCHAR* QStoredProcedures =
 		L"	SELECT name, OBJECT_DEFINITION(object_id) AS body FROM sys.procedures;";
 
@@ -92,13 +95,15 @@ DBSynchronizer::~DBSynchronizer()
 
 bool DBSynchronizer::Synchronize(const WCHAR* path)
 {
-	ParseXmlDB(path);
-
-	GatherDBTables();
-	GatherDBIndexes();
-	GatherDBStoredProcedures();
-
-	CompareDBModel();
+	/* XML 파일 메모리에 로드*/
+	ParseXmlDB(path);// XMl 파일 파싱
+	/* 테이블 정보 긁어서 메모리에 로드*/
+	GatherDBTables();// 테이블 정보 
+	GatherDBIndexes();// 인덱스 정보 
+	GatherDBStoredProcedures();// Stored Procedure 정보 
+	/* 정보 비교*/
+	CompareDBModel();// 업데이트 해야할 부분을 UpdateStep에 넣어줌
+	/* 다른 부분 변경 실행 */
 	ExecuteUpdateQueries();
 
 	return true;
@@ -108,6 +113,7 @@ void DBSynchronizer::ParseXmlDB(const WCHAR* path)
 {
 	XmlNode root;
 	XmlParser parser;
+	// XML 파일 파싱
 	ASSERT_CRASH(parser.ParseFromFile(path, OUT root));
 
 	Vector<XmlNode> tables = root.FindChildren(L"Table");
@@ -235,7 +241,8 @@ bool DBSynchronizer::GatherDBTables()
 	{
 		DBModel::TableRef table;
 
-		auto findTable = std::find_if(_dbTables.begin(), _dbTables.end(), [=](const DBModel::TableRef& table) { return table->_objectId == objectId; });
+		auto findTable = std::find_if(_dbTables.begin(), _dbTables.end(),
+			[=](const DBModel::TableRef& table) { return table->_objectId == objectId; });
 		if (findTable == _dbTables.end())
 		{
 			table = MakeShared<DBModel::Table>();
@@ -301,10 +308,14 @@ bool DBSynchronizer::GatherDBIndexes()
 
 	while (getDBIndexes.Fetch())
 	{
-		auto findTable = std::find_if(_dbTables.begin(), _dbTables.end(), [=](const DBModel::TableRef& table) { return table->_objectId == objectId; });
+		auto findTable = std::find_if(_dbTables.begin(), _dbTables.end(),
+			[=](const DBModel::TableRef& table) { return table->_objectId == objectId; }
+		);
 		ASSERT_CRASH(findTable != _dbTables.end());
 		Vector<DBModel::IndexRef>& indexes = (*findTable)->_indexes;
-		auto findIndex = std::find_if(indexes.begin(), indexes.end(), [indexId](DBModel::IndexRef& index) { return index->_indexId == indexId; });
+		auto findIndex = std::find_if(indexes.begin(), indexes.end(),
+			[indexId](DBModel::IndexRef& index) { return index->_indexId == indexId; }
+		);
 		if (findIndex == indexes.end())
 		{
 			DBModel::IndexRef index = MakeShared<DBModel::Index>();
@@ -321,7 +332,9 @@ bool DBSynchronizer::GatherDBIndexes()
 
 		// 인덱스가 걸린 column 찾아서 매핑해준다.
 		Vector<DBModel::ColumnRef>& columns = (*findTable)->_columns;
-		auto findColumn = std::find_if(columns.begin(), columns.end(), [columnId](DBModel::ColumnRef& column) { return column->_columnId == columnId; });
+		auto findColumn = std::find_if(columns.begin(), columns.end(),
+			[columnId](DBModel::ColumnRef& column) { return column->_columnId == columnId; }
+		);
 		ASSERT_CRASH(findColumn != columns.end());
 		(*findIndex)->_columns.push_back(*findColumn);
 	}
@@ -559,9 +572,9 @@ void DBSynchronizer::CompareTables(DBModel::TableRef dbTable, DBModel::TableRef 
 		{
 			_updateQueries[UpdateStep::CreateIndex].push_back(
 				DBModel::Helpers::Format(L"ALTER TABLE [dbo].[%s] ADD CONSTRAINT [%s] %s %s (%s)",
-					dbTable->_name.c_str(), xmlIndex->CreateName(dbTable->_name).c_str(), 
-					xmlIndex->GetKeyText().c_str(), 
-					xmlIndex->GetTypeText().c_str(), 
+					dbTable->_name.c_str(), xmlIndex->CreateName(dbTable->_name).c_str(),
+					xmlIndex->GetKeyText().c_str(),
+					xmlIndex->GetTypeText().c_str(),
 					xmlIndex->CreateColumnsText().c_str()
 				)
 			);
@@ -571,9 +584,9 @@ void DBSynchronizer::CompareTables(DBModel::TableRef dbTable, DBModel::TableRef 
 			_updateQueries[UpdateStep::CreateIndex].push_back(
 				DBModel::Helpers::Format(
 					L"CREATE %s INDEX [%s] ON [dbo].[%s] (%s)",
-					xmlIndex->GetTypeText().c_str(), 
-					xmlIndex->CreateName(dbTable->_name).c_str(), 
-					dbTable->_name.c_str(), 
+					xmlIndex->GetTypeText().c_str(),
+					xmlIndex->CreateName(dbTable->_name).c_str(),
+					dbTable->_name.c_str(),
 					xmlIndex->CreateColumnsText().c_str()
 				)
 			);

@@ -3,12 +3,14 @@
 
 ConsoleLog::ConsoleLog()
 {
+	// c 표준 입출력 핸들 바당오기
 	_stdOut = ::GetStdHandle(STD_OUTPUT_HANDLE);
 	_stdErr = ::GetStdHandle(STD_ERROR_HANDLE);
 }
 
 ConsoleLog::~ConsoleLog()
 {
+
 }
 
 void ConsoleLog::WriteStdOut(Color color, const WCHAR* format, ...)

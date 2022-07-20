@@ -12,7 +12,9 @@ class MemoryManager
 {
 	enum
 	{
-		// 0~1024 byte까지 32byte단위, ~2048 byte까지 128 btye단위, ~4096 byte까지 256 byte단위로 할당
+		/*	0~1024 byte까지 32byte단위, 
+			1025~2048 byte까지 128 btye단위, 
+			2049~4096 byte까지 256 byte단위로 할당*/
 		POOL_COUNT = (1024 / 32) + (1024 / 128) + (2048 / 256),
 		MAX_ALLOC_SIZE = 4096,
 	};
@@ -31,33 +33,52 @@ private:
 	MemoryPool* poolTable[MAX_ALLOC_SIZE + 1];
 };
 
+//#define DefaultAllocator
 
-// 할당 연산자 new 대신 사용하는 Customed Allocator
-template<typename Type, typename... Args>
-Type* XNew(Args&&... args)
+#ifdef DefaultAllocator
+template<typename T, typename... Args>
+T* XNew(Args... _args)
 {
-	// 메모리만 할당
-	Type* memory = static_cast<Type*>(PoolAllocator::AllocateMemory(sizeof(Type)));
-	// placement new를 통해 생성자 호출
-	new(memory)Type(std::forward<Args>(args)...);
+	return new T(std::forward<Args>(_args)...);
+}
+
+template<typename T>
+void XDelete(T* _obj)
+{// 소멸자 호출 후 메모리 풀에 반납
+	_obj->~T();
+	delete _obj;
+}
+
+template<typename T, typename... Args>
+std::shared_ptr<T> MakeShared(Args&&... args)
+{
+	return std::shared_ptr<T>(std::forward<Args>(args)...);
+}
+#else
+template<typename T, typename... Args>
+T* XNew(Args... _args)
+{
+	T* memory = static_cast<T*>(PoolAllocator::AllocateMemory(sizeof(T)));
+	new(memory) T(std::forward<Args>(_args)...);
 	return memory;
 }
 
-template<typename Type>
-void XDelete(Type* obj)
-{
-	// obj의 소멸자 호출
-	obj->~Type();
-	// MemoryManager Pool에 반납
-	PoolAllocator::ReleaseMemory(obj);
-} 
+template<typename T>
+void XDelete(T* _obj)
+{// 소멸자 호출 후 메모리 풀에 반납
+	_obj->~T();
+	PoolAllocator::ReleaseMemory(_obj);
+}
 
-template<typename Type, typename... Args>
-std::shared_ptr<Type> MakeShared(Args&&... args)
+
+template<typename T, typename... Args>
+std::shared_ptr<T> MakeShared(Args&&... args)
 {
 	// shared_ptr로 반환해 주기
-	return std::shared_ptr<Type>{ XNew<Type>(forward<Args>(args)...), XDelete<Type> };
+	return std::shared_ptr<T>{ XNew<T>(forward<Args>(args)...),
+								XDelete<T> };
 
-	//이걸로하면 오류 남
+	// 이걸로하면 오류 남
 	//return std::make_shared<Type>( XNew<Type>(forward<Args>(args)...), XDelete<Type> );
 }
+#endif
