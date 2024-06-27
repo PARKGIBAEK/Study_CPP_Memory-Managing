@@ -1,9 +1,7 @@
 #pragma once
-
+#include "Types.h"
+#include <memory>
 //  사용 안함
-
-
-
 
 /*============================================
 
@@ -28,8 +26,8 @@ class LockFreeStack
 		Node(const T& value) : data(make_shared<T>(value))
 		{	}
 
-		shared_ptr<T> data;
-		atomic<int32> internalCount = 0;// 다른 Thread들이 더 이상 접근하지 않는지 확인하기 위한 용도 ( TryPop함수에서 건드림 )
+		std::shared_ptr<T> data;
+		std::atomic<int32> internalCount = 0;// 다른 Thread들이 더 이상 접근하지 않는지 확인하기 위한 용도 ( TryPop함수에서 건드림 )
 		CountedNodePtr next;
 	};
 
@@ -249,8 +247,8 @@ public:
 	}
 
 private:
-	atomic<Node*> head;
+	std::atomic<Node*> head;
 
-	atomic<uint32> popCount = 0; // Pop을 실행중인 쓰레드 개수
-	atomic<Node*> pendingList; // 삭제 되어야 할 노드들 (첫번째 노드)
+	std::atomic<uint32> popCount = 0; // Pop을 실행중인 쓰레드 개수
+	std::atomic<Node*> pendingList; // 삭제 되어야 할 노드들 (첫번째 노드)
 };

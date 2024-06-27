@@ -1,6 +1,8 @@
-#include "pch.h"
+#include "Types.h"
 #include "CoreTLS.h"
-//#include <memory>
+#include "SendBufferChunk.h"
+#include "JobQueue.h"
+
 thread_local uint32				tls_ThreadId = 0;
 thread_local uint64				tls_EndTickCount = 0;
 thread_local std::stack<int32>	tls_LockStack;

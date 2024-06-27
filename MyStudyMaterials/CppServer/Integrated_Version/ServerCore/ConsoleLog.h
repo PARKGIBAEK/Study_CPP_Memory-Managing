@@ -1,5 +1,6 @@
 #pragma once
-
+#include "Core.h"
+#include "Types.h"
 /*---------------
 	ConsoleLog
 ----------------*/
@@ -16,6 +17,7 @@ enum class Color
 
 class ConsoleLog
 {
+	typedef void *HANDLE;
 	enum { BUFFER_SIZE = 4096 };
 
 public:

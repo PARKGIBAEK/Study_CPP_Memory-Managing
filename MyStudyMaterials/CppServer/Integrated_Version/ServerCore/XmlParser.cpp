@@ -1,7 +1,15 @@
-#include "pch.h"
+#define WIN32_LEAN_AND_MEAN
+#define NOMINMAX
+#include <windows.h>
+#include <winsock2.h>
+#include <mswsock.h>
+#include <ws2tcpip.h>
+#include <clocale>
+
 #include "XmlParser.h"
 #include "FileUtils.h"
 #include "CoreGlobal.h"
+#include "MemoryManager.h"
 
 /*-------------
 	XmlNode
@@ -178,7 +186,7 @@ Vector<XmlNode> XmlNode::FindChildren(const WCHAR* key)
 bool XmlParser::ParseFromFile(const WCHAR* path, OUT XmlNode& root)
 {
 	Vector<BYTE> bytes = FileUtils::ReadFile(path);
-	_data = FileUtils::Convert(string(bytes.begin(), bytes.end()));
+	_data = FileUtils::Convert(std::string(bytes.begin(), bytes.end()));
 
 	if (_data.empty())
 		return false;

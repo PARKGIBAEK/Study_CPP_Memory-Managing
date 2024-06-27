@@ -1,13 +1,19 @@
-#include "pch.h"
 #include "Listener.h"
-#include "SocketUtils.h"
 #include "IocpEvent.h"
+#include "ServerService.h"
+#include "MemoryManager.h"
+#include "SocketUtils.h"
 #include "Session.h"
-#include "Service.h"
+// #include "Service.h"
+#include "IocpService.h"
 
 /*--------------
 	Listener
 ---------------*/
+
+Listener::Listener():listenSocket(INVALID_SOCKET)
+{
+}
 
 Listener::~Listener()
 {
@@ -113,7 +119,7 @@ void Listener::RegisterAccept(AcceptEvent* _acceptEvent)
 void Listener::ProcessAccept(AcceptEvent* _acceptEvent)
 {
 	std::shared_ptr<Session> session = 
-		static_pointer_cast<Session>(_acceptEvent->ownerSession);
+		std::static_pointer_cast<Session>(_acceptEvent->ownerSession);
 	// ListenSocket의 특성을 ClientSocket에 그대로 적용하기
 	if (false == SocketUtils::SyncSocketContext(session->GetSocket(), listenSocket))
 	{

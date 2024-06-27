@@ -1,133 +1,99 @@
 #pragma once
-#include "IocpService.h"
+#include <memory>
+#include <atomic>
+#include "Container.h"
+#include "CoreMacro.h"
 #include "IocpEvent.h"
+#include "ISession.h"
 #include "NetAddress.h"
 #include "RecvBuffer.h"
 
 class Service;
-
-
-
-/*--------------
-	Session
----------------*/
+class SendBuffer;
 
 class Session : public ISession
 {
-	friend class Listener;
-	friend class IocpService;
-	friend class Service;
+    typedef void *HANDLE;
+    
+    friend class Listener;
+    friend class IocpService;
+    friend class Service;
 
-	enum
-	{
-		BUFFER_SIZE = 0x10000, // 64KB
-	};
+    enum
+    {
+        BUFFER_SIZE = 0x10000, // 64KB
+    };
 
 public:
-	Session();
-	virtual ~Session();
+    Session();
+    virtual ~Session();
 
-public:				/* ¿ÜºÎ¿¡¼­ »ç¿ë */
-	void						Send(std::shared_ptr<SendBuffer> sendBuffer);
-	bool						Connect();
-	void						Disconnect(const WCHAR* cause);
+public: /* ì™¸ë¶€ì—ì„œ ì‚¬ìš© */
+    void Send(std::shared_ptr<SendBuffer> sendBuffer);
+    bool Connect();
+    void Disconnect(const WCHAR* cause);
 
-	shared_ptr<Service>			GetService() { return service.lock(); }
-	void						SetService(shared_ptr<Service> _service) { service = _service; }
+    std::shared_ptr<Service> GetService();
+    void SetService(std::shared_ptr<Service> _service);
 
-public:				/* Á¤º¸ °ü·Ã */
-	void						SetNetAddress(NetAddress address) { netAddress = address; }
-	NetAddress					GetNetAddress() { return netAddress; }
-	SOCKET						GetSocket() { return socket; }
-	std::shared_ptr<Session>	GetSessionRef() 
-	{
-		return static_pointer_cast<Session>(shared_from_this());
-	}
-	bool						IsConnected() { return isConnected; }
+public: /* ì •ë³´ ê´€ë ¨ */
+    void SetNetAddress(NetAddress address);
+    NetAddress GetNetAddress() const;
+    SOCKET GetSocket() const;
+    std::shared_ptr<Session> GetSessionRef();
+    bool IsConnected();
 
-private:				/* ÀÎÅÍÆäÀÌ½º ±¸Çö */
+private: /* ì¸í„°í˜ì´ìŠ¤ êµ¬í˜„ */
 
-	virtual HANDLE				GetHandle() override;
-	virtual void				DispatchEvent(class IocpEvent* iocpEvent, int32 numOfBytes = 0) override;
+    virtual HANDLE GetHandle() override;
+    virtual void DispatchEvent(class IocpEvent* iocpEvent, int32 numOfBytes = 0) override;
 
 private:
-	/* Àü¼Û °ü·Ã */
-	bool						RegisterConnect();
-	bool						RegisterDisconnect();
-	void						RegisterRecv();
-	void						RegisterSend();// Gathering write
+    /* ì „ì†¡ ê´€ë ¨ */
+    bool RegisterConnect();
+    bool RegisterDisconnect();
+    void RegisterRecv();
+    void RegisterSend(); // Gathering write
 
-	void						ProcessConnect();
-	void						ProcessDisconnect();
-	void						ProcessRecv(int32 numOfBytes);
-	void						ProcessSend(int32 numOfBytes);
+    void ProcessConnect();
+    void ProcessDisconnect();
+    void ProcessRecv(int32 numOfBytes);
+    void ProcessSend(int32 numOfBytes);
 
-	void						HandleError(int32 errorCode);
+    void HandleError(int32 errorCode);
 
 protected:
-	/* ÄÁÅÙÃ÷ ÄÚµå¿¡¼­ ÀçÁ¤ÀÇ */
-	virtual void				OnConnected()
-	{
-		PrintAddress();
-	}
-	virtual int32				OnRecv(BYTE* buffer, int32 len) { return len; }
-	virtual void				OnSend(int32 len) { }
-	virtual void				OnDisconnected() { }
-	virtual void				 PrintAddress() 
-	{
-		auto t = GetNetAddress();
-		auto ip = t.GetIpAddress();
-		auto port = t.GetPort();
-		wprintf(L"[port : %d][ ip : %ls] is connected \n", port, ip.c_str());
-	}
-private:
-	weak_ptr<Service>			service;
-	SOCKET						socket = INVALID_SOCKET;
-	NetAddress					netAddress = {};
-	Atomic<bool>				isConnected = false;
+    /* ì»¨í…ì¸  ì½”ë“œì—ì„œ ì¬ì •ì˜ */
+    virtual void OnConnected();
+    virtual int32 OnRecv(BYTE* buffer, int32 len);
+
+    virtual void OnSend(int32 len);
+
+    virtual void OnDisconnected();
+
+    virtual void PrintAddress();
 
 private:
-	USE_LOCK;
-
-	/* ¼ö½Å °ü·Ã */
-	RecvBuffer					recvBuffer;
-
-	/* ¼Û½Å °ü·Ã */
-	Queue<std::shared_ptr<SendBuffer>>		sendQueue;
-	Atomic<bool>				isSendRegistered = false;
+    std::weak_ptr<Service> service;
+    SOCKET socket;
+    NetAddress netAddress;
+    std::atomic<bool> isConnected;
 
 private:
-	/* IocpEvent Àç»ç¿ë */
-	ConnectEvent				connectEvent;
-	DisconnectEvent				disconnectEvent;
-	RecvEvent					recvEvent;
-	SendEvent					sendEvent;
+    USE_LOCK;
+
+    /* ìˆ˜ì‹  ê´€ë ¨ */
+    RecvBuffer recvBuffer;
+
+    /* ì†¡ì‹  ê´€ë ¨ */
+    Queue<std::shared_ptr<SendBuffer>> sendQueue;
+    std::atomic<bool> isSendRegistered;
+
+private:
+    /* IocpEvent ì¬ì‚¬ìš© */
+    ConnectEvent connectEvent;
+    DisconnectEvent disconnectEvent;
+    RecvEvent recvEvent;
+    SendEvent sendEvent;
 };
 
-
-/*-----------------
-	PacketSession
-------------------*/
-
-struct PacketHeader
-{
-	uint16 size;
-	uint16 id; // ÇÁ·ÎÅäÄİID (ex. 1=·Î±×ÀÎ, 2=ÀÌµ¿¿äÃ»)
-};
-
-class PacketSession : public Session
-{
-public:
-	PacketSession();
-	virtual ~PacketSession();
-
-	std::shared_ptr<PacketSession>	GetPacketSessionRef()
-	{
-		return static_pointer_cast<PacketSession>(shared_from_this());
-	}
-
-protected:
-	virtual int32		OnRecv(BYTE* buffer, int32 len) sealed;
-	virtual void		OnRecvPacket(BYTE* buffer, int32 len) = 0;
-
-};

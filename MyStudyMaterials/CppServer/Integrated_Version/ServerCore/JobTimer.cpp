@@ -1,19 +1,20 @@
-#include "pch.h"
 #include "JobTimer.h"
+#include "Job.h"
+#include "JobData.h"
 #include "JobQueue.h"
 
 /*--------------
 	JobTimer
 ---------------*/
 
-void JobTimer::Reserve(uint64 tickAfter, weak_ptr<JobQueue> owner, std::shared_ptr<Job> job)
+void JobTimer::Reserve(uint64 tickAfter, std::weak_ptr<JobQueue> owner, std::shared_ptr<Job> job)
 {
 	const uint64 executeTick = ::GetTickCount64() + tickAfter;
 	JobData* jobData = ObjectPool<JobData>::Pop(owner, job);
 
 	WRITE_LOCK;
 
-	_items.push(TimerItem{ executeTick, jobData });
+	 _items.emplace(TimerItem{ executeTick, jobData });
 }
 
 void JobTimer::Distribute(uint64 now)

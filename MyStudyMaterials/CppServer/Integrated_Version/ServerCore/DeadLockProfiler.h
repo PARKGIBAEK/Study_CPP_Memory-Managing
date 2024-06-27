@@ -1,7 +1,9 @@
 #pragma once
-#include <stack>
 #include <map>
+#include <set>
+#include <unordered_map>
 #include <vector>
+#include "Types.h"
 //#include "ConcurrentStack.h"
 
 /*--------------------
@@ -20,17 +22,17 @@ private:
 	void DFS(int32 _here);
 
 private:
-	unordered_map<const char*, int32>	nameToId;
-	unordered_map<int32, const char*>	idToName;
-	map<int32, set<int32>>				lockHistory;
+	std::unordered_map<const char*, int32>	nameToId;
+	std::unordered_map<int32, const char*>	idToName;
+	std::map<int32, std::set<int32>>				lockHistory;
 
 	std::mutex mtxLock{};
 
 private:
-	vector<int32>	discoveredOrder; // ³ëµå°¡ ¹ß°ßµÈ ¼ø¼­¸¦ ±â·ÏÇÏ´Â ¹è¿­
-	int32			discoveredCount = 0; // ³ëµå°¡ ¹ß°ßµÈ ¼ø¼­
-	vector<bool>	finished; // Dfs(i)°¡ Á¾·á µÇ¾ú´ÂÁö ¿©ºÎ
-	vector<int32>	parent;
+	std::vector<int32>	discoveredOrder; // ë…¸ë“œê°€ ë°œê²¬ëœ ìˆœì„œë¥¼ ê¸°ë¡í•˜ëŠ” ë°°ì—´
+	int32			discoveredCount = 0; // ë…¸ë“œê°€ ë°œê²¬ëœ ìˆœì„œ
+	std::vector<bool>	finished; // Dfs(i)ê°€ ì¢…ë£Œ ë˜ì—ˆëŠ”ì§€ ì—¬ë¶€
+	std::vector<int32>	parent;
 	
 };
 

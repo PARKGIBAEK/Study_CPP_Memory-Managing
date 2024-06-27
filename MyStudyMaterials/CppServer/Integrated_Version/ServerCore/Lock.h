@@ -1,6 +1,6 @@
 #pragma once
 #include "Types.h"
-
+#include <atomic>
 /*----------------
 	 RW SpinLock
 -----------------*/
@@ -13,24 +13,25 @@ R : ReadFlag (Shared Lock Count)
 
 class Lock
 {
-	enum : uint32
-	{
-		ACQUIRE_TIMEOUT_TICK = 10000,
-		MAX_SPIN_COUNT = 5000,
-		WRITE_THREAD_MASK = 0xFFFF'0000,
-		READ_COUNT_MASK = 0x0000'FFFF,
-		EMPTY_FLAG = 0x0000'0000
-	};
+    enum : uint32
+    {
+        ACQUIRE_TIMEOUT_TICK = 10000,
+        MAX_SPIN_COUNT = 5000,
+        WRITE_THREAD_MASK = 0xFFFF'0000,
+        READ_COUNT_MASK = 0x0000'FFFF,
+        EMPTY_FLAG = 0x0000'0000
+    };
 
 public:
-	void WriteLock(const char* name);
-	void WriteUnlock(const char* name);
-	void ReadLock(const char* name);
-	void ReadUnlock(const char* name);
+    Lock();
+    void WriteLock(const char* name);
+    void WriteUnlock(const char* name);
+    void ReadLock(const char* name);
+    void ReadUnlock(const char* name);
 
 private:
-	Atomic<uint32> lockFlag = EMPTY_FLAG;
-	uint16 writeCount = 0;
+    std::atomic<uint32> lockFlag; // = EMPTY_FLAG;
+    uint16 writeCount; // = 0;
 };
 
 /*----------------
@@ -40,28 +41,25 @@ private:
 class ReadLockGuard
 {
 public:
-	ReadLockGuard(Lock& _lock, const char* _name) : lock(_lock), name(_name) 
-	{
-		lock.ReadLock(_name);
-	}
-	~ReadLockGuard()
-	{
-		lock.ReadUnlock(name);
-	}
+    ReadLockGuard(Lock& _lock, const char* _name);
+
+    ~ReadLockGuard()
+    {
+        lock.ReadUnlock(name);
+    }
 
 private:
-	Lock& lock;
-	const char* name;
+    Lock& lock;
+    const char* name;
 };
 
 class WriteLockGuard
 {
 public:
-	WriteLockGuard(Lock& _lock, const char* _name)
-		: lock(_lock), name(_name) { _lock.WriteLock(_name); }
-	~WriteLockGuard() { lock.WriteUnlock(name); }
+    WriteLockGuard(Lock& _lock, const char* _name);
+    ~WriteLockGuard();
 
 private:
-	Lock& lock;
-	const char* name;
+    Lock& lock;
+    const char* name;
 };

@@ -1,18 +1,15 @@
 #pragma once
+#define WIN32_LEAN_AND_MEAN  // ê±°ì˜ ì‚¬ìš©ë˜ì§€ ì•ŠëŠ” ë‚´ìš©ì„ Windows í—¤ë”ì—ì„œ ì œì™¸í•©ë‹ˆë‹¤.
 #include <sql.h>
 #include <sqlext.h>
-
-/*----------------
-	DBConnection
------------------*/
 
 enum
 {
 	WVARCHAR_MAX = 4000,
-	BINARY_MAX = 8000
+	BINARY_MAX = 8000,
 };
 
-class DBConnection
+class DbConnection
 {
 public:
 	// connect to db with handle
@@ -29,7 +26,7 @@ public:
 	void			Unbind();
 
 public:
-	// Query¿ªÇÒÀ» ÇÒ ¹®ÀÚ¿­ÀÇ ?ÀÚ¸®¿¡ ´ëÃ¼µÉ ÀÎÀÚ¸¦ ¹ÙÀÎµù
+	// Queryï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½Ú¿ï¿½ï¿½ï¿½ ?ï¿½Ú¸ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½Ú¸ï¿½ ï¿½ï¿½ï¿½Îµï¿½
 	bool			BindParam(int32 paramIndex, bool* value, SQLLEN* index);
 	bool			BindParam(int32 paramIndex, float* value, SQLLEN* index);
 	bool			BindParam(int32 paramIndex, double* value, SQLLEN* index);
@@ -41,7 +38,7 @@ public:
 	bool			BindParam(int32 paramIndex, const WCHAR* str, SQLLEN* index);
 	bool			BindParam(int32 paramIndex, const BYTE* bin, int32 size, SQLLEN* index);
 	
-	// Query ¼öÇà °á°ú¸¦ ¹Ş¾Æ¿Ã ¿ÜºÎ º¯¼ö¸¦ ¹ÙÀÎµù
+	// Query ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ş¾Æ¿ï¿½ ï¿½Üºï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Îµï¿½
 	bool			BindCol(int32 columnIndex, bool* value, SQLLEN* index);
 	bool			BindCol(int32 columnIndex, float* value, SQLLEN* index);
 	bool			BindCol(int32 columnIndex, double* value, SQLLEN* index);
@@ -54,42 +51,42 @@ public:
 	bool			BindCol(int32 columnIndex, BYTE* bin, int32 size, SQLLEN* index);
 
 private:
-	/* cType : SQLÀÇ Æ¯Á¤ ÀÚ·áÇü°ú ¸ÅÄªµÇ´Â C¾ğ¾îÀÇ Å¸ÀÔ
-		sqlType : cType°ú ¸ÅÄªµÇ´Â SQLÀÇ ÀÚ·áÇü		*/
+	/* cType : SQLï¿½ï¿½ Æ¯ï¿½ï¿½ ï¿½Ú·ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Äªï¿½Ç´ï¿½ Cï¿½ï¿½ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½
+		sqlType : cTypeï¿½ï¿½ ï¿½ï¿½Äªï¿½Ç´ï¿½ SQLï¿½ï¿½ ï¿½Ú·ï¿½ï¿½ï¿½		*/
 	bool			BindParam(SQLUSMALLINT paramIndex, SQLSMALLINT cType, SQLSMALLINT sqlType, SQLULEN len, SQLPOINTER ptr, SQLLEN* index);
-	/* Äõ¸® ½ÇÇà °á°ú¸¦ °¡Á®¿À´Â ¿äÃ»À» ¸Ş¸ğ¸®¿Í ¹ÙÀÎµù*/
+	/* ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã»ï¿½ï¿½ ï¿½Ş¸ğ¸®¿ï¿½ ï¿½ï¿½ï¿½Îµï¿½*/
 	bool			BindCol(SQLUSMALLINT columnIndex, SQLSMALLINT cType, SQLULEN len, SQLPOINTER value, SQLLEN* index);
-	/* ¿¡·¯ ¹øÈ£¿¡ µû¸¥ ¿À·ù Ãâ·Â*/
+	/* ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½*/
 	void			HandleError(SQLRETURN ret);
 
 private:
-	// SQL connection ´ã´ç ÇÚµé
-	SQLHDBC			_connection = SQL_NULL_HANDLE;
-	// DB¿Í connectionÀ» ¸ÎÀº ÈÄ ¿©·¯°¡Áö ÀÎÀÚ¸¦ Àü´ŞÇÏ°Å³ª °¡Á®¿Ã ¶§ »ç¿ë(¿¹ : Äõ¸® Àü´Ş, Äõ¸® °á°ú °¡Á®¿À±â )
-	SQLHSTMT		_statement = SQL_NULL_HANDLE;
+	// SQL connection ï¿½ï¿½ï¿½ ï¿½Úµï¿½
+	SQLHDBC			_connection;// = SQL_NULL_HANDLE;
+	// DBï¿½ï¿½ connectionï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ú¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°Å³ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½(ï¿½ï¿½ : ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ )
+	SQLHSTMT		_statement;// = SQL_NULL_HANDLE;
 };
 
 
-// DBBind Å¬·¡½º »ç¿ë ÃßÃµ( »ç¿ë ¿¹½Ã 3 ÂüÁ¶)
-// ÃßÃµÀÌÀ¯ : ´©¶ôµÈ ÀÎÀÚµé·Î ÀÎÇÑ ¿¡·¯¸¦ ÄÄÆÄÀÏ ½Ã¿¡ ¹ß°ßÇÒ ¼ö ÀÖ´Ù.
+// DBBind Å¬ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½Ãµ( ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 3 ï¿½ï¿½ï¿½ï¿½)
+// ï¿½ï¿½Ãµï¿½ï¿½ï¿½ï¿½ : ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Úµï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ã¿ï¿½ ï¿½ß°ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ö´ï¿½.
 
-/* »ç¿ë ¿¹½Ã 1
-(±âº» API¸¦ °ÅÀÇ °¡°øÇÏÁö ¾ÊÀº ¹æ½ÄÀÌ¹Ç·Î Àü´ŞÇÒ ÀÎÀÚ°¡ ¸¹¾ÆÁ®¼­ ºñÃßÃµ) */
+/* ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 1
+(ï¿½âº» APIï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ì¹Ç·ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ú°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ãµ) */
 /*
 int main()
 {
-	// 1.  DB Connection Pool °´Ã¼ »ı¼º 
+	// 1.  DB Connection Pool ï¿½ï¿½Ã¼ ï¿½ï¿½ï¿½ï¿½ 
 	DBConnectionPool* dbConnectionPool = new DBConnectionPool();
 
-	// 2. SQL¿¡ ¿¬°áÇÏ¿© ÇØ´ç DB¿¡ ´ëÇÑ ¿¬°á ÇÚµéÀ» ¹ß±Ş ¹Ş±â
-	-	½ÇÁ¦ ¼­ºñ½º¿¡¼­´Â Connection StringÀ» ÇÏµå ÄÚµùÇÏÁö ¾Ê°í,
-		Server ÁÖ¼Ò, DB¸í, Account/PW µîÀº ÆÄÀÏ·Î ºĞ¸®ÇÏ¿© ·ÎµåÇÏ´Â ¹æ½ÄÀ¸·Î ÇØ¾ßÇÑ´Ù.
+	// 2. SQLï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½Ø´ï¿½ DBï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Úµï¿½ï¿½ï¿½ ï¿½ß±ï¿½ ï¿½Ş±ï¿½
+	-	ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ñ½º¿ï¿½ï¿½ï¿½ï¿½ï¿½ Connection Stringï¿½ï¿½ ï¿½Ïµï¿½ ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê°ï¿½,
+		Server ï¿½Ö¼ï¿½, DBï¿½ï¿½, Account/PW ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï·ï¿½ ï¿½Ğ¸ï¿½ï¿½Ï¿ï¿½ ï¿½Îµï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ø¾ï¿½ï¿½Ñ´ï¿½.
 	dbConnectionPool->Connect(10,
 		L"Driver={SQL Server Native Client 11.0};Server=(localdb)\\MSSQLLocalDB;Database=ServerDb;Trusted_Connection=Yes;");
 
 
-	//  3. Å×ÀÌºí »ı¼ºÇÏ±â
-	//-	dbo¶ó´Â DB¿¡ Gold¶ó´Â Å×ÀÌºíÀÌ ÀÖÀ¸¸é Áö¿ì°í »õ·Î ¸¸µé±â(column ¸í°ú ¿É¼Ç ÀÔ·Â)
+	//  3. ï¿½ï¿½ï¿½Ìºï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï±ï¿½
+	//-	dboï¿½ï¿½ï¿½ DBï¿½ï¿½ Goldï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ìºï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½(column ï¿½ï¿½ï¿½ ï¿½É¼ï¿½ ï¿½Ô·ï¿½)
 	
 	auto query = L"	DROP TABLE IF EXISTS[dbo].[Gold];	\
 			CREATE TABLE [dbo].[Gold]					\
@@ -97,13 +94,13 @@ int main()
 				[id] INT NOT NULL PRIMARY KEY IDENTITY,	\
 				[gold] INT NULL							\
 			)";
-	//	4. Connection Pool¿¡¼­ Connection ²¨³»¿À±â
+	//	4. Connection Poolï¿½ï¿½ï¿½ï¿½ Connection ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	DBConnection* dbConnection = dbConnectionPool->Pop();
 
-	//	5. ConnectionÀ¸·Î Äõ¸® Àü´ŞÇÏ±â
+	//	5. Connectionï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï±ï¿½
 	dbConnection->Execute(query);
 
-	//  connectionÀ» connection Pool¿¡ ¹İÈ¯ÇÏ±â
+	//  connectionï¿½ï¿½ connection Poolï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï±ï¿½
 	dbConnectionPool->Push(dbConnection);
 
 	//	6. INSERT
@@ -111,90 +108,90 @@ int main()
 	for (size_t i = 0; i < count; i++)
 	{
 		DBConnection* dbConn = dbConnectionPool->Pop();
-		// ±âÁ¸¿¡ ¹ÙÀÎµù µÈ Á¤º¸ ³¯¸®±â
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Îµï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		dbConn->Unbind();
 
-		// ³Ñ±æ ÀÎÀÚ Á¤ÀÇ
-		int32 gold = 100; // 100°ñµå
-		SQLLEN len = 0; // °¡º¯ÀÎÀÚ°¡ ¾Æ´Ï±â ¶§¹®¿¡ 0À¸·Î ¼³Á¤ÇÏ¸é µÊ
+		// ï¿½Ñ±ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+		int32 gold = 100; // 100ï¿½ï¿½ï¿½
+		SQLLEN len = 0; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú°ï¿½ ï¿½Æ´Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 0ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¸ï¿½ ï¿½ï¿½
 
-		// ³Ñ±æ ÀÎÀÚ ¹ÙÀÎµù : QueryÀÇ ?ºÎºĞ¿¡ ÇØ´çÇÏ´Â ÀÚ¸®¸¦ ´ëÃ¼ÇÒ ÀÎÀÚ¸¦ ¹ÙÀÎµùÇÔ(¹ÙÀÎµùÇÒ ÀÎÀÚ´Â ÇÏ³ª ÀÌ»óÀÏ ¼ö ÀÖÀ½)
-		//  SQL Äõ¸®¿¡¼­ ?·Î Ç¥½ÃµÇ¾î ÀÖ´Â ºÎºĞ¿¡ Bind½ÃÅ°°Ô µÈ´Ù
+		// ï¿½Ñ±ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Îµï¿½ : Queryï¿½ï¿½ ?ï¿½ÎºĞ¿ï¿½ ï¿½Ø´ï¿½ï¿½Ï´ï¿½ ï¿½Ú¸ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½Ú¸ï¿½ ï¿½ï¿½ï¿½Îµï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½Îµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ú´ï¿½ ï¿½Ï³ï¿½ ï¿½Ì»ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
+		//  SQL ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ?ï¿½ï¿½ Ç¥ï¿½ÃµÇ¾ï¿½ ï¿½Ö´ï¿½ ï¿½ÎºĞ¿ï¿½ Bindï¿½ï¿½Å°ï¿½ï¿½ ï¿½È´ï¿½
 		dbConn->BindParam(1, SQL_C_LONG, SQL_INTEGER, sizeof(gold), &gold, &len);
 
-		//-	100°ñµå ³Ö±â
+		//-	100ï¿½ï¿½ï¿½ ï¿½Ö±ï¿½
 		auto query1 = L"INSERT INTO[dbo].[Gold]([gold]) VALUES(? )";
 
-		// INSERT Äõ¸® ½ÇÇà
+		// INSERT ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		dbConn->Execute(L"INSERT INTO [dbo].[Gold]([gold]) VALUES(?)");
 
-		// connection ¹İ³³
+		// connection ï¿½İ³ï¿½
 		dbConnectionPool->Push(dbConn);
 	}
 
 	//		7. Read
 	{
 		DBConnection dbConn = dbConnectionPool->Pop();
-		// ±âÁ¸ ¹ÙµùÀÎ Á¤º¸ ³¯¸®±â
+		// ï¿½ï¿½ï¿½ï¿½ ï¿½Ùµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		dbConn->Unbind();
 
 		int32 gold = 100;
-		SQLLEN len = 0;//°¡º¯ÀÎÀÚ°¡ ¾Æ´Ï¹Ç·Î 0À¸·Î ¼³Á¤ÇØµµ µÊ
+		SQLLEN len = 0;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú°ï¿½ ï¿½Æ´Ï¹Ç·ï¿½ 0ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Øµï¿½ ï¿½ï¿½
 
-		// ³Ñ°ÜÁÙ ÀÎÀÚ ¹ÙÀÎµù
+		// ï¿½Ñ°ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Îµï¿½
 		dbConn->BindParam(1, SQL_C_LONG, SQL_INTEGER, sizeof(gold), &gold, &len);
 
-		// Äõ¸® ¼öÇà °á°ú·Î ¹Ş¾Æ¿Â µ¥ÀÌÅÍ¸¦ ²¨³»°¥ º¯¼ö ¿¹¾àÇÏ±â
-		//-	Äõ¸® ¼öÇà °á°ú¿¡¼­ id¿Í gold¸¦ outId¿Í outGold¿¡ ¹ŞÀ» ¿¹Á¤
+		// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ş¾Æ¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï±ï¿½
+		//-	ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ idï¿½ï¿½ goldï¿½ï¿½ outIdï¿½ï¿½ outGoldï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-		// id¿¡ ÇØ´çÇÏ´Â ColumnÀÇ µ¥ÀÌÅÍ¸¦ ¹Ş¾Æ¿Ã º¯¼ö
+		// idï¿½ï¿½ ï¿½Ø´ï¿½ï¿½Ï´ï¿½ Columnï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ ï¿½Ş¾Æ¿ï¿½ ï¿½ï¿½ï¿½ï¿½
 		int32 outId = 0;
 		SQLLEN outIdLen = 0;
 		dbConn->BindCol(1, SQL_C_LONG, sizeof(outId), &outId, &outIdLen);
 
-		// gold¿¡ ÇØ´çÇÏ´Â ColumnÀÇ µ¥ÀÌÅÍ¸¦ ¹Ş¾Æ¿Ã º¯¼ö
+		// goldï¿½ï¿½ ï¿½Ø´ï¿½ï¿½Ï´ï¿½ Columnï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ ï¿½Ş¾Æ¿ï¿½ ï¿½ï¿½ï¿½ï¿½
 		int32 outGold = 0;
 		SQLLEN outGoldLen = 0;
 		dbConn->BindCol(2, SQL_C_LONG, sizeof(outGold), &outGold, &outGoldLen);
 
 		
-		// SELECT Äõ¸® ½ÇÇà( Äõ¸®¸¦ ½ÇÇàÇØµµ µ¥ÀÌÅÍ°¡ outId¿Í outGold¿¡ µé¾î°¡Áö ¾Ê´Â´Ù )
+		// SELECT ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½( ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Øµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í°ï¿½ outIdï¿½ï¿½ outGoldï¿½ï¿½ ï¿½ï¿½î°¡ï¿½ï¿½ ï¿½Ê´Â´ï¿½ )
 		dbConn->Execute(L"SELECT id, gold FROM [dbo].[Gold] WHERE gold = (?)");
 
-		// Äõ¸® ¼öÇà °á°ú¸¦ outId¿Í outGold¿¡ ¹Ş¾Æ¿À·Á¸é Fetch¸¦ ½ÇÇàÇØ¾ß ÇÑ´Ù
-		//	Äõ¸® ¼öÇà °á°ú´Â ¿©·¯°³ÀÇ Row°¡ 1°³ ÀÌ»óÀÌ¹Ç·Î ´Ù °¡Á®¿Ã ¶§ ±îÁö ¹İº¹ÀûÀ¸·Î Fetch¸¦ ¼öÇàÇÑ´Ù.
-		//	ÇÑ¹ø Fetch¼öÇàÇÒ ¶§¸¶´Ù ÇÏ³ªÀÇ Row¿¡ ÇØ´çÇÏ´Â µ¥ÀÌÅÍ°¡ outId¿Í outGold¿¡ Àü´ŞµÈ´Ù.
+		// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ outIdï¿½ï¿½ outGoldï¿½ï¿½ ï¿½Ş¾Æ¿ï¿½ï¿½ï¿½ï¿½ï¿½ Fetchï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ø¾ï¿½ ï¿½Ñ´ï¿½
+		//	ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Rowï¿½ï¿½ 1ï¿½ï¿½ ï¿½Ì»ï¿½ï¿½Ì¹Ç·ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½İºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Fetchï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
+		//	ï¿½Ñ¹ï¿½ Fetchï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ï³ï¿½ï¿½ï¿½ Rowï¿½ï¿½ ï¿½Ø´ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í°ï¿½ outIdï¿½ï¿½ outGoldï¿½ï¿½ ï¿½ï¿½ï¿½ŞµÈ´ï¿½.
 		while (dbConn->Fetch())
 		{
 			cout << "Id : " << outId << ", Gold : " << outGold << '\n';
 		}
 
-		// connection ¹İ³³
+		// connection ï¿½İ³ï¿½
 		dbConnectionPool->Push(dbConn);
 	}
 }
 */
 
 
-/*	»ç¿ë ¿¹½Ã 2(±âº» API¸¦ 2Â÷ÀûÀ¸·Î ·¡ÇÎÇÏ¿© Àü´ŞÇÒ ÀÎÀÚ °³¼ö¸¦ Á¶±İ ÁÙ¿´´Ù)	*/
+/*	ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 2(ï¿½âº» APIï¿½ï¿½ 2ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ù¿ï¿½ï¿½ï¿½)	*/
 /*
 int main()
 {
 
-	// 1.  DB Connection Pool °´Ã¼ »ı¼º 
+	// 1.  DB Connection Pool ï¿½ï¿½Ã¼ ï¿½ï¿½ï¿½ï¿½ 
 	DBConnectionPool* dbConn = new DBConnectionPool();
 
-	// 2. SQL¿¡ ¿¬°áÇÏ¿© ÇØ´ç DB¿¡ ´ëÇÑ ¿¬°á ÇÚµéÀ» ¹ß±Ş ¹Ş±â
-	// -½ÇÁ¦ ¼­ºñ½º¿¡¼­´Â Connection StringÀ» ÇÏµå ÄÚµùÇÏÁö ¾Ê°í,
-	//	Server ÁÖ¼Ò, DB¸í, Account / PW µîÀº ÆÄÀÏ·Î ºĞ¸®ÇÏ¿© ·ÎµåÇÏ´Â ¹æ½ÄÀ¸·Î ÇØ¾ßÇÑ´Ù.
+	// 2. SQLï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½Ø´ï¿½ DBï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Úµï¿½ï¿½ï¿½ ï¿½ß±ï¿½ ï¿½Ş±ï¿½
+	// -ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ñ½º¿ï¿½ï¿½ï¿½ï¿½ï¿½ Connection Stringï¿½ï¿½ ï¿½Ïµï¿½ ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê°ï¿½,
+	//	Server ï¿½Ö¼ï¿½, DBï¿½ï¿½, Account / PW ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï·ï¿½ ï¿½Ğ¸ï¿½ï¿½Ï¿ï¿½ ï¿½Îµï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ø¾ï¿½ï¿½Ñ´ï¿½.
 	dbConn->Connect(10,
 			L"Driver={SQL Server Native Client 11.0};Server=(localdb)\\MSSQLLocalDB;Database=ServerDb;Trusted_Connection=Yes;");
 	dbConn->Unbind();
 
 	// 3. INSERT
-	// ³Ñ±æ ÀÎÀÚ Á¤ÀÇ
-	int32 gold = 100; // 100°ñµå
-	SQLLEN len = 0; // °¡º¯ÀÎÀÚ°¡ ¾Æ´Ï±â ¶§¹®¿¡ 0À¸·Î ¼³Á¤ÇÏ¸é µÊ
+	// ï¿½Ñ±ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+	int32 gold = 100; // 100ï¿½ï¿½ï¿½
+	SQLLEN len = 0; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú°ï¿½ ï¿½Æ´Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 0ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¸ï¿½ ï¿½ï¿½
 
 	WCHAR name[100] = L"MyName";
 	SQLLEN nameLen = 0;
@@ -205,49 +202,49 @@ int main()
 	ts.day = 13;
 	SQLLEN tsLen = 0;
 
-	// ³Ñ±æ ÀÎÀÚ ¹ÙÀÎµù
+	// ï¿½Ñ±ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Îµï¿½
 	dbConn->BindParam(1, &gold, &len);
 	dbConn->BindParam(2, &name, &len);
 	dbConn->BindParam(3, &ts, &tsLen);
 
-	// INSERT Äõ¸® ½ÇÇà
+	// INSERT ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	dbConn->Execute(L"INSERT INTO [dbo].[Gold]([gold],[name],[createDate]) VALUES(?, ?, ?)");
 	
 	// 4. SELECT
-	// id¿¡ ÇØ´çÇÏ´Â ColumnÀÇ µ¥ÀÌÅÍ¸¦ ¹Ş¾Æ¿Ã º¯¼ö
+	// idï¿½ï¿½ ï¿½Ø´ï¿½ï¿½Ï´ï¿½ Columnï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ ï¿½Ş¾Æ¿ï¿½ ï¿½ï¿½ï¿½ï¿½
 	int32 outId = 0;
 	SQLLEN outIdLen = 0;
 	dbConn->BindCol(1, &outId, &outIdLen);
 
-	// gold¿¡ ÇØ´çÇÏ´Â ColumnÀÇ µ¥ÀÌÅÍ¸¦ ¹Ş¾Æ¿Ã º¯¼ö
+	// goldï¿½ï¿½ ï¿½Ø´ï¿½ï¿½Ï´ï¿½ Columnï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ ï¿½Ş¾Æ¿ï¿½ ï¿½ï¿½ï¿½ï¿½
 	int32 outGold = 0;
 	SQLLEN outGoldLen = 0;
 	dbConn->BindCol(2, &outGold, &outGoldLen);
 
-	// name¿¡ ÇØ´çÇÏ´Â ColumnÀÇ µ¥ÀÌÅÍ¸¦ ¹Ş¾Æ¿Ã º¯¼ö
+	// nameï¿½ï¿½ ï¿½Ø´ï¿½ï¿½Ï´ï¿½ Columnï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ ï¿½Ş¾Æ¿ï¿½ ï¿½ï¿½ï¿½ï¿½
 	WCHAR outName[100];
 	SQLLEN outNameLen = 0;
 	dbConn->BindCol(3, &outName, &outNameLen);
 
-	// date¿¡ ÇØ´çÇÏ´Â ColumnÀÇ µ¥ÀÌÅÍ¸¦ ¹Ş¾Æ¿Ã º¯¼ö
+	// dateï¿½ï¿½ ï¿½Ø´ï¿½ï¿½Ï´ï¿½ Columnï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ ï¿½Ş¾Æ¿ï¿½ ï¿½ï¿½ï¿½ï¿½
 	TIMESTAMP_STRUCT outDate = {};
 	SQLLEN outDateLen = 0;
 	dbConn->BindCol(4, &outDate, &outDateLen);
 	
-	// SELECT Äõ¸® ½ÇÇà
+	// SELECT ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	dbConn->Execute(L"SELECT id, gold, name, createDate FROM [dbo].[Gold] WHERE gold = (?)");
 	
-	// wide string ÇÑ±Û Áö¿ø ¿É¼Ç ¼³Á¤
+	// wide string ï¿½Ñ±ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½É¼ï¿½ ï¿½ï¿½ï¿½ï¿½
 	wcout.imbue(locale("kore"));
 
-	// Äõ¸® ½ÇÇà °á°ú °¡Á®¿À±â
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	while (dbConn->Fetch())
 	{
 		wcout << "Id : " << outId << ", Gold : " << outGold << ", Name : " << outName<<'\n';
 		wcout << "Date : " << outDate.year << "/" << outDate.month << "/" << outDate.day << '\n';
 	}
 
-	// connection ¹İ³³
+	// connection ï¿½İ³ï¿½
 	GDBConnectionPool->Push(dbConn);
 }
 */

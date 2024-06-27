@@ -1,9 +1,11 @@
-#include "pch.h"
 #include "DBSynchronizer.h"
 #include "DBBind.h"
 #include "CoreGlobal.h"
 #include "XmlParser.h"
 #include <regex>
+
+#include "ConsoleLog.h"
+#include "MemoryManager.h"
 
 /*---------------------
 	StoredProcedures
@@ -29,7 +31,7 @@ namespace SP
 	class GetDBTables : public DBBind<0, 13>
 	{
 	public:
-		GetDBTables(DBConnection& conn) : DBBind(conn, QTablesAndColumns) {}
+		GetDBTables(DbConnection& conn) : DBBind(conn, QTablesAndColumns) {}
 
 		void Out_ObjectId(OUT int32& value) { BindCol(0, value); }
 		template<int32 N> void Out_TableName(OUT WCHAR(&value)[N]) { BindCol(1, value); }
@@ -59,7 +61,7 @@ namespace SP
 	class GetDBIndexes : public DBBind<0, 8>
 	{
 	public:
-		GetDBIndexes(DBConnection& conn) : DBBind(conn, QIndexes) {}
+		GetDBIndexes(DbConnection& conn) : DBBind(conn, QIndexes) {}
 
 		void Out_ObjectId(OUT int32& value) { BindCol(0, value); }
 		template<int32 N> void Out_IndexName(OUT WCHAR(&value)[N]) { BindCol(1, value); }
@@ -78,7 +80,7 @@ namespace SP
 	class GetDBStoredProcedures : public DBBind<0, 2>
 	{
 	public:
-		GetDBStoredProcedures(DBConnection& conn) : DBBind(conn, QStoredProcedures) {}
+		GetDBStoredProcedures(DbConnection& conn) : DBBind(conn, QStoredProcedures) {}
 
 		template<int32 N> void Out_Name(OUT WCHAR(&value)[N]) { BindCol(0, value); }
 		void Out_Body(OUT WCHAR* value, int32 len) { BindCol(1, value, len); }

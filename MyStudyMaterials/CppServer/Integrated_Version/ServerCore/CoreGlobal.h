@@ -1,27 +1,41 @@
 #pragma once
+#include <mutex>
 
-extern class ThreadManager*		GThreadManager;
-extern class MemoryManager*		GMemoryManager;
-extern class SendBufferManager* GSendBufferManager;
-extern class GlobalQueue*		GGlobalQueue;
-extern class JobTimer*			GJobTimer;
-extern class DeadLockProfiler*	GDeadLockProfiler;
+/* <sql.h>ë‚˜ ,<sqlext.h>ê°™ì€ ODBC APIê°€
+ * í¬ë¡œìŠ¤ í”Œë˜í¼ ê¸°ë°˜ì„ì—ë„ ë¶ˆêµ¬í•˜ê³ 
+ * í”Œë˜í¼ ë²„ì „ì— ë”°ë¥¸ ì¢…ì†ì„±ì„ ë³´ì´ê³  ìˆì–´ì„œ ì„ì‹œë¡œ ì œê±°í•´ ë‘ 
+ * ê´€ë ¨ ë¼ì´ë¸ŒëŸ¬ë¦¬ëŠ” DB~ë¡œ ì‹œì‘í•¨
+ * DBConnection
+ */
+class DeadLockProfiler;
+class ThreadManager;	
+class MemoryManager;		
+class SendBufferManager; 
+class GlobalQueue;
+class JobTimer;		
+// class DBConnectionPool;
+class ConsoleLog;
 
-
-extern class DBConnectionPool*	GDBConnectionPool;
-extern class ConsoleLog*		GConsoleLogger;
+extern DeadLockProfiler*	GDeadLockProfiler;
+extern ThreadManager*		GThreadManager;
+extern MemoryManager*		GMemoryManager;
+extern SendBufferManager* GSendBufferManager;
+extern GlobalQueue*		GGlobalQueue;
+extern JobTimer*			GJobTimer;
+// extern DBConnectionPool*	GDBConnectionPool;
+extern ConsoleLog*		GConsoleLogger;
 
 
 class CoreGlobal
 {
 public:
-	/* ¿ÜºÎ¿¡¼­ ServerCore¶óÀÌºê·¯¸®¸¦ ¸µÅ©ÇÏ¿© »ç¿ëÇÒ °æ¿ì
-		Custom Memory Allocation °ü·ÃÇÏ¿© ¿À·ù°¡ ¹ß»ıÇÑ´Ù.
+	/* ì™¸ë¶€ì—ì„œ ServerCoreë¼ì´ë¸ŒëŸ¬ë¦¬ë¥¼ ë§í¬í•˜ì—¬ ì‚¬ìš©í•  ê²½ìš°
+		Custom Memory Allocation ê´€ë ¨í•˜ì—¬ ì˜¤ë¥˜ê°€ ë°œìƒí•œë‹¤.
 
-		ÀÌÀ¯´Â Àü¿ª°´Ã¼ GMemoryManager°¡ ¸ÕÀú ÃÊ±âÈ­ µÇÁö ¾Ê¾Æ
-		Memory PoolÀÌ ºñ¾îÀÖ´Â »óÈ²¿¡¼­ PopÇÏ·Á°í Çß±â ¶§¹®ÀÌ´Ù.
+		ì´ìœ ëŠ” ì „ì—­ê°ì²´ GMemoryManagerê°€ ë¨¼ì € ì´ˆê¸°í™” ë˜ì§€ ì•Šì•„
+		Memory Poolì´ ë¹„ì–´ìˆëŠ” ìƒí™©ì—ì„œ Popí•˜ë ¤ê³  í–ˆê¸° ë•Œë¬¸ì´ë‹¤.
 
-		µû¶ó¼­ ¾Æ·¡¿Í °°ÀÌ ½Ì±ÛÅæÀ¸·Î ±¸ÇöÇÏ¿© »ç¿ëÇÑ´Ù.
+		ë”°ë¼ì„œ ì•„ë˜ì™€ ê°™ì´ ì‹±ê¸€í†¤ìœ¼ë¡œ êµ¬í˜„í•˜ì—¬ ì‚¬ìš©í•œë‹¤.
 	*/
 	/*static CoreGlobal* GetInstance() {
 		static std::mutex mtx;

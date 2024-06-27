@@ -1,9 +1,7 @@
 #pragma once
+#include "Container.h"
+#include "CoreMacro.h"
 #include "DBConnection.h"
-
-/*-------------------
-	DBConnectionPool
---------------------*/
 
 class DBConnectionPool
 {
@@ -17,14 +15,14 @@ public:
 	void					Clear();
 
 	// get remaining DB connection in 'connection pool'
-	DBConnection*			Pop();
+	DbConnection*			Pop();
 	// return the DB connection to the 'connection pool'
-	void					Push(DBConnection* connection);
+	void					Push(DbConnection* connection);
 
 private:
 	USE_LOCK;
 	// SQL handle for environment
-	SQLHENV					_environment = SQL_NULL_HANDLE;
-	Vector<DBConnection*>	_connectionPool;
+	SQLHENV					_environment;
+	Vector<DbConnection*>	_connectionPool;
 };
 

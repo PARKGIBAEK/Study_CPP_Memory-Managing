@@ -1,7 +1,8 @@
 #pragma once
 #include <mutex>
+#include <memory>
+#include <atomic>
 #include "Types.h"
-
 
 
 /* atomic의 compare_exchange_strong 함수의 동작
@@ -133,7 +134,7 @@ public:
 		}
 	}
 
-	shared_ptr<T> TryPop()
+	std::shared_ptr<T> TryPop()
 	{
 		/*	[data][data][nullptr]
 			  ↑				↑

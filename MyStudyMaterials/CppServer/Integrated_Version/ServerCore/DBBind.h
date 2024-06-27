@@ -1,4 +1,5 @@
 #pragma once
+#include "CoreMacro.h"
 #include "DBConnection.h"
 
 template<int32 C>
@@ -17,7 +18,7 @@ template<int32 ParamCount, int32 ColumnCount>
 class DBBind
 {
 public:
-	DBBind(DBConnection& dbConnection, const WCHAR* query)
+	DBBind(DbConnection& dbConnection, const WCHAR* query)
 		: _dbConnection(dbConnection), _query(query)
 	{
 		::memset(_paramIndex, 0, sizeof(_paramIndex));
@@ -106,7 +107,7 @@ public:
 	}
 
 protected:
-	DBConnection& _dbConnection;
+	DbConnection& _dbConnection;
 	const WCHAR* _query;
 	SQLLEN			_paramIndex[ParamCount > 0 ? ParamCount : 1];
 	SQLLEN			_columnIndex[ColumnCount > 0 ? ColumnCount : 1];

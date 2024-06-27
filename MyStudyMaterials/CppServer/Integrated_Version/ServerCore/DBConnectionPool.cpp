@@ -1,13 +1,12 @@
-#include "pch.h"
 #include "DBConnectionPool.h"
-
+#include "Lock.h"
+#include "MemoryManager.h"
 /*-------------------
 	DBConnectionPool
 --------------------*/
 
-DBConnectionPool::DBConnectionPool()
+DBConnectionPool::DBConnectionPool(): _environment(SQL_NULL_HANDLE)
 {
-
 }
 
 DBConnectionPool::~DBConnectionPool()
@@ -35,7 +34,7 @@ bool DBConnectionPool::Connect(int32 connectionCount, const WCHAR* connectionStr
 	// connectionCount만큼 Connection 생성
 	for (int32 i = 0; i < connectionCount; i++)
 	{
-		DBConnection* connection = XNew<DBConnection>(); // XNew는 Pooling을 위한 할당 함수
+		DbConnection* connection = XNew<DbConnection>(); // XNew는 Pooling을 위한 할당 함수
 		if (connection->Connect(_environment, connectionString) == false)
 			return false;
 
@@ -56,25 +55,25 @@ void DBConnectionPool::Clear()
 	}
 
 	// connection 해제
-	for (DBConnection* connection : _connectionPool)
+	for (DbConnection* connection : _connectionPool)
 		XDelete(connection);
 
 	_connectionPool.clear();
 }
 
-DBConnection* DBConnectionPool::Pop()
+DbConnection* DBConnectionPool::Pop()
 {
 	WRITE_LOCK;
 
 	if (_connectionPool.empty())
 		return nullptr;
 
-	DBConnection* connection = _connectionPool.back();
+	DbConnection* connection = _connectionPool.back();
 	_connectionPool.pop_back();
 	return connection;
 }
 
-void DBConnectionPool::Push(DBConnection* connection)
+void DBConnectionPool::Push(DbConnection* connection)
 {
 	WRITE_LOCK;
 

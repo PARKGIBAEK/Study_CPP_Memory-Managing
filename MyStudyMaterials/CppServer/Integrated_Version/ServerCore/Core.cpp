@@ -1,4 +1,4 @@
 // Core.cpp
 //#define WIN32_LEAN_AND_MEAN
-//#include "pch.h"
+// #define NOMINMAX
 #include "Core.h"

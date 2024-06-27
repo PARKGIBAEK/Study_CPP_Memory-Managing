@@ -1,15 +1,10 @@
-#include "pch.h"
 #include "ClientPacketHandler.h"
 #include "Player.h"
 #include "Room.h"
 #include "GameSession.h"
+#include "MemoryManager.h"
 
-/*
-	using PacketHandlerFunc = std::function<bool(std::shared_ptr<PacketSession>, BYTE*, int32)>;
-*/
 PacketHandlerFunc GPacketHandler[UINT16_MAX];
-
-// Á÷Á¢ ÄÁÅÙÃ÷ ÀÛ¾÷ÀÚ
 
 bool Handle_INVALID(std::shared_ptr<PacketSession> session, BYTE* buffer, int32 len)
 {
@@ -20,22 +15,22 @@ bool Handle_INVALID(std::shared_ptr<PacketSession> session, BYTE* buffer, int32 
 
 bool Handle_C_LOGIN(std::shared_ptr<PacketSession> session, Protocol::C_LOGIN& pkt)
 {
-	std::shared_ptr<GameSession> gameSession = static_pointer_cast<GameSession>(session);
+	std::shared_ptr<GameSession> gameSession = std::static_pointer_cast<GameSession>(session);
 
-	// TODO : Validation Ã¼Å©
+	// TODO : Validation ì²´í¬
 
 	Protocol::S_LOGIN loginPkt;
 	loginPkt.set_success(true);
 
-	// DB¿¡¼­ ÇÃ·¹ÀÌ Á¤º¸¸¦ ±Ü¾î¿Â´Ù
-	// GameSession¿¡ ÇÃ·¹ÀÌ Á¤º¸¸¦ ÀúÀå (¸Ş¸ğ¸®)
+	// DBì—ì„œ í”Œë ˆì´ì–´ ë°ì´í„°ë¥¼ ê°€ì ¸ì˜¤ê¸°
+	// GameSessionì— í”Œë ˆì´ì–´ ë°ì´í„° ì¶”ê°€ (ë©”ëª¨ë¦¬)
 
-	// ID ¹ß±Ş (DB ¾ÆÀÌµğ°¡ ¾Æ´Ï°í, ÀÎ°ÔÀÓ ¾ÆÀÌµğ)
-	static Atomic<uint64> idGenerator = 1;
+	// ID ìƒì„± (DB ì•„ì´ë””ê°€ ì•„ë‹ˆê³ , ê²Œì„ ì•„ì´ë””)
+	static std::atomic<uint64> idGenerator = 1;
 
 	{
 		auto player = loginPkt.add_players();
-		player->set_name(u8"DB¿¡¼­±Ü¾î¿ÂÀÌ¸§1");
+		player->set_name(u8"DB_extracted_name");
 		player->set_playertype(Protocol::PLAYER_TYPE_KNIGHT);
 
 		std::shared_ptr<Player> playerRef = MakeShared<Player>();
@@ -44,13 +39,12 @@ bool Handle_C_LOGIN(std::shared_ptr<PacketSession> session, Protocol::C_LOGIN& p
 		playerRef->type = player->playertype();
 		playerRef->ownerSession = gameSession;
 
-		gameSession->_players.push_back(playerRef);
+		gameSession->mPlayers.push_back(playerRef);
 	}
 
 	{
 		auto player = loginPkt.add_players();
-		//player->set_name(u8"DB¿¡¼­±Ü¾î¿ÂÀÌ¸§2");
-		player->set_id(player->id());
+		player->set_name(u8"DB_extracted_name_2");
 		player->set_playertype(Protocol::PLAYER_TYPE_MAGE);
 
 		std::shared_ptr<Player> playerRef = MakeShared<Player>();
@@ -59,7 +53,7 @@ bool Handle_C_LOGIN(std::shared_ptr<PacketSession> session, Protocol::C_LOGIN& p
 		playerRef->type = player->playertype();
 		playerRef->ownerSession = gameSession;
 
-		gameSession->_players.push_back(playerRef);
+		gameSession->mPlayers.push_back(playerRef);
 	}
 
 	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(loginPkt);
@@ -70,27 +64,27 @@ bool Handle_C_LOGIN(std::shared_ptr<PacketSession> session, Protocol::C_LOGIN& p
 
 bool Handle_C_ENTER_GAME(std::shared_ptr<PacketSession> session, Protocol::C_ENTER_GAME& pkt)
 {
-	std::shared_ptr<GameSession> gameSession = static_pointer_cast<GameSession>(session);
+	std::shared_ptr<GameSession> gameSession = std::static_pointer_cast<GameSession>(session);
 
 	uint64 index = pkt.playerindex();
 	// TODO : Validation
 
-	gameSession->_currentPlayer = gameSession->_players[index]; // READ_ONLY?
-	gameSession->_room = GRoom;
+	gameSession->mCurrentPlayer = gameSession->mPlayers[index]; // READ_ONLY?
+	gameSession->mRoom = GRoom;
 
-	GRoom->DoAsync(&Room::Enter, gameSession->_currentPlayer);
+	GRoom->DoAsync(&Room::Enter, gameSession->mCurrentPlayer);
 
 	Protocol::S_ENTER_GAME enterGamePkt;
 	enterGamePkt.set_success(true);
 	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(enterGamePkt);
-	gameSession->_currentPlayer->ownerSession->Send(sendBuffer);
+	gameSession->mCurrentPlayer->ownerSession->Send(sendBuffer);
 
 	return true;
 }
 
 bool Handle_C_CHAT(std::shared_ptr<PacketSession> session, Protocol::C_CHAT& pkt)
 {
-	std::cout << pkt.msg() << endl;
+	std::cout << pkt.msg() << std::endl;
 
 	Protocol::S_CHAT chatPkt;
 	chatPkt.set_msg(pkt.msg());

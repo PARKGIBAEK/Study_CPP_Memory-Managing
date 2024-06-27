@@ -1,13 +1,15 @@
 #pragma once
-#include "Session.h"
+#include <memory>
+#include "Types.h"
+#include "Container.h"
+#include "PacketSession.h"
 
+class Player;
+class Room;
 class GameSession : public PacketSession
 {
 public:
-	~GameSession()
-	{
-		cout << "~GameSession" << endl;
-	}
+	~GameSession() override;
 
 	virtual void OnConnected() override;
 	virtual void OnDisconnected() override;
@@ -15,8 +17,8 @@ public:
 	virtual void OnSend(int32 len) override;
 
 public:
-	Vector<std::shared_ptr<class Player>> _players;
+	Vector<std::shared_ptr<Player>> mPlayers;
 
-	std::shared_ptr<class Player> _currentPlayer;
-	weak_ptr<class Room> _room;
+	std::shared_ptr<Player> mCurrentPlayer;
+	std::weak_ptr<Room> mRoom;
 };

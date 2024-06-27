@@ -1,8 +1,6 @@
 /*   사용 안함   */
-
-
 #pragma once
-#include <vector>
+#include "Container.h"
 #include "Types.h"
 
 /*-----------------
@@ -13,5 +11,5 @@ class FileUtils
 {
 public:
 	static Vector<BYTE>		ReadFile(const WCHAR* path);
-	static String			Convert(string str);
+	static String			Convert(std::string str);
 };

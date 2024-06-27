@@ -1,5 +1,12 @@
-#include "pch.h"
 #include "SocketUtils.h"
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#define WIN32_LEAN_AND_MEAN
+#define NOMINMAX
+#include <windows.h>
+
+
+#include "CoreMacro.h"
 
 /*----------------
 	SocketUtils

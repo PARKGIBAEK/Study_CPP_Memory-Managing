@@ -1,22 +1,14 @@
-﻿#include "pch.h"
-#include "ThreadManager.h"
+﻿#include "LibConfig.h"
+#include "CoreTLS.h"
 #include "CoreGlobal.h"
-#include "Service.h"
-#include "Session.h"
+#include "ThreadManager.h"
+#include "ServerService.h"
+#include "IocpService.h"
 #include "GameSession.h"
-#include "BufferWriter.h"
 #include "ClientPacketHandler.h"
-#include <tchar.h>
-#include "Protocol.pb.h"
-#include "Job.h"
-#include "Room.h"
-#include "Player.h"
-#include "DBConnectionPool.h"
-#include "DBBind.h"
-#include "XmlParser.h"
-#include "DBSynchronizer.h"
-#include "GenProcedures.h"
-#include "GameSessionManager.h"
+#include <memory>
+
+#include "MemoryManager.h"
 
 enum
 {
@@ -44,14 +36,13 @@ void DoWorkerJob(std::shared_ptr<ServerService>& service)
 
 int main()
 {
+	/*// DB Test Code
 	ASSERT_CRASH(GDBConnectionPool->Connect(1, L"Driver={SQL Server Native Client 11.0};Server=(localdb)\\MSSQLLocalDB;Database=ServerDb;Trusted_Connection=Yes;"));
 
-	DBConnection* dbConn = GDBConnectionPool->Pop();
+	DbConnection* dbConn = GDBConnectionPool->Pop();
 	DBSynchronizer dbSync(*dbConn);
 	dbSync.Synchronize(L"GameDB.xml");
-
-	// DB Test Code
-	/*
+	
 	{
 		WCHAR name[] = L"Test";
 
@@ -87,13 +78,13 @@ int main()
 	*/
 	ClientPacketHandler::Init();
 
-	std::shared_ptr<ServerService>service = MakeShared<ServerService>(
+	std::shared_ptr<ServerzService>service = MakeShared<ServerService>(
 		NetAddress(L"127.0.0.1", 7777),
 		MakeShared<IocpService>(),
 		MakeShared<GameSession>, // TODO : SessionManager 등
 		100);
 
-	ASSERT_CRASH(service->Start());
+	ASSERT_CRASH(service->Start())
 
 	for (int32 i = 0; i < 5; i++)
 	{

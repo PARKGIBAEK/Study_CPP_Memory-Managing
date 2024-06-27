@@ -1,19 +1,17 @@
 #pragma once
-
-/*--------------
-	NetAddress
----------------*/
+#include "Types.h"
+#include <WS2tcpip.h>
 
 class NetAddress
 {
 public:
 	NetAddress() = default;
 	NetAddress(SOCKADDR_IN _sockAddr);
-	NetAddress(wstring _ip, uint16 _port);
+	NetAddress(std::wstring _ip, uint16 _port);
 
-	SOCKADDR_IN&	GetSockAddr() { return sockAddr; }
-	wstring			GetIpAddress();
-	uint16			GetPort() { return ::ntohs(sockAddr.sin_port); }
+	SOCKADDR_IN&	GetSockAddr();
+	std::wstring			GetIpAddress();
+	uint16			GetPort() ;
 
 public:
 	static IN_ADDR	Ip2Address(const WCHAR* ip);

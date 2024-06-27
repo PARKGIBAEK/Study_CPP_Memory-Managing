@@ -11,14 +11,18 @@ using uint8 = unsigned __int8;
 using uint16 = unsigned __int16;
 using uint32 = unsigned __int32;
 using uint64 = unsigned __int64;
-
+using WCHAR = wchar_t;
 template<typename T>
 using Atomic = std::atomic<T>;
 using Mutex = std::mutex;
 using CondVar = std::condition_variable;
 using UniqueLock = std::unique_lock<std::mutex>;
 using LockGuard = std::lock_guard<std::mutex>;
-
+constexpr uint64 UINF=0xffff'ffff;
+enum class ALIGNMENT
+{
+    SLIST_ALIGNMENT = 16,
+};
 /*			shared_ptr			*/
 //template<typename T>
 //using shared_ptr = std::shared_ptr<T>;

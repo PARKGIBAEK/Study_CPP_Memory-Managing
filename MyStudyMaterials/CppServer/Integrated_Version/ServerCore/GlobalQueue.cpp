@@ -1,19 +1,5 @@
-#include "pch.h"
 #include "GlobalQueue.h"
-
-/*----------------
-	GlobalQueue
------------------*/
-
-GlobalQueue::GlobalQueue()
-{
-
-}
-
-GlobalQueue::~GlobalQueue()
-{
-
-}
+#include "JobQueue.h"
 
 void GlobalQueue::Push(std::shared_ptr<JobQueue> jobQueue)
 {

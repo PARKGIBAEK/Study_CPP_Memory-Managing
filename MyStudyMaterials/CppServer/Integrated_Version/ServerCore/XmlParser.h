@@ -1,4 +1,5 @@
 #pragma once
+#include <memory>
 #include "Types.h"
 #include "Container.h"
 #include "rapidxml.hpp"
@@ -54,6 +55,6 @@ public:
 	bool ParseFromFile(const WCHAR* path, OUT XmlNode& root);
 
 private:
-	shared_ptr<XmlDocumentType>		_document = nullptr;
+	std::shared_ptr<XmlDocumentType>		_document = nullptr;
 	String							_data;
 };

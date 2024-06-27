@@ -1,7 +1,18 @@
 #pragma once
+#include <functional>
+#include <memory>
+#include "Session.h"
 #include "Protocol.pb.h"
+#include "Types.h"
+#include "SendBuffer.h"
+#include "CoreGlobal.h"
+#include "CoreMacro.h"
+#include "PacketSession.h"
+#include "PacketHeader.h"
+#include "SendBufferManager.h"
 
-using PacketHandlerFunc = std::function<bool(std::shared_ptr<PacketSession>, BYTE*, int32)>;
+
+using PacketHandlerFunc = std::function<bool(std::shared_ptr<PacketSession>&, BYTE*, int32)>;
 extern PacketHandlerFunc GPacketHandler[UINT16_MAX];
 
 enum : uint16
@@ -15,10 +26,10 @@ enum : uint16
 };
 
 // Custom Handlers
-bool Handle_INVALID(std::shared_ptr<PacketSession> session, BYTE* buffer, int32 len);
-bool Handle_S_LOGIN(std::shared_ptr<PacketSession> session, Protocol::S_LOGIN& pkt);
-bool Handle_S_ENTER_GAME(std::shared_ptr<PacketSession> session, Protocol::S_ENTER_GAME& pkt);
-bool Handle_S_CHAT(std::shared_ptr<PacketSession> session, Protocol::S_CHAT& pkt);
+bool Handle_INVALID(std::shared_ptr<PacketSession>& session, BYTE* buffer, int32 len);
+bool Handle_S_LOGIN(std::shared_ptr<PacketSession>& session, Protocol::S_LOGIN& pkt);
+bool Handle_S_ENTER_GAME(std::shared_ptr<PacketSession>& session, Protocol::S_ENTER_GAME& pkt);
+bool Handle_S_CHAT(std::shared_ptr<PacketSession>& session, Protocol::S_CHAT& pkt);
 
 class ServerPacketHandler
 {
@@ -27,12 +38,12 @@ public:
 	{
 		for (int32 i = 0; i < UINT16_MAX; i++)
 			GPacketHandler[i] = Handle_INVALID;
-		GPacketHandler[PKT_S_LOGIN] = [](std::shared_ptr<PacketSession> session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::S_LOGIN>(Handle_S_LOGIN, session, buffer, len); };
-		GPacketHandler[PKT_S_ENTER_GAME] = [](std::shared_ptr<PacketSession> session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::S_ENTER_GAME>(Handle_S_ENTER_GAME, session, buffer, len); };
-		GPacketHandler[PKT_S_CHAT] = [](std::shared_ptr<PacketSession> session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::S_CHAT>(Handle_S_CHAT, session, buffer, len); };
+		GPacketHandler[PKT_S_LOGIN] = [](std::shared_ptr<PacketSession>& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::S_LOGIN>(Handle_S_LOGIN, session, buffer, len); };
+		GPacketHandler[PKT_S_ENTER_GAME] = [](std::shared_ptr<PacketSession>& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::S_ENTER_GAME>(Handle_S_ENTER_GAME, session, buffer, len); };
+		GPacketHandler[PKT_S_CHAT] = [](std::shared_ptr<PacketSession>& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::S_CHAT>(Handle_S_CHAT, session, buffer, len); };
 	}
 
-	static bool HandlePacket(std::shared_ptr<PacketSession> session, BYTE* buffer, int32 len)
+	static bool HandlePacket(std::shared_ptr<PacketSession>& session, BYTE* buffer, int32 len)
 	{
 		PacketHeader* header = reinterpret_cast<PacketHeader*>(buffer);
 		return GPacketHandler[header->id](session, buffer, len);
@@ -43,7 +54,7 @@ public:
 
 private:
 	template<typename PacketType, typename ProcessFunc>
-	static bool HandlePacket(ProcessFunc func, std::shared_ptr<PacketSession> session, BYTE* buffer, int32 len)
+	static bool HandlePacket(ProcessFunc func, std::shared_ptr<PacketSession>& session, BYTE* buffer, int32 len)
 	{
 		PacketType pkt;
 		if (pkt.ParseFromArray(buffer + sizeof(PacketHeader), len - sizeof(PacketHeader)) == false)

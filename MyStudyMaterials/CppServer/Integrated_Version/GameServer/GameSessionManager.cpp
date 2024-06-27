@@ -1,8 +1,14 @@
-#include "pch.h"
 #include "GameSessionManager.h"
 #include "GameSession.h"
+#include "SendBuffer.h"
+#include <iostream>
 
 GameSessionManager GSessionManager;
+
+GameSessionManager::GameSessionManager()
+{
+	std::cout << "Debug\n";
+}
 
 void GameSessionManager::Add(std::shared_ptr<GameSession> session)
 {

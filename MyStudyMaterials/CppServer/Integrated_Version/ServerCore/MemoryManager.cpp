@@ -1,7 +1,9 @@
-#include "pch.h"
 #include "MemoryManager.h"
 #include "MemoryPool.h"
 #include "CoreGlobal.h"
+#include "CoreMacro.h"
+#include "MemoryHeader.h"
+
 /*-------------
 	MemoryManager
 ---------------*/
@@ -82,7 +84,7 @@ void* MemoryManager::Allocate(int32 size)
 	{// 메모리 풀링 최대 크기를 벗어나면 일반 할당
 		
 		header = reinterpret_cast<MemoryHeader*>(
-			::_aligned_malloc(allocSize, SLIST_ALIGNMENT));
+			::_aligned_malloc(allocSize, static_cast<int>(ALIGNMENT::SLIST_ALIGNMENT)));
 	}
 	else
 	{

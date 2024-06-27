@@ -5,8 +5,7 @@ import "Enum.proto";
 
 message Player
 {
-	uint64 id = 1;
+	uint64 playerId = 1;
 	string name = 2;
-	PlayerType playerType = 3;
-	// Ω∫≈» ¡§∫∏...
+	PlayerType playertype = 3;
 }

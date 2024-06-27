@@ -1,6 +1,6 @@
 #pragma once
 #include "NetAddress.h"
-
+#include <MSWSock.h>
 /*----------------
 	SocketUtils
 -----------------*/

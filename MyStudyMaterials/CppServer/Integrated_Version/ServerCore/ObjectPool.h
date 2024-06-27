@@ -1,4 +1,6 @@
 #pragma once
+#include <memory>
+#include "MemoryHeader.h"
 #include "Types.h"
 #include "MemoryPool.h"
 
@@ -29,6 +31,7 @@ public:
 		new(memory) Type(std::forward<Args>(args)...); // placement new
 		return memory;
 	}
+	
 	static void Push(Type* obj)
 	{
 		obj->~Type(); // 소멸자 호출

@@ -33,9 +33,6 @@
     <ClInclude Include="Core.h">
       <Filter>Main</Filter>
     </ClInclude>
-    <ClInclude Include="pch.h">
-      <Filter>Main</Filter>
-    </ClInclude>
     <ClInclude Include="Types.h">
       <Filter>Main</Filter>
     </ClInclude>
@@ -56,9 +53,6 @@
     </ClInclude>
     <ClInclude Include="DeadLockProfiler.h">
       <Filter>Thread</Filter>
-    </ClInclude>
-    <ClInclude Include="Allocator.h">
-      <Filter>Memory</Filter>
     </ClInclude>
     <ClInclude Include="MemoryManager.h">
       <Filter>Memory</Filter>
@@ -162,12 +156,57 @@
     <ClInclude Include="LockFreeStack.h">
       <Filter>Utils</Filter>
     </ClInclude>
+    <ClInclude Include="TimerItem.h">
+      <Filter>Job</Filter>
+    </ClInclude>
+    <ClInclude Include="Time.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="JobData.h">
+      <Filter>Job</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientService.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="ISession.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="MemoryHeader.h">
+      <Filter>Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="SendBufferChunk.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="SendBufferManager.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerService.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="PacketSession.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="PacketHeader.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="StompAllocator.h">
+      <Filter>Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="PoolAllocator.h">
+      <Filter>Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="STL_Allocator.h">
+      <Filter>Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseAllocator.h">
+      <Filter>Memory</Filter>
+    </ClInclude>
+    <ClInclude Include="ConcurrentQueue.h" />
+    <ClInclude Include="ConcurrentStack.h" />
+    <ClInclude Include="LockFreeQueue.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core.cpp">
-      <Filter>Main</Filter>
-    </ClCompile>
-    <ClCompile Include="pch.cpp">
       <Filter>Main</Filter>
     </ClCompile>
     <ClCompile Include="CoreGlobal.cpp">
@@ -184,9 +223,6 @@
     </ClCompile>
     <ClCompile Include="DeadLockProfiler.cpp">
       <Filter>Thread</Filter>
-    </ClCompile>
-    <ClCompile Include="Allocator.cpp">
-      <Filter>Memory</Filter>
     </ClCompile>
     <ClCompile Include="MemoryManager.cpp">
       <Filter>Memory</Filter>
@@ -269,5 +305,44 @@
     <ClCompile Include="LockFreeStack.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
+    <ClCompile Include="TimerItem.cpp">
+      <Filter>Job</Filter>
+    </ClCompile>
+    <ClCompile Include="Time.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="JobData.cpp">
+      <Filter>Job</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientService.cpp">
+      <Filter>Network</Filter>
+    </ClCompile>
+    <ClCompile Include="MemoryHeader.cpp">
+      <Filter>Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="SendBufferChunk.cpp">
+      <Filter>Network</Filter>
+    </ClCompile>
+    <ClCompile Include="SendBufferManager.cpp">
+      <Filter>Network</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerService.cpp">
+      <Filter>Network</Filter>
+    </ClCompile>
+    <ClCompile Include="PacketSession.cpp">
+      <Filter>Network</Filter>
+    </ClCompile>
+    <ClCompile Include="PoolAllocator.cpp">
+      <Filter>Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="StompAllocator.cpp">
+      <Filter>Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseAllocator.cpp">
+      <Filter>Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="ConcurrentQueue.cpp" />
+    <ClCompile Include="ConcurrentStack.cpp" />
+    <ClCompile Include="LockFreeQueue.cpp" />
   </ItemGroup>
 </Project>

@@ -1,29 +1,12 @@
 #pragma once
+#include <memory>
+#include "Container.h"
+#include "CoreMacro.h"
+#include "Types.h"
+#include "TimerItem.h"
 
-struct JobData
-{
-	JobData(std::weak_ptr<JobQueue> owner, std::shared_ptr<Job> job) : owner(owner), job(job)
-	{
-		
-	}
-
-	std::weak_ptr<JobQueue>		owner;// Job을 실행해야할 JobQueue
-	std::shared_ptr<Job>		job;
-};
-
-struct TimerItem
-{
-	bool operator<(const TimerItem& other) const
-	{
-		return executeTick > other.executeTick;
-	}
-
-	uint64 executeTick = 0;
-	/* jobData를 shared_ptr로 만들지 않고, raw pointer로 만든 이유는 ?
-	  - JobData가 이리저리 옮겨다니면 Ref count 변경으로 인한 비용 발생 */
-	JobData* jobData = nullptr;
-};
-
+class Job;
+class JobQueue;
 /*--------------
 	JobTimer
 ---------------*/
@@ -43,6 +26,6 @@ public:
 
 private:
 	USE_LOCK;
-	PriorityQueue<TimerItem>	_items;
-	Atomic<bool>				_distributing = false;
+	PriorityQueue<TimerItem>		_items;
+	std::atomic<bool>				_distributing;
 };

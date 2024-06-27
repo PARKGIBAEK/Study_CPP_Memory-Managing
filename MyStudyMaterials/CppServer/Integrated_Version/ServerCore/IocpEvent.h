@@ -1,6 +1,11 @@
 #pragma once
+#include <memory>
 #include "Container.h"
-class Session;
+#include "Core.h"
+#include <WS2tcpip.h>
+
+class ISession;
+class SendBuffer;
 
 enum class EventType : uint8
 {
@@ -12,23 +17,19 @@ enum class EventType : uint8
 	Send
 };
 
-/*--------------
-	IocpEvent
----------------*/
-
 class IocpEvent : public OVERLAPPED
 {
 public:
 	IocpEvent(EventType _type);
-	// »ó¼Ó¹ŞÀº OVERLLAPED°´Ã¼ÀÇ ³»¿ëÀ» ÃÊ±âÈ­
+	// ìƒì†ë°›ì€ OVERLLAPEDê°ì²´ì˜ ë‚´ìš©ì„ ì´ˆê¸°í™”
 	void			Init();
 
 public:
 	EventType		eventType;
-	/* onwer pointer¸¦ µé°íÀÖ´Â ÀÌÀ¯
-	- GetQueuedCompletionStatusÇÔ¼ö¿¡¼­ CompletionKey·Î IocpObject¸¦ ²¨³»¼­ ¹«¾ğ°¡¸¦ ÇÏ·Á°í ÇÒ ¶§
-	  ÇØ´ç SessionÀÌ ¼Ò¸êÇØ¹ö·È´Ù¸é Àß¸øµÈ µ¿ÀÛÀ» ÇÏ°Ô µÉ °ÍÀÌ´Ù.
-	  µû¶ó¼­ ownerSession Æ÷ÀÎÅÍ°¡ À¯È¿ÇÑÁö °ËÁõÇÑ µÚ Event¸¦ Ã³¸®ÇÏ´Â ¹æ½ÄÀ» Ã¤¿ëÇÒ ¸ñÀûÀ¸·Î ownerSession pointer »ç¿ë.*/
+	/* onwer pointerë¥¼ ë“¤ê³ ìˆëŠ” ì´ìœ 
+	- GetQueuedCompletionStatusí•¨ìˆ˜ì—ì„œ CompletionKeyë¡œ IocpObjectë¥¼ êº¼ë‚´ì„œ ë¬´ì–¸ê°€ë¥¼ í•˜ë ¤ê³  í•  ë•Œ
+	  í•´ë‹¹ Sessionì´ ì†Œë©¸í•´ë²„ë ¸ë‹¤ë©´ ì˜ëª»ëœ ë™ì‘ì„ í•˜ê²Œ ë  ê²ƒì´ë‹¤.
+	  ë”°ë¼ì„œ ownerSession í¬ì¸í„°ê°€ ìœ íš¨í•œì§€ ê²€ì¦í•œ ë’¤ Eventë¥¼ ì²˜ë¦¬í•˜ëŠ” ë°©ì‹ì„ ì±„ìš©í•  ëª©ì ìœ¼ë¡œ ownerSession pointer ì‚¬ìš©.*/
 	std::shared_ptr<ISession>	ownerSession;
 };
 
@@ -39,7 +40,7 @@ public:
 class ConnectEvent : public IocpEvent
 {
 public:
-	ConnectEvent() : IocpEvent(EventType::Connect) { }
+	ConnectEvent();
 };
 
 
@@ -50,7 +51,7 @@ public:
 class DisconnectEvent : public IocpEvent
 {
 public:
-	DisconnectEvent() : IocpEvent(EventType::Disconnect) { }
+	DisconnectEvent();
 };
 
 
@@ -61,7 +62,7 @@ public:
 class AcceptEvent : public IocpEvent
 {
 public:
-	AcceptEvent() : IocpEvent(EventType::Accept) { }
+	AcceptEvent();
 };
 
 
@@ -72,7 +73,7 @@ public:
 class RecvEvent : public IocpEvent
 {
 public:
-	RecvEvent() : IocpEvent(EventType::Recv) { }
+	RecvEvent();
 };
 
 
@@ -83,7 +84,7 @@ public:
 class SendEvent : public IocpEvent
 {
 public:
-	SendEvent() : IocpEvent(EventType::Send) { }
+	SendEvent();
 	 
 	//Vector<std::shared_ptr<SendBuffer>> sendBuffers;
 	Vector<std::shared_ptr<SendBuffer>> sendBuffers;

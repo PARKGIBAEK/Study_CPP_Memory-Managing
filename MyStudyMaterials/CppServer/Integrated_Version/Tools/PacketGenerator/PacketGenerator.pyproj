@@ -11,6 +11,8 @@
     <OutputPath>.</OutputPath>
     <Name>PacketGenerator</Name>
     <RootNamespace>PacketGenerator</RootNamespace>
+    <InterpreterId>
+    </InterpreterId>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>

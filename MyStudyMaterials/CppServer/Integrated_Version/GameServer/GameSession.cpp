@@ -1,9 +1,15 @@
-#include "pch.h"
 #include "GameSession.h"
 #include "GameSessionManager.h"
 #include "ClientPacketHandler.h"
-#include "Room.h"
+#include "PacketHeader.h"
 #include "Player.h"
+#include "Room.h"
+#include <iostream>
+
+GameSession::~GameSession()
+{
+		std::cout << "~GameSession" << std::endl;
+}
 
 void GameSession::OnConnected()
 {
@@ -13,21 +19,21 @@ void GameSession::OnConnected()
 	auto port = t.GetPort();
 	printf("[port : %d][ ip : %s] is connected\n", port, ip);
 	*/
-	GSessionManager.Add(static_pointer_cast<GameSession>(shared_from_this()));
+	GSessionManager.Add(std::static_pointer_cast<GameSession>(shared_from_this()));
 }
 
 void GameSession::OnDisconnected()
 {
-	GSessionManager.Remove(static_pointer_cast<GameSession>(shared_from_this()));
+	GSessionManager.Remove(std::static_pointer_cast<GameSession>(shared_from_this()));
 
-	if (_currentPlayer)
+	if (mCurrentPlayer)
 	{
-		if (auto room = _room.lock())
-			room->DoAsync(&Room::Leave, _currentPlayer);
+		if (auto room = mRoom.lock())
+			room->DoAsync(&Room::Leave, mCurrentPlayer);
 	}
 
-	_currentPlayer = nullptr;
-	_players.clear();
+	mCurrentPlayer = nullptr;
+	mPlayers.clear();
 }
 
 void GameSession::OnRecvPacket(BYTE* buffer, int32 len)
@@ -35,7 +41,7 @@ void GameSession::OnRecvPacket(BYTE* buffer, int32 len)
 	std::shared_ptr< PacketSession> session = GetPacketSessionRef();
 	PacketHeader* header = reinterpret_cast<PacketHeader*>(buffer);
 
-	// TODO : packetId 措开 眉农
+	// TODO : packetId 锟诫开 眉农
 	ClientPacketHandler::HandlePacket(session, buffer, len);
 }
 

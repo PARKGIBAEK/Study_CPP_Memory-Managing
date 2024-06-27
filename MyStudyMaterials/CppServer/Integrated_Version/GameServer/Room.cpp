@@ -1,9 +1,9 @@
-#include "pch.h"
 #include "Room.h"
 #include "Player.h"
+#include "SendBuffer.h"
 #include "GameSession.h"
 
-shared_ptr<Room> GRoom = std::make_shared<Room>();
+std::shared_ptr<Room> GRoom = std::make_shared<Room>();
 
 void Room::Enter(std::shared_ptr<Player> player)
 {

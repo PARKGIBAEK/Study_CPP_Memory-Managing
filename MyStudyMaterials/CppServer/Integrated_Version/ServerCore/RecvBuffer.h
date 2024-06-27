@@ -1,5 +1,6 @@
 #pragma once
-
+#include "Container.h"
+#include "Types.h"
 /*--------------
 	RecvBuffer
 ----------------*/

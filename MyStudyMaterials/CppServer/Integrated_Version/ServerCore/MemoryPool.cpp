@@ -1,5 +1,13 @@
-#include "pch.h"
 #include "MemoryPool.h"
+#include "MemoryHeader.h"
+#include "CoreMacro.h"
+
+// #define WIN32_LEAN_AND_MEAN
+// #define NOMINMAX
+// #include <winsock2.h>
+// #include <mswsock.h>
+// #include <windows.h>
+// #include <ws2tcpip.h>
 
 /*-----------------
 	MemoryPool
@@ -54,7 +62,7 @@ MemoryHeader* MemoryPool::Pop()
 	{
 		// _aligned_malloc은 CPU 아키텍쳐에 최적화된 동작을 위해 메모리 주소를 16의 배수로 맞춰준다(특히 MS에서 제공하는 SLIST를 사용하려면 메모리 정렬을 16의 배수로 맞춰주어야한다)
 		memory = reinterpret_cast<MemoryHeader*>(
-			::_aligned_malloc(allocSize, SLIST_ALIGNMENT));
+			::_aligned_malloc(allocSize, static_cast<int>(ALIGNMENT::SLIST_ALIGNMENT)));
 	}
 	else
 	{

@@ -1,7 +1,8 @@
 #pragma once
-#include "Allocator.h"
-using namespace std;
-
+#include <vector>
+#include <memory>
+#include "STL_Allocator.h"
+#include "PoolAllocator.h"
 class MemoryPool;
 
 /*-------------
@@ -75,7 +76,7 @@ template<typename T, typename... Args>
 std::shared_ptr<T> MakeShared(Args&&... _args)
 {
 	// shared_ptr로 반환해 주기
-	return std::shared_ptr<T>{ XNew<T>(forward<Args>(_args)...),
+	return std::shared_ptr<T>{ XNew<T>(std::forward<Args>(_args)...),
 								XDelete<T> };
 
 	// 이걸로하면 오류 남

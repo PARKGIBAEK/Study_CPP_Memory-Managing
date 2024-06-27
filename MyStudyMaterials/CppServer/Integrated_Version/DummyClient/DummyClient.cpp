@@ -1,8 +1,8 @@
-﻿#include "pch.h"
-#include "ThreadManager.h"
+﻿#include "ThreadManager.h"
 #include "Service.h"
 #include "Session.h"
 #include "BufferReader.h"
+#include "MemoryManager.h"
 #include "ServerPacketHandler.h"
 #include "ServerSession.h"
 char sendData[] = "Hello World";

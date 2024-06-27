@@ -1,4 +1,5 @@
 #pragma once
+#include <memory>
 #include "DBConnection.h"
 #include "DBModel.h"
 
@@ -49,7 +50,7 @@ class DBSynchronizer
 	
 
 public:
-	DBSynchronizer(DBConnection& conn) : _dbConn(conn) { }
+	DBSynchronizer(DbConnection& conn) : _dbConn(conn) { }
 	~DBSynchronizer();
 
 	bool		Synchronize(const WCHAR* path);
@@ -68,7 +69,7 @@ private:
 	void		ExecuteUpdateQueries();
 
 private:
-	DBConnection& _dbConn;
+	DbConnection& _dbConn;
 
 	// XML상의 Table & Stored Procedure 정보
 	Vector<std::shared_ptr<Table>>			_xmlTables;

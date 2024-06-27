@@ -1,16 +1,17 @@
-#include "pch.h"
 #include "CoreGlobal.h"
+
+#include "DeadLockProfiler.h"
 #include "ThreadManager.h"
 #include "MemoryManager.h"
-#include "DeadLockProfiler.h"
-#include "SocketUtils.h"
-#include "SendBuffer.h"
+#include "SendBufferManager.h"
 #include "GlobalQueue.h"
 #include "JobTimer.h"
-#include "DBConnectionPool.h"
+// #include "DBConnectionPool.h"
 #include "ConsoleLog.h"
+#include "SocketUtils.h"
 
 //MemoryManager* GMemoryManager = new MemoryManager();
+
 
 DeadLockProfiler* GDeadLockProfiler = nullptr;
 ThreadManager* GThreadManager = nullptr;
@@ -18,19 +19,19 @@ MemoryManager* GMemoryManager = nullptr;
 SendBufferManager* GSendBufferManager = nullptr;
 GlobalQueue* GGlobalQueue = nullptr;
 JobTimer* GJobTimer = nullptr;
-DBConnectionPool* GDBConnectionPool = nullptr;
+// DBConnectionPool* GDBConnectionPool = nullptr;
 ConsoleLog* GConsoleLogger = nullptr;
 
 //class CoreGlobal
 //{
 //public:
-//	/* ¿ÜºÎ¿¡¼­ ServerCore¶óÀÌºê·¯¸®¸¦ ¸µÅ©ÇÏ¿© »ç¿ëÇÒ °æ¿ì
-//		Custom Memory Allocation °ü·ÃÇÏ¿© ¿À·ù°¡ ¹ß»ıÇÑ´Ù.
+//	/* ì™¸ë¶€ì—ì„œ ServerCoreë¼ì´ë¸ŒëŸ¬ë¦¬ë¥¼ ë§í¬í•˜ì—¬ ì‚¬ìš©í•  ê²½ìš°
+//		Custom Memory Allocation ê´€ë ¨í•˜ì—¬ ì˜¤ë¥˜ê°€ ë°œìƒí•œë‹¤.
 //
-//		ÀÌÀ¯´Â Àü¿ª°´Ã¼ GMemoryManager°¡ ¸ÕÀú ÃÊ±âÈ­ µÇÁö ¾Ê¾Æ
-//		Memory PoolÀÌ ºñ¾îÀÖ´Â »óÈ²¿¡¼­ PopÇÏ·Á°í Çß±â ¶§¹®ÀÌ´Ù.
+//		ì´ìœ ëŠ” ì „ì—­ê°ì²´ GMemoryManagerê°€ ë¨¼ì € ì´ˆê¸°í™” ë˜ì§€ ì•Šì•„
+//		Memory Poolì´ ë¹„ì–´ìˆëŠ” ìƒí™©ì—ì„œ Popí•˜ë ¤ê³  í–ˆê¸° ë•Œë¬¸ì´ë‹¤.
 //
-//		µû¶ó¼­ ¾Æ·¡¿Í °°ÀÌ ½Ì±ÛÅæÀ¸·Î ±¸ÇöÇÏ¿© »ç¿ëÇÑ´Ù.
+//		ë”°ë¼ì„œ ì•„ë˜ì™€ ê°™ì´ ì‹±ê¸€í†¤ìœ¼ë¡œ êµ¬í˜„í•˜ì—¬ ì‚¬ìš©í•œë‹¤.
 //	*/
 //	static CoreGlobal* GetInstance() {
 //		static std::mutex mtx;
@@ -74,7 +75,7 @@ ConsoleLog* GConsoleLogger = nullptr;
 //		delete GConsoleLogger;
 //		GConsoleLogger = nullptr;
 //
-//		delete GMemoryManager; // Ç®¸µ ¶§¹®¿¡ ¸¶Áö¸·¿¡ ¼Ò¸ê½ÃÄÑ¾ß ÇÔ(¸ÕÀú ¼Ò¸ê½ÃÅ°¸é SendBuffer °°Àº Ç®¸µ °´Ã¼ ¼Ò¸êÀÚ¿¡¼­ Heap ÅÍÁü)
+//		delete GMemoryManager; // í’€ë§ ë•Œë¬¸ì— ë§ˆì§€ë§‰ì— ì†Œë©¸ì‹œì¼œì•¼ í•¨(ë¨¼ì € ì†Œë©¸ì‹œí‚¤ë©´ SendBuffer ê°™ì€ í’€ë§ ê°ì²´ ì†Œë©¸ìì—ì„œ Heap í„°ì§)
 //		GMemoryManager = nullptr;
 //
 //		SocketUtils::Clear();
@@ -104,7 +105,7 @@ void CoreGlobal:: Init() {
 	GGlobalQueue = new GlobalQueue();
 	GJobTimer = new JobTimer();
 
-	GDBConnectionPool = new DBConnectionPool();
+	// GDBConnectionPool = new DBConnectionPool();
 	GConsoleLogger = new ConsoleLog();
 	SocketUtils::Init();
 }
@@ -123,12 +124,12 @@ CoreGlobal::~CoreGlobal()
 	GDeadLockProfiler = nullptr;
 
 
-	delete GDBConnectionPool;
-	GDBConnectionPool = nullptr;
+	// delete GDBConnectionPool;
+	// GDBConnectionPool = nullptr;
 	delete GConsoleLogger;
 	GConsoleLogger = nullptr;
 
-	delete GMemoryManager; // Ç®¸µ ¶§¹®¿¡ ¸¶Áö¸·¿¡ ¼Ò¸ê½ÃÄÑ¾ß ÇÔ(¸ÕÀú ¼Ò¸ê½ÃÅ°¸é SendBuffer °°Àº Ç®¸µ °´Ã¼ ¼Ò¸êÀÚ¿¡¼­ Heap ÅÍÁü)
+	delete GMemoryManager; // í’€ë§ ë•Œë¬¸ì— ë§ˆì§€ë§‰ì— ì†Œë©¸ì‹œì¼œì•¼ í•¨(ë¨¼ì € ì†Œë©¸ì‹œí‚¤ë©´ SendBuffer ê°™ì€ í’€ë§ ê°ì²´ ì†Œë©¸ìì—ì„œ Heap í„°ì§)
 	GMemoryManager = nullptr;
 
 	SocketUtils::Clear();
@@ -180,7 +181,7 @@ public:
 		delete GConsoleLogger;
 		GConsoleLogger = nullptr;
 
-		delete GMemoryManager; // Ç®¸µ ¶§¹®¿¡ ¸¶Áö¸·¿¡ ¼Ò¸ê½ÃÄÑ¾ß ÇÔ(¸ÕÀú ¼Ò¸ê½ÃÅ°¸é SendBuffer °°Àº Ç®¸µ °´Ã¼ ¼Ò¸êÀÚ¿¡¼­ Heap ÅÍÁü)
+		delete GMemoryManager; // í’€ë§ ë•Œë¬¸ì— ë§ˆì§€ë§‰ì— ì†Œë©¸ì‹œì¼œì•¼ í•¨(ë¨¼ì € ì†Œë©¸ì‹œí‚¤ë©´ SendBuffer ê°™ì€ í’€ë§ ê°ì²´ ì†Œë©¸ìì—ì„œ Heap í„°ì§)
 		GMemoryManager = nullptr;
 
 		SocketUtils::Clear();

@@ -1,5 +1,7 @@
-#include "pch.h"
 #include "DeadLockProfiler.h"
+
+#include "CoreMacro.h"
+#include "CoreTLS.h"
 
 
 /*--------------------
@@ -33,7 +35,7 @@ void DeadLockProfiler::PushLock(const char* _name)
 		// 기존에 발견되지 않은 케이스라면 데드락 여부 다시 확인한다.
 		if (lockId != prevId)// 지금 잡으려는 락이 바로 직전에 잡은 락이 아닌경우
 		{
-			set<int32>& history = lockHistory[prevId];
+			std::set<int32>& history = lockHistory[prevId];
 			if (history.find(lockId) == history.end())
 			{
 				history.insert(lockId);
@@ -62,10 +64,10 @@ void DeadLockProfiler::PopLock(const char* _name)
 void DeadLockProfiler::CheckCycle()
 {
 	const int32 lockCount = static_cast<int32>(nameToId.size());
-	discoveredOrder = vector<int32>(lockCount, -1);
+	discoveredOrder = std::vector<int32>(lockCount, -1);
 	discoveredCount = 0;
-	finished = vector<bool>(lockCount, false);
-	parent = vector<int32>(lockCount, -1);
+	finished = std::vector<bool>(lockCount, false);
+	parent = std::vector<int32>(lockCount, -1);
 
 	for (int32 lockId = 0; lockId < lockCount; lockId++)
 		DFS(lockId);
@@ -91,7 +93,7 @@ void DeadLockProfiler::DFS(int32 _here)
 		return;
 	}
 
-	set<int32>& nextSet = findIt->second;
+	std::set<int32>& nextSet = findIt->second;
 	for (int32 there : nextSet)
 	{
 		// 아직 방문한 적이 없는 정점이라면 방문하기

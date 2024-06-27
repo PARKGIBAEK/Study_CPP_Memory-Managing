@@ -1,5 +1,6 @@
 #pragma once
-
+#include "CoreMacro.h"
+#include "Types.h"
 /*----------------
 	BufferReader
 -----------------*/
@@ -7,9 +8,7 @@
 class BufferReader
 {
 public:
-	BufferReader();
 	BufferReader(BYTE* _buffer, uint32 _size, uint32 _pos = 0);
-	~BufferReader();
 
 	BYTE*			Buffer() { return buffer; }
 	uint32			Size() { return size; }
