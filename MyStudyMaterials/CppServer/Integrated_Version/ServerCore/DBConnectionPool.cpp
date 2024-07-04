@@ -1,10 +1,12 @@
 #include "DBConnectionPool.h"
-#include "Lock.h"
-#include "MemoryManager.h"
+#include "../Thread/Lock.h"
+#include "../Memory/MemoryManager.h"
 /*-------------------
 	DBConnectionPool
 --------------------*/
 
+namespace ServerDb
+{
 DBConnectionPool::DBConnectionPool(): _environment(SQL_NULL_HANDLE)
 {
 }
@@ -78,4 +80,5 @@ void DBConnectionPool::Push(DbConnection* connection)
 	WRITE_LOCK;
 
 	_connectionPool.push_back(connection);
+}
 }

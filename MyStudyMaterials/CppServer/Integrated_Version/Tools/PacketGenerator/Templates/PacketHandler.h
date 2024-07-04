@@ -1,17 +1,23 @@
 #pragma once
 #include <functional>
 #include <memory>
-#include "Session.h"
+#include "Network/Session.h"
 #include "Protocol.pb.h"
-#include "Types.h"
-#include "SendBuffer.h"
-#include "CoreGlobal.h"
-#include "CoreMacro.h"
-#include "PacketSession.h"
-#include "PacketHeader.h"
-#include "SendBufferManager.h"
+#include "Core/Types.h"
+#include "Network/SendBuffer.h"
+#include "Core/CoreInitializer.h"
+#include "Core/CoreMacro.h"
+#include "Network/PacketSession.h"
+#include "Network/PacketHeader.h"
+#include "Network/SendBufferManager.h"
+
+namespace {{name_space}}
+{
+
+using namespace ServerCore;
 
 using PacketHandlerFunc = std::function<bool(std::shared_ptr<PacketSession>&, BYTE*, int32)>;
+
 extern PacketHandlerFunc GPacketHandler[UINT16_MAX];
 
 enum : uint16
@@ -37,7 +43,9 @@ public:
 			GPacketHandler[i] = Handle_INVALID;
 
 {%- for pkt in parser.recv_pkt %}
-		GPacketHandler[PKT_{{pkt.name}}] = [](std::shared_ptr<PacketSession>& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::{{pkt.name}}>(Handle_{{pkt.name}}, session, buffer, len); };
+		GPacketHandler[PKT_{{pkt.name}}] = [](std::shared_ptr<PacketSession>& session, BYTE* buffer, int32 len) {
+			 return HandlePacket<Protocol::{{pkt.name}}>(Handle_{{pkt.name}}, session, buffer, len); 
+		};
 {%- endfor %}
 	}
 
@@ -48,7 +56,10 @@ public:
 	}
 
 {%- for pkt in parser.send_pkt %}
-	static std::shared_ptr<SendBuffer> MakeSendBuffer(Protocol::{{pkt.name}}& pkt) { return MakeSendBuffer(pkt, PKT_{{pkt.name}}); }
+	static std::shared_ptr<SendBuffer> MakeSendBuffer(Protocol::{{pkt.name}}& pkt)
+	{
+		return MakeSendBuffer(pkt, PKT_{{pkt.name}}); 
+	}
 {%- endfor %}
 
 private:
@@ -78,3 +89,4 @@ private:
 		return sendBuffer;
 	}
 };
+}

@@ -1,14 +1,14 @@
 #include "DBConnection.h"
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#include <sql.h>
-#include <sqlext.h>
-#include <sqltypes.h>
-#include <iostream>
-#include "CoreMacro.h"
-/*----------------
-	DBConnection
------------------*/
+#include "../Core/Types.h"
+#include "../Core/CoreMacro.h"
+#include "../Memory/Container.h"
+
+
+
+
+
+namespace ServerDb
+{
 
 bool DbConnection::Connect(SQLHENV henv, const WCHAR* connectionString)
 {
@@ -284,16 +284,16 @@ void DbConnection::HandleError(SQLRETURN ret)
 
     while (true)
     {
-        // errorRet = ::SQLGetDiagRecW(
-        //     SQL_HANDLE_STMT,
-        //     _statement,
-        //     index,
-        //     sqlState,
-        //     OUT &nativeErr,
-        //     errMsg,
-        //     _countof(errMsg),
-        //     &msgLen
-        // );
+        errorRet = ::SQLGetDiagRecW(
+            SQL_HANDLE_STMT,
+            _statement,
+            index,
+            sqlState,
+            OUT &nativeErr,
+            errMsg,
+            _countof(errMsg),
+            &msgLen
+        );
 
         if (errorRet == SQL_NO_DATA)
             break;
@@ -307,4 +307,5 @@ void DbConnection::HandleError(SQLRETURN ret)
 
         index++;
     }
+}
 }

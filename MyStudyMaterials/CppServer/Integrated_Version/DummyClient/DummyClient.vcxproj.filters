@@ -12,9 +12,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DummyClient.cpp">
-      <Filter>Main</Filter>
-    </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
@@ -33,6 +30,8 @@
     <ClCompile Include="ServerSession.cpp">
       <Filter>Main</Filter>
     </ClCompile>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Globals.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -54,5 +53,7 @@
     <ClInclude Include="ServerSession.h">
       <Filter>Main</Filter>
     </ClInclude>
+    <ClInclude Include="Globals.h" />
+    <ClInclude Include="LibConfig.h" />
   </ItemGroup>
 </Project>

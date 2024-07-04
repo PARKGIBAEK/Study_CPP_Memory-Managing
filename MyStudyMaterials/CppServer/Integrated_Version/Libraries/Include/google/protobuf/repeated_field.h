@@ -124,7 +124,6 @@ inline void SwapBlock(char* p, char* q) {
 //  template <int kSize> void memswap(char* p, char* q);
 template <int kSize>
 inline typename std::enable_if<(kSize == 0), void>::type memswap(char*, char*) {
-  
 }
 
 #define PROTO_MEMSWAP_DEF_SIZE(reg_type, max_size)                           \

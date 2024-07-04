@@ -1,10 +1,16 @@
 #pragma once
 #include <memory>
 #include <set>
-#include "CoreMacro.h"
+#include "Core/CoreMacro.h"
+#include "Network/SendBuffer.h"
+
+namespace GameServer
+{
+
+using namespace ServerCore;
 
 class GameSession;
-class SendBuffer;
+
 
 class GameSessionManager
 {
@@ -20,3 +26,4 @@ private:
 };
 
 extern GameSessionManager GSessionManager;
+}

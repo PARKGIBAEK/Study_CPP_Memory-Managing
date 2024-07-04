@@ -1,14 +1,20 @@
 #pragma once
-#include "JobQueue.h"
-#include "Types.h"
 #include <memory>
 #include <map>
+#include "Job/JobQueue.h"
+#include "Core/Types.h"
+#include "Player.h"
+#include "Network/SendBuffer.h"
 
-class Player;
-class SendBuffer;
+namespace GameServer
+{
+
+using namespace ServerCore;
+
 class Room : public JobQueue
 {
 public:
+	virtual ~Room() override {}
 	// 싱글쓰레드 환경인마냥 코딩
 	void Enter(std::shared_ptr<Player> player);
 	void Leave(std::shared_ptr<Player> player);
@@ -19,3 +25,4 @@ private:
 };
 
 extern std::shared_ptr<Room> GRoom;
+}

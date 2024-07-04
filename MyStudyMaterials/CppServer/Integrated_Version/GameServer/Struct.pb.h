@@ -180,7 +180,6 @@ class Player final :
   enum : int {
     kNameFieldNumber = 2,
     kPlayerIdFieldNumber = 1,
-    kPlayertypeFieldNumber = 3,
   };
   // string name = 2;
   void clear_name();
@@ -205,15 +204,6 @@ class Player final :
   void _internal_set_playerid(uint64_t value);
   public:
 
-  // .Protocol.PlayerType playertype = 3;
-  void clear_playertype();
-  ::Protocol::PlayerType playertype() const;
-  void set_playertype(::Protocol::PlayerType value);
-  private:
-  ::Protocol::PlayerType _internal_playertype() const;
-  void _internal_set_playertype(::Protocol::PlayerType value);
-  public:
-
   // @@protoc_insertion_point(class_scope:Protocol.Player)
  private:
   class _Internal;
@@ -224,7 +214,6 @@ class Player final :
   struct Impl_ {
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr name_;
     uint64_t playerid_;
-    int playertype_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
   union { Impl_ _impl_; };
@@ -309,26 +298,6 @@ inline void Player::set_allocated_name(std::string* name) {
   }
 #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
   // @@protoc_insertion_point(field_set_allocated:Protocol.Player.name)
-}
-
-// .Protocol.PlayerType playertype = 3;
-inline void Player::clear_playertype() {
-  _impl_.playertype_ = 0;
-}
-inline ::Protocol::PlayerType Player::_internal_playertype() const {
-  return static_cast< ::Protocol::PlayerType >(_impl_.playertype_);
-}
-inline ::Protocol::PlayerType Player::playertype() const {
-  // @@protoc_insertion_point(field_get:Protocol.Player.playertype)
-  return _internal_playertype();
-}
-inline void Player::_internal_set_playertype(::Protocol::PlayerType value) {
-  
-  _impl_.playertype_ = value;
-}
-inline void Player::set_playertype(::Protocol::PlayerType value) {
-  _internal_set_playertype(value);
-  // @@protoc_insertion_point(field_set:Protocol.Player.playertype)
 }
 
 #ifdef __GNUC__

@@ -1,18 +1,19 @@
 #include "pch.h"
 #include "ServerPacketHandler.h"
 
+namespace DummyClient {
 PacketHandlerFunc GPacketHandler[UINT16_MAX];
 
 // Á÷Á¢ ÄÁÅÙÃ÷ ÀÛ¾÷ÀÚ
 
-bool Handle_INVALID(std::shared_ptr<PacketSession> session, BYTE* buffer, int32 len)
+bool Handle_INVALID(std::shared_ptr<PacketSession>& session, BYTE* buffer, int32 len)
 {
 	PacketHeader* header = reinterpret_cast<PacketHeader*>(buffer);
 	// TODO : Log
 	return false;
 }
 
-bool Handle_S_LOGIN(std::shared_ptr<PacketSession> session, Protocol::S_LOGIN& pkt)
+bool Handle_S_LOGIN(std::shared_ptr<PacketSession>& session, Protocol::S_LOGIN& pkt)
 {
 	if (pkt.success() == false)
 		return true;
@@ -31,14 +32,15 @@ bool Handle_S_LOGIN(std::shared_ptr<PacketSession> session, Protocol::S_LOGIN& p
 	return true;
 }
 
-bool Handle_S_ENTER_GAME(std::shared_ptr<PacketSession> session, Protocol::S_ENTER_GAME& pkt)
+bool Handle_S_ENTER_GAME(std::shared_ptr<PacketSession>& session, Protocol::S_ENTER_GAME& pkt)
 {
 	// TODO
 	return true;
 }
 
-bool Handle_S_CHAT(std::shared_ptr<PacketSession> session, Protocol::S_CHAT& pkt)
+bool Handle_S_CHAT(std::shared_ptr<PacketSession>& session, Protocol::S_CHAT& pkt)
 {
-	std::cout << pkt.msg() << endl;
+	std::cout << pkt.msg() << std::endl;
 	return true;
+}
 }

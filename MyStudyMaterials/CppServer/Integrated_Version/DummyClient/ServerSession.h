@@ -2,37 +2,41 @@
 #include "Protocol.pb.h"
 #include "ServerPacketHandler.h"
 
+namespace DummyClient
+{
+
 class ServerSession : public PacketSession
 {
 public:
-	~ServerSession()
-	{
-		cout << "~ServerSession" << endl;
-	}
+    ~ServerSession()
+    {
+        std::cout << "~ServerSession" << std::endl;
+    }
 
-	virtual void OnConnected() override
-	{
-		Protocol::C_LOGIN pkt;
-		auto sendBuffer = ServerPacketHandler::MakeSendBuffer(pkt);
-		Send(sendBuffer);
-	}
+    virtual void OnConnected() override
+    {
+        Protocol::C_LOGIN pkt;
+        auto sendBuffer = ServerPacketHandler::MakeSendBuffer(pkt);
+        Send(sendBuffer);
+    }
 
-	virtual void OnRecvPacket(BYTE* buffer, int32 len) override
-	{
-		std::shared_ptr<PacketSession> session = GetPacketSessionRef();
-		PacketHeader* header = reinterpret_cast<PacketHeader*>(buffer);
+    virtual void OnRecvPacket(BYTE* buffer, int32 len) override
+    {
+        std::shared_ptr<PacketSession> session = GetPacketSessionRef();
+        PacketHeader* header = reinterpret_cast<PacketHeader*>(buffer);
 
-		// TODO : packetId 措开 眉农
-		ServerPacketHandler::HandlePacket(session, buffer, len);
-	}
+        // TODO : packetId 措开 眉农
+        ServerPacketHandler::HandlePacket(session, buffer, len);
+    }
 
-	virtual void OnSend(int32 len) override
-	{
-		cout << "OnSend Len = " << len << endl;
-	}
+    virtual void OnSend(int32 len) override
+    {
+        std::cout << "OnSend Len = " << len << std::endl;
+    }
 
-	virtual void OnDisconnected() override
-	{
-		cout << "Disconnected" << endl;
-	}
+    virtual void OnDisconnected() override
+    {
+        std::cout << "Disconnected" << std::endl;
+    }
 };
+}

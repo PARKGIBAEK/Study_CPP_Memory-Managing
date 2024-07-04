@@ -1,18 +1,23 @@
 #pragma once
 #include <functional>
 #include <memory>
-#include "Session.h"
+#include "Network/Session.h"
 #include "Protocol.pb.h"
-#include "Types.h"
-#include "SendBuffer.h"
-#include "CoreGlobal.h"
-#include "CoreMacro.h"
-#include "PacketSession.h"
-#include "PacketHeader.h"
-#include "SendBufferManager.h"
+#include "Core/Types.h"
+#include "Network/SendBuffer.h"
+#include "Core/CoreInitializer.h"
+#include "Core/CoreMacro.h"
+#include "Network/PacketSession.h"
+#include "Network/PacketHeader.h"
+#include "Network/SendBufferManager.h"
 
+namespace GameServer
+{
+
+using namespace ServerCore;
 
 using PacketHandlerFunc = std::function<bool(std::shared_ptr<PacketSession>&, BYTE*, int32)>;
+
 extern PacketHandlerFunc GPacketHandler[UINT16_MAX];
 
 enum : uint16
@@ -38,9 +43,15 @@ public:
 	{
 		for (int32 i = 0; i < UINT16_MAX; i++)
 			GPacketHandler[i] = Handle_INVALID;
-		GPacketHandler[PKT_C_LOGIN] = [](std::shared_ptr<PacketSession>& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::C_LOGIN>(Handle_C_LOGIN, session, buffer, len); };
-		GPacketHandler[PKT_C_ENTER_GAME] = [](std::shared_ptr<PacketSession>& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::C_ENTER_GAME>(Handle_C_ENTER_GAME, session, buffer, len); };
-		GPacketHandler[PKT_C_CHAT] = [](std::shared_ptr<PacketSession>& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::C_CHAT>(Handle_C_CHAT, session, buffer, len); };
+		GPacketHandler[PKT_C_LOGIN] = [](std::shared_ptr<PacketSession>& session, BYTE* buffer, int32 len) {
+			 return HandlePacket<Protocol::C_LOGIN>(Handle_C_LOGIN, session, buffer, len); 
+		};
+		GPacketHandler[PKT_C_ENTER_GAME] = [](std::shared_ptr<PacketSession>& session, BYTE* buffer, int32 len) {
+			 return HandlePacket<Protocol::C_ENTER_GAME>(Handle_C_ENTER_GAME, session, buffer, len); 
+		};
+		GPacketHandler[PKT_C_CHAT] = [](std::shared_ptr<PacketSession>& session, BYTE* buffer, int32 len) {
+			 return HandlePacket<Protocol::C_CHAT>(Handle_C_CHAT, session, buffer, len); 
+		};
 	}
 
 	static bool HandlePacket(std::shared_ptr<PacketSession>& session, BYTE* buffer, int32 len)
@@ -48,9 +59,18 @@ public:
 		PacketHeader* header = reinterpret_cast<PacketHeader*>(buffer);
 		return GPacketHandler[header->id](session, buffer, len);
 	}
-	static std::shared_ptr<SendBuffer> MakeSendBuffer(Protocol::S_LOGIN& pkt) { return MakeSendBuffer(pkt, PKT_S_LOGIN); }
-	static std::shared_ptr<SendBuffer> MakeSendBuffer(Protocol::S_ENTER_GAME& pkt) { return MakeSendBuffer(pkt, PKT_S_ENTER_GAME); }
-	static std::shared_ptr<SendBuffer> MakeSendBuffer(Protocol::S_CHAT& pkt) { return MakeSendBuffer(pkt, PKT_S_CHAT); }
+	static std::shared_ptr<SendBuffer> MakeSendBuffer(Protocol::S_LOGIN& pkt)
+	{
+		return MakeSendBuffer(pkt, PKT_S_LOGIN); 
+	}
+	static std::shared_ptr<SendBuffer> MakeSendBuffer(Protocol::S_ENTER_GAME& pkt)
+	{
+		return MakeSendBuffer(pkt, PKT_S_ENTER_GAME); 
+	}
+	static std::shared_ptr<SendBuffer> MakeSendBuffer(Protocol::S_CHAT& pkt)
+	{
+		return MakeSendBuffer(pkt, PKT_S_CHAT); 
+	}
 
 private:
 	template<typename PacketType, typename ProcessFunc>
@@ -79,3 +99,4 @@ private:
 		return sendBuffer;
 	}
 };
+}

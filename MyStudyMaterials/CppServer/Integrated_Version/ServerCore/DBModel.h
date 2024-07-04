@@ -1,15 +1,14 @@
 #pragma once
 #include <memory>
-#include "Container.h"
-#include "Types.h"
-#include "CoreMacro.h"
+#include "../Memory/Container.h"
+#include "../Core/Types.h"
+#include "../Core/CoreMacro.h"
 
 
-namespace DBModel
+namespace ServerDb
 {
-/*-------------
-	DataType
---------------*/
+
+using namespace ServerCore;
 
 enum class DataType
 {

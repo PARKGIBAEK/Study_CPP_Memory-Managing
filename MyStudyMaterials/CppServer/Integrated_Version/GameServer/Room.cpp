@@ -1,7 +1,11 @@
 #include "Room.h"
 #include "Player.h"
-#include "SendBuffer.h"
+#include "Network/SendBuffer.h"
 #include "GameSession.h"
+
+
+namespace GameServer
+{
 
 std::shared_ptr<Room> GRoom = std::make_shared<Room>();
 
@@ -21,4 +25,5 @@ void Room::Broadcast(std::shared_ptr<SendBuffer> sendBuffer)
 	{
 		p.second->ownerSession->Send(sendBuffer);
 	}
+}
 }

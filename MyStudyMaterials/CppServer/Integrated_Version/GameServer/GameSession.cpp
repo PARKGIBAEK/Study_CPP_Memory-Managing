@@ -1,14 +1,16 @@
+#include "Room.h"
 #include "GameSession.h"
 #include "GameSessionManager.h"
 #include "ClientPacketHandler.h"
-#include "PacketHeader.h"
-#include "Player.h"
-#include "Room.h"
+#include "Network/PacketHeader.h"
 #include <iostream>
+
+namespace GameServer
+{
 
 GameSession::~GameSession()
 {
-		std::cout << "~GameSession" << std::endl;
+	std::cout << "~GameSession" << std::endl;
 }
 
 void GameSession::OnConnected()
@@ -47,4 +49,5 @@ void GameSession::OnRecvPacket(BYTE* buffer, int32 len)
 
 void GameSession::OnSend(int32 len)
 {
+}
 }

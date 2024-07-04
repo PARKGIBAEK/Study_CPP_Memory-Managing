@@ -7,5 +7,5 @@ message Player
 {
 	uint64 playerId = 1;
 	string name = 2;
-	PlayerType playertype = 3;
+	//PlayerType playertype = 3;
 }

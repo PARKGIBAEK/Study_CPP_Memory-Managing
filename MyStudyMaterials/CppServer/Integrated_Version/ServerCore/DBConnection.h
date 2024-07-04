@@ -1,69 +1,79 @@
 #pragma once
-#define WIN32_LEAN_AND_MEAN  // 거의 사용되지 않는 내용을 Windows 헤더에서 제외합니다.
 #include <sql.h>
 #include <sqlext.h>
 
+#include "../Memory/Container.h"
+
+
+namespace ServerDb
+{
+
+using namespace ServerCore;
+
+
+
 enum
 {
-	WVARCHAR_MAX = 4000,
-	BINARY_MAX = 8000,
+    WVARCHAR_MAX = 4000,
+    BINARY_MAX = 8000,
 };
 
 class DbConnection
 {
 public:
-	// connect to db with handle
-	bool			Connect(SQLHENV henv, const WCHAR* connectionString);
-	// disconnect
-	void			Clear();
-	// execute query
-	bool			Execute(const WCHAR* query);
-	// fetch the query execution results( used in "SELECT ~ " )
-	bool			Fetch();
-	// Get row count
-	int32			GetRowCount();
+    // connect to db with handle
+    bool Connect(SQLHENV henv, const WCHAR* connectionString);
+    // disconnect
+    void Clear();
+    // execute query
+    bool Execute(const WCHAR* query);
+    // fetch the query execution results( used in "SELECT ~ " )
+    bool Fetch();
+    // Get row count
+    int32 GetRowCount();
 
-	void			Unbind();
+    void Unbind();
 
 public:
-	// Query������ �� ���ڿ��� ?�ڸ��� ��ü�� ���ڸ� ���ε�
-	bool			BindParam(int32 paramIndex, bool* value, SQLLEN* index);
-	bool			BindParam(int32 paramIndex, float* value, SQLLEN* index);
-	bool			BindParam(int32 paramIndex, double* value, SQLLEN* index);
-	bool			BindParam(int32 paramIndex, int8* value, SQLLEN* index);
-	bool			BindParam(int32 paramIndex, int16* value, SQLLEN* index);
-	bool			BindParam(int32 paramIndex, int32* value, SQLLEN* index);
-	bool			BindParam(int32 paramIndex, int64* value, SQLLEN* index);
-	bool			BindParam(int32 paramIndex, TIMESTAMP_STRUCT* value, SQLLEN* index);
-	bool			BindParam(int32 paramIndex, const WCHAR* str, SQLLEN* index);
-	bool			BindParam(int32 paramIndex, const BYTE* bin, int32 size, SQLLEN* index);
-	
-	// Query ���� ����� �޾ƿ� �ܺ� ������ ���ε�
-	bool			BindCol(int32 columnIndex, bool* value, SQLLEN* index);
-	bool			BindCol(int32 columnIndex, float* value, SQLLEN* index);
-	bool			BindCol(int32 columnIndex, double* value, SQLLEN* index);
-	bool			BindCol(int32 columnIndex, int8* value, SQLLEN* index);
-	bool			BindCol(int32 columnIndex, int16* value, SQLLEN* index);
-	bool			BindCol(int32 columnIndex, int32* value, SQLLEN* index);
-	bool			BindCol(int32 columnIndex, int64* value, SQLLEN* index);
-	bool			BindCol(int32 columnIndex, TIMESTAMP_STRUCT* value, SQLLEN* index);
-	bool			BindCol(int32 columnIndex, WCHAR* str, int32 size, SQLLEN* index);
-	bool			BindCol(int32 columnIndex, BYTE* bin, int32 size, SQLLEN* index);
+    // Query������ �� ���ڿ��� ?�ڸ��� ��ü�� ���ڸ� ���ε�
+    bool BindParam(int32 paramIndex, bool* value, SQLLEN* index);
+    bool BindParam(int32 paramIndex, float* value, SQLLEN* index);
+    bool BindParam(int32 paramIndex, double* value, SQLLEN* index);
+    bool BindParam(int32 paramIndex, int8* value, SQLLEN* index);
+    bool BindParam(int32 paramIndex, int16* value, SQLLEN* index);
+    bool BindParam(int32 paramIndex, int32* value, SQLLEN* index);
+    bool BindParam(int32 paramIndex, int64* value, SQLLEN* index);
+    bool BindParam(int32 paramIndex, TIMESTAMP_STRUCT* value, SQLLEN* index);
+    bool BindParam(int32 paramIndex, const WCHAR* str, SQLLEN* index);
+    bool BindParam(int32 paramIndex, const BYTE* bin, int32 size, SQLLEN* index);
+
+    // Query ���� ����� �޾ƿ� �ܺ� ������ ���ε�
+    bool BindCol(int32 columnIndex, bool* value, SQLLEN* index);
+    bool BindCol(int32 columnIndex, float* value, SQLLEN* index);
+    bool BindCol(int32 columnIndex, double* value, SQLLEN* index);
+    bool BindCol(int32 columnIndex, int8* value, SQLLEN* index);
+    bool BindCol(int32 columnIndex, int16* value, SQLLEN* index);
+    bool BindCol(int32 columnIndex, int32* value, SQLLEN* index);
+    bool BindCol(int32 columnIndex, int64* value, SQLLEN* index);
+    bool BindCol(int32 columnIndex, TIMESTAMP_STRUCT* value, SQLLEN* index);
+    bool BindCol(int32 columnIndex, WCHAR* str, int32 size, SQLLEN* index);
+    bool BindCol(int32 columnIndex, BYTE* bin, int32 size, SQLLEN* index);
 
 private:
-	/* cType : SQL�� Ư�� �ڷ����� ��Ī�Ǵ� C����� Ÿ��
-		sqlType : cType�� ��Ī�Ǵ� SQL�� �ڷ���		*/
-	bool			BindParam(SQLUSMALLINT paramIndex, SQLSMALLINT cType, SQLSMALLINT sqlType, SQLULEN len, SQLPOINTER ptr, SQLLEN* index);
-	/* ���� ���� ����� �������� ��û�� �޸𸮿� ���ε�*/
-	bool			BindCol(SQLUSMALLINT columnIndex, SQLSMALLINT cType, SQLULEN len, SQLPOINTER value, SQLLEN* index);
-	/* ���� ��ȣ�� ���� ���� ���*/
-	void			HandleError(SQLRETURN ret);
+    /* cType : SQL�� Ư�� �ڷ����� ��Ī�Ǵ� C����� Ÿ��
+        sqlType : cType�� ��Ī�Ǵ� SQL�� �ڷ���		*/
+    bool BindParam(SQLUSMALLINT paramIndex, SQLSMALLINT cType, SQLSMALLINT sqlType, SQLULEN len, SQLPOINTER ptr,
+                   SQLLEN* index);
+    /* ���� ���� ����� �������� ��û�� �޸𸮿� ���ε�*/
+    bool BindCol(SQLUSMALLINT columnIndex, SQLSMALLINT cType, SQLULEN len, SQLPOINTER value, SQLLEN* index);
+    /* ���� ��ȣ�� ���� ���� ���*/
+    void HandleError(SQLRETURN ret);
 
 private:
-	// SQL connection ��� �ڵ�
-	SQLHDBC			_connection;// = SQL_NULL_HANDLE;
-	// DB�� connection�� ���� �� �������� ���ڸ� �����ϰų� ������ �� ���(�� : ���� ����, ���� ��� �������� )
-	SQLHSTMT		_statement;// = SQL_NULL_HANDLE;
+    // SQL connection ��� �ڵ�
+    SQLHDBC _connection = SQL_NULL_HANDLE; // = SQL_NULL_HANDLE;
+    // DB�� connection�� ���� �� �������� ���ڸ� �����ϰų� ������ �� ���(�� : ���� ����, ���� ��� �������� )
+    SQLHSTMT _statement = SQL_NULL_HANDLE; // = SQL_NULL_HANDLE;
 };
 
 
@@ -248,3 +258,4 @@ int main()
 	GDBConnectionPool->Push(dbConn);
 }
 */
+}

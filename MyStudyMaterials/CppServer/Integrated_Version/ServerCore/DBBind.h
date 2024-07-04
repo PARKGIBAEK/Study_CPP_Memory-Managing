@@ -1,6 +1,13 @@
 #pragma once
-#include "CoreMacro.h"
-#include "DBConnection.h"
+#include "../DB/DBConnection.h"
+#include "../Core/Types.h"
+#include "../Core/CoreMacro.h"
+
+
+namespace ServerDb
+{
+using namespace ServerCore;
+
 
 template<int32 C>
 struct FullBits {
@@ -173,3 +180,4 @@ int main()
 
 	}
 }*/
+}

@@ -3,8 +3,8 @@ protoc.exe -I=./ --cpp_out=./ ./Enum.proto
 protoc.exe -I=./ --cpp_out=./ ./Struct.proto
 protoc.exe -I=./ --cpp_out=./ ./Protocol.proto
 
-GenPackets.exe --path=./Protocol.proto --output=ClientPacketHandler --recv=C_ --send=S_
-GenPackets.exe --path=./Protocol.proto --output=ServerPacketHandler --recv=S_ --send=C_
+GenPackets.exe --path=./Protocol.proto --output=ClientPacketHandler --recv=C_ --send=S_ --namespace GameServer
+GenPackets.exe --path=./Protocol.proto --output=ServerPacketHandler --recv=S_ --send=C_ --namespace DummyClient
 
 IF ERRORLEVEL 1 PAUSE
 

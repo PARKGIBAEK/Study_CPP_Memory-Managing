@@ -1,17 +1,17 @@
 #include "DBSynchronizer.h"
 #include "DBBind.h"
-#include "CoreGlobal.h"
-#include "XmlParser.h"
+#include "../Core/CoreInitializer.h"
+#include "../XML/XmlParser.h"
 #include <regex>
 
-#include "ConsoleLog.h"
-#include "MemoryManager.h"
+#include "../Log/ConsoleLog.h"
+#include "../Memory/MemoryManager.h"
 
 /*---------------------
 	StoredProcedures
 ----------------------*/
 
-namespace SP
+namespace ServerDb
 {
 	// 테이블 & 컬럼 얻어오기
 	const WCHAR* QTablesAndColumns =
@@ -85,7 +85,7 @@ namespace SP
 		template<int32 N> void Out_Name(OUT WCHAR(&value)[N]) { BindCol(0, value); }
 		void Out_Body(OUT WCHAR* value, int32 len) { BindCol(1, value, len); }
 	};
-}
+
 
 /*--------------------
 	DBSynchronizer
@@ -121,17 +121,17 @@ void DBSynchronizer::ParseXmlDB(const WCHAR* path)
 	Vector<XmlNode> tables = root.FindChildren(L"Table");
 	for (XmlNode& table : tables)
 	{
-		std::shared_ptr<Table> t = MakeShared<DBModel::Table>();
+		std::shared_ptr<Table> t = MakeShared<ServerDb::Table>();
 		t->_name = table.GetStringAttr(L"name");
 
 		Vector<XmlNode> columns = table.FindChildren(L"Column");
 		for (XmlNode& column : columns)
 		{
-			std::shared_ptr<Column> c = MakeShared<DBModel::Column>();
+			std::shared_ptr<Column> c = MakeShared<ServerDb::Column>();
 			c->_name = column.GetStringAttr(L"name");
 			c->_typeText = column.GetStringAttr(L"type");
-			c->_type = DBModel::Helpers::String2DataType(c->_typeText.c_str(), OUT c->_maxLength);
-			ASSERT_CRASH(c->_type != DBModel::DataType::None);
+			c->_type = ServerDb::Helpers::String2DataType(c->_typeText.c_str(), OUT c->_maxLength);
+			ASSERT_CRASH(c->_type != ServerDb::DataType::None);
 			c->_nullable = !column.GetBoolAttr(L"notnull", false);
 
 			const WCHAR* identityStr = column.GetStringAttr(L"identity");
@@ -155,9 +155,9 @@ void DBSynchronizer::ParseXmlDB(const WCHAR* path)
 			std::shared_ptr<Index> i = MakeShared<Index>();
 			const WCHAR* typeStr = index.GetStringAttr(L"type");
 			if (::_wcsicmp(typeStr, L"clustered") == 0)
-				i->_type = DBModel::IndexType::Clustered;
+				i->_type = ServerDb::IndexType::Clustered;
 			else if (::_wcsicmp(typeStr, L"nonclustered") == 0)
-				i->_type = DBModel::IndexType::NonClustered;
+				i->_type = ServerDb::IndexType::NonClustered;
 			else
 				CRASH("Invalid Index Type");
 
@@ -182,14 +182,14 @@ void DBSynchronizer::ParseXmlDB(const WCHAR* path)
 	Vector<XmlNode> procedures = root.FindChildren(L"Procedure");
 	for (XmlNode& procedure : procedures)
 	{
-		std::shared_ptr<Procedure> p = MakeShared<DBModel::Procedure>();
+		std::shared_ptr<Procedure> p = MakeShared<ServerDb::Procedure>();
 		p->_name = procedure.GetStringAttr(L"name");
 		p->_body = procedure.FindChild(L"Body").GetStringValue();
 
 		Vector<XmlNode> params = procedure.FindChildren(L"Param");
 		for (XmlNode& paramNode : params)
 		{
-			DBModel::Param param;
+			ServerDb::Param param;
 			param._name = paramNode.GetStringAttr(L"name");
 			param._type = paramNode.GetStringAttr(L"type");
 			p->_parameters.push_back(param);
@@ -221,7 +221,7 @@ bool DBSynchronizer::GatherDBTables()
 	WCHAR defaultDefinition[101] = { 0 };
 	WCHAR defaultConstraintName[101] = { 0 };
 
-	SP::GetDBTables getDBTables(_dbConn);
+	GetDBTables getDBTables(_dbConn);
 	getDBTables.Out_ObjectId(OUT objectId);
 	getDBTables.Out_TableName(OUT tableName);
 	getDBTables.Out_ColumnName(OUT columnName);
@@ -247,7 +247,7 @@ bool DBSynchronizer::GatherDBTables()
 			[=](const std::shared_ptr<Table>& table) { return table->_objectId == objectId; });
 		if (findTable == _dbTables.end())
 		{
-			table = MakeShared<DBModel::Table>();
+			table = MakeShared<ServerDb::Table>();
 			table->_objectId = objectId;
 			table->_name = tableName;
 			_dbTables.push_back(table);
@@ -257,13 +257,13 @@ bool DBSynchronizer::GatherDBTables()
 			table = *findTable;
 		}
 
-		std::shared_ptr<Column> column = MakeShared<DBModel::Column>();
+		std::shared_ptr<Column> column = MakeShared<ServerDb::Column>();
 		{
 			column->_name = columnName;
 			column->_columnId = columnId;
-			column->_type = static_cast<DBModel::DataType>(userTypeId);
-			column->_typeText = DBModel::Helpers::DataType2String(column->_type);
-			column->_maxLength = (column->_type == DBModel::DataType::NVarChar ? maxLength / 2 : maxLength);
+			column->_type = static_cast<ServerDb::DataType>(userTypeId);
+			column->_typeText = ServerDb::Helpers::DataType2String(column->_type);
+			column->_maxLength = (column->_type == ServerDb::DataType::NVarChar ? maxLength / 2 : maxLength);
 			column->_nullable = isNullable;
 			column->_identity = isIdentity;
 			column->_seedValue = (isIdentity ? seedValue : 0);
@@ -295,7 +295,7 @@ bool DBSynchronizer::GatherDBIndexes()
 	int32 columnId;
 	WCHAR columnName[101] = { 0 };
 
-	SP::GetDBIndexes getDBIndexes(_dbConn);
+	GetDBIndexes getDBIndexes(_dbConn);
 	getDBIndexes.Out_ObjectId(OUT objectId);
 	getDBIndexes.Out_IndexName(OUT indexName);
 	getDBIndexes.Out_IndexId(OUT indexId);
@@ -320,11 +320,11 @@ bool DBSynchronizer::GatherDBIndexes()
 		);
 		if (findIndex == indexes.end())
 		{
-			std::shared_ptr<Index> index = MakeShared<DBModel::Index>();
+			std::shared_ptr<Index> index = MakeShared<ServerDb::Index>();
 			{
 				index->_name = indexName;
 				index->_indexId = indexId;
-				index->_type = static_cast<DBModel::IndexType>(indexType);
+				index->_type = static_cast<ServerDb::IndexType>(indexType);
 				index->_primaryKey = isPrimaryKey;
 				index->_uniqueConstraint = isUniqueConstraint;
 			}
@@ -349,7 +349,7 @@ bool DBSynchronizer::GatherDBStoredProcedures()
 	WCHAR name[101] = { 0 };
 	Vector<WCHAR> body(PROCEDURE_MAX_LEN);
 
-	SP::GetDBStoredProcedures getDBStoredProcedures(_dbConn);
+	GetDBStoredProcedures getDBStoredProcedures(_dbConn);
 	getDBStoredProcedures.Out_Name(OUT name);
 	getDBStoredProcedures.Out_Body(OUT & body[0], PROCEDURE_MAX_LEN);
 
@@ -358,7 +358,7 @@ bool DBSynchronizer::GatherDBStoredProcedures()
 
 	while (getDBStoredProcedures.Fetch())
 	{
-		std::shared_ptr<Procedure> proc = MakeShared<DBModel::Procedure>();
+		std::shared_ptr<Procedure> proc = MakeShared<ServerDb::Procedure>();
 		{
 			proc->_name = name;
 			proc->_fullBody = String(body.begin(), std::find(body.begin(), body.end(), 0));
@@ -396,7 +396,7 @@ void DBSynchronizer::CompareDBModel()
 			if (_xmlRemovedTables.find(dbTable->_name) != _xmlRemovedTables.end())
 			{
 				GConsoleLogger->WriteStdOut(Color::YELLOW, L"Removing Table : [dbo].[%s]\n", dbTable->_name.c_str());
-				_updateQueries[UpdateStep::DropTable].push_back(DBModel::Helpers::Format(L"DROP TABLE [dbo].[%s]", dbTable->_name.c_str()));
+				_updateQueries[UpdateStep::DropTable].push_back(ServerDb::Helpers::Format(L"DROP TABLE [dbo].[%s]", dbTable->_name.c_str()));
 			}
 		}
 	}
@@ -417,16 +417,16 @@ void DBSynchronizer::CompareDBModel()
 		}
 
 		GConsoleLogger->WriteStdOut(Color::YELLOW, L"Creating Table : [dbo].[%s]\n", xmlTable->_name.c_str());
-		_updateQueries[UpdateStep::CreateTable].push_back(DBModel::Helpers::Format(L"CREATE TABLE [dbo].[%s] (%s)", xmlTable->_name.c_str(), columnsStr.c_str()));
+		_updateQueries[UpdateStep::CreateTable].push_back(ServerDb::Helpers::Format(L"CREATE TABLE [dbo].[%s] (%s)", xmlTable->_name.c_str(), columnsStr.c_str()));
 
 		for (std::shared_ptr<Column>& xmlColumn : xmlTable->_columns)
 		{
 			if (xmlColumn->_default.empty())
 				continue;
 
-			_updateQueries[UpdateStep::DefaultConstraint].push_back(DBModel::Helpers::Format(L"ALTER TABLE [dbo].[%s] ADD CONSTRAINT [%s] DEFAULT (%s) FOR [%s]",
+			_updateQueries[UpdateStep::DefaultConstraint].push_back(ServerDb::Helpers::Format(L"ALTER TABLE [dbo].[%s] ADD CONSTRAINT [%s] DEFAULT (%s) FOR [%s]",
 				xmlTable->_name.c_str(),
-				DBModel::Helpers::Format(L"DF_%s_%s", xmlTable->_name.c_str(), xmlColumn->_name.c_str()).c_str(),
+				ServerDb::Helpers::Format(L"DF_%s_%s", xmlTable->_name.c_str(), xmlColumn->_name.c_str()).c_str(),
 				xmlColumn->_default.c_str(),
 				xmlColumn->_name.c_str()));
 		}
@@ -436,7 +436,7 @@ void DBSynchronizer::CompareDBModel()
 			GConsoleLogger->WriteStdOut(Color::YELLOW, L"Creating Index : [%s] %s %s [%s]\n", xmlTable->_name.c_str(), xmlIndex->GetKeyText().c_str(), xmlIndex->GetTypeText().c_str(), xmlIndex->GetUniqueName().c_str());
 			if (xmlIndex->_primaryKey || xmlIndex->_uniqueConstraint)
 			{
-				_updateQueries[UpdateStep::CreateIndex].push_back(DBModel::Helpers::Format(
+				_updateQueries[UpdateStep::CreateIndex].push_back(ServerDb::Helpers::Format(
 					L"ALTER TABLE [dbo].[%s] ADD CONSTRAINT [%s] %s %s (%s)",
 					xmlTable->_name.c_str(),
 					xmlIndex->CreateName(xmlTable->_name).c_str(),
@@ -446,7 +446,7 @@ void DBSynchronizer::CompareDBModel()
 			}
 			else
 			{
-				_updateQueries[UpdateStep::CreateIndex].push_back(DBModel::Helpers::Format(
+				_updateQueries[UpdateStep::CreateIndex].push_back(ServerDb::Helpers::Format(
 					L"CREATE %s INDEX [%s] ON [dbo].[%s] (%s)",
 					xmlIndex->GetTypeText().c_str(),
 					xmlIndex->CreateName(xmlTable->_name).c_str(),
@@ -492,9 +492,9 @@ void DBSynchronizer::CompareTables(std::shared_ptr<Table> dbTable, std::shared_p
 		{
 			GConsoleLogger->WriteStdOut(Color::YELLOW, L"Dropping Column : [%s].[%s]\n", dbTable->_name.c_str(), dbColumn->_name.c_str());
 			if (dbColumn->_defaultConstraintName.empty() == false)
-				_updateQueries[UpdateStep::DropColumn].push_back(DBModel::Helpers::Format(L"ALTER TABLE [dbo].[%s] DROP CONSTRAINT [%s]", dbTable->_name.c_str(), dbColumn->_defaultConstraintName.c_str()));
+				_updateQueries[UpdateStep::DropColumn].push_back(ServerDb::Helpers::Format(L"ALTER TABLE [dbo].[%s] DROP CONSTRAINT [%s]", dbTable->_name.c_str(), dbColumn->_defaultConstraintName.c_str()));
 
-			_updateQueries[UpdateStep::DropColumn].push_back(DBModel::Helpers::Format(L"ALTER TABLE [dbo].[%s] DROP COLUMN [%s]", dbTable->_name.c_str(), dbColumn->_name.c_str()));
+			_updateQueries[UpdateStep::DropColumn].push_back(ServerDb::Helpers::Format(L"ALTER TABLE [dbo].[%s] DROP COLUMN [%s]", dbTable->_name.c_str(), dbColumn->_name.c_str()));
 		}
 	}
 
@@ -502,28 +502,28 @@ void DBSynchronizer::CompareTables(std::shared_ptr<Table> dbTable, std::shared_p
 	for (auto& mapIt : xmlColumnMap)
 	{
 		std::shared_ptr<Column>& xmlColumn = mapIt.second;
-		DBModel::Column newColumn = *xmlColumn;
+		ServerDb::Column newColumn = *xmlColumn;
 		newColumn._nullable = true;
 
 		GConsoleLogger->WriteStdOut(Color::YELLOW, L"Adding Column : [%s].[%s]\n", dbTable->_name.c_str(), xmlColumn->_name.c_str());
-		_updateQueries[UpdateStep::AddColumn].push_back(DBModel::Helpers::Format(L"ALTER TABLE [dbo].[%s] ADD %s %s",
+		_updateQueries[UpdateStep::AddColumn].push_back(ServerDb::Helpers::Format(L"ALTER TABLE [dbo].[%s] ADD %s %s",
 			dbTable->_name.c_str(), xmlColumn->_name.c_str(), xmlColumn->_typeText.c_str()));
 
 		if (xmlColumn->_nullable == false && xmlColumn->_default.empty() == false)
 		{
-			_updateQueries[UpdateStep::AddColumn].push_back(DBModel::Helpers::Format(L"SET NOCOUNT ON; UPDATE [dbo].[%s] SET [%s] = %s WHERE [%s] IS NULL",
+			_updateQueries[UpdateStep::AddColumn].push_back(ServerDb::Helpers::Format(L"SET NOCOUNT ON; UPDATE [dbo].[%s] SET [%s] = %s WHERE [%s] IS NULL",
 				dbTable->_name.c_str(), xmlColumn->_name.c_str(), xmlColumn->_default.c_str(), xmlColumn->_name.c_str()));
 		}
 
 		if (xmlColumn->_nullable == false)
 		{
-			_updateQueries[UpdateStep::AddColumn].push_back(DBModel::Helpers::Format(L"ALTER TABLE [dbo].[%s] ALTER COLUMN %s",
+			_updateQueries[UpdateStep::AddColumn].push_back(ServerDb::Helpers::Format(L"ALTER TABLE [dbo].[%s] ALTER COLUMN %s",
 				dbTable->_name.c_str(), xmlColumn->CreateText().c_str()));
 		}
 
 		if (xmlColumn->_default.empty() == false)
 		{
-			_updateQueries[UpdateStep::AddColumn].push_back(DBModel::Helpers::Format(L"ALTER TABLE [dbo].[%s] ADD CONSTRAINT [DF_%s_%s] DEFAULT (%s) FOR [%s]",
+			_updateQueries[UpdateStep::AddColumn].push_back(ServerDb::Helpers::Format(L"ALTER TABLE [dbo].[%s] ADD CONSTRAINT [DF_%s_%s] DEFAULT (%s) FOR [%s]",
 				dbTable->_name.c_str(), dbTable->_name.c_str(), xmlColumn->_name.c_str(), xmlColumn->_default.c_str(), xmlColumn->_name.c_str()));
 		}
 	}
@@ -550,13 +550,13 @@ void DBSynchronizer::CompareTables(std::shared_ptr<Table> dbTable, std::shared_p
 
 			if (dbIndex->_primaryKey || dbIndex->_uniqueConstraint)
 				_updateQueries[UpdateStep::DropIndex].push_back(
-					DBModel::Helpers::Format(
+					ServerDb::Helpers::Format(
 						L"ALTER TABLE [dbo].[%s] DROP CONSTRAINT [%s]",
 						dbTable->_name.c_str(), dbIndex->_name.c_str()
 					)
 				);
 			else
-				_updateQueries[UpdateStep::DropIndex].push_back(DBModel::Helpers::Format(L"DROP INDEX [%s] ON [dbo].[%s]", dbIndex->_name.c_str(), dbTable->_name.c_str()));
+				_updateQueries[UpdateStep::DropIndex].push_back(ServerDb::Helpers::Format(L"DROP INDEX [%s] ON [dbo].[%s]", dbIndex->_name.c_str(), dbTable->_name.c_str()));
 		}
 	}
 
@@ -573,7 +573,7 @@ void DBSynchronizer::CompareTables(std::shared_ptr<Table> dbTable, std::shared_p
 		if (xmlIndex->_primaryKey || xmlIndex->_uniqueConstraint)
 		{
 			_updateQueries[UpdateStep::CreateIndex].push_back(
-				DBModel::Helpers::Format(L"ALTER TABLE [dbo].[%s] ADD CONSTRAINT [%s] %s %s (%s)",
+				ServerDb::Helpers::Format(L"ALTER TABLE [dbo].[%s] ADD CONSTRAINT [%s] %s %s (%s)",
 					dbTable->_name.c_str(), xmlIndex->CreateName(dbTable->_name).c_str(),
 					xmlIndex->GetKeyText().c_str(),
 					xmlIndex->GetTypeText().c_str(),
@@ -584,7 +584,7 @@ void DBSynchronizer::CompareTables(std::shared_ptr<Table> dbTable, std::shared_p
 		else
 		{
 			_updateQueries[UpdateStep::CreateIndex].push_back(
-				DBModel::Helpers::Format(
+				ServerDb::Helpers::Format(
 					L"CREATE %s INDEX [%s] ON [dbo].[%s] (%s)",
 					xmlIndex->GetTypeText().c_str(),
 					xmlIndex->CreateName(dbTable->_name).c_str(),
@@ -630,14 +630,14 @@ void DBSynchronizer::CompareColumns(std::shared_ptr<Table> dbTable, std::shared_
 	{
 		if (dbColumn->_defaultConstraintName.empty() == false)
 		{
-			_updateQueries[UpdateStep::AlterColumn].push_back(DBModel::Helpers::Format(
+			_updateQueries[UpdateStep::AlterColumn].push_back(ServerDb::Helpers::Format(
 				L"ALTER TABLE [dbo].[%s] DROP CONSTRAINT [%s]",
 				dbTable->_name.c_str(),
 				dbColumn->_defaultConstraintName.c_str()));
 		}
 	}
 
-	DBModel::Column newColumn = *dbColumn;
+	ServerDb::Column newColumn = *dbColumn;
 	newColumn._default = L"";
 	newColumn._type = xmlColumn->_type;
 	newColumn._maxLength = xmlColumn->_maxLength;
@@ -647,7 +647,7 @@ void DBSynchronizer::CompareColumns(std::shared_ptr<Table> dbTable, std::shared_
 
 	if (flag & (ColumnFlag::Type | ColumnFlag::Length | ColumnFlag::Identity))
 	{
-		_updateQueries[UpdateStep::AlterColumn].push_back(DBModel::Helpers::Format(
+		_updateQueries[UpdateStep::AlterColumn].push_back(ServerDb::Helpers::Format(
 			L"ALTER TABLE [dbo].[%s] ALTER COLUMN %s",
 			dbTable->_name.c_str(),
 			newColumn.CreateText().c_str()));
@@ -658,7 +658,7 @@ void DBSynchronizer::CompareColumns(std::shared_ptr<Table> dbTable, std::shared_
 	{
 		if (xmlColumn->_default.empty() == false)
 		{
-			_updateQueries[UpdateStep::AlterColumn].push_back(DBModel::Helpers::Format(
+			_updateQueries[UpdateStep::AlterColumn].push_back(ServerDb::Helpers::Format(
 				L"SET NOCOUNT ON; UPDATE [dbo].[%s] SET [%s] = %s WHERE [%s] IS NULL",
 				dbTable->_name.c_str(),
 				xmlColumn->_name.c_str(),
@@ -666,7 +666,7 @@ void DBSynchronizer::CompareColumns(std::shared_ptr<Table> dbTable, std::shared_
 				xmlColumn->_name.c_str()));
 		}
 
-		_updateQueries[UpdateStep::AlterColumn].push_back(DBModel::Helpers::Format(
+		_updateQueries[UpdateStep::AlterColumn].push_back(ServerDb::Helpers::Format(
 			L"ALTER TABLE [dbo].[%s] ALTER COLUMN %s",
 			dbTable->_name.c_str(),
 			newColumn.CreateText().c_str()));
@@ -676,10 +676,10 @@ void DBSynchronizer::CompareColumns(std::shared_ptr<Table> dbTable, std::shared_
 	{
 		if (dbColumn->_defaultConstraintName.empty() == false)
 		{
-			_updateQueries[UpdateStep::AlterColumn].push_back(DBModel::Helpers::Format(
+			_updateQueries[UpdateStep::AlterColumn].push_back(ServerDb::Helpers::Format(
 				L"ALTER TABLE [dbo].[%s] ADD CONSTRAINT [%s] DEFAULT (%s) FOR [%s]",
 				dbTable->_name.c_str(),
-				DBModel::Helpers::Format(L"DF_%s_%s", dbTable->_name.c_str(), dbColumn->_name.c_str()).c_str(),
+				ServerDb::Helpers::Format(L"DF_%s_%s", dbTable->_name.c_str(), dbColumn->_name.c_str()).c_str(),
 				dbColumn->_default.c_str(), dbColumn->_name.c_str()));
 		}
 	}
@@ -700,7 +700,7 @@ void DBSynchronizer::CompareStoredProcedures()
 		{
 			std::shared_ptr<Procedure> xmlProcedure = findProcedure->second;
 			String xmlBody = xmlProcedure->GenerateCreateQuery();
-			if (DBModel::Helpers::RemoveWhiteSpace(dbProcedure->_fullBody) != DBModel::Helpers::RemoveWhiteSpace(xmlBody))
+			if (ServerDb::Helpers::RemoveWhiteSpace(dbProcedure->_fullBody) != ServerDb::Helpers::RemoveWhiteSpace(xmlBody))
 			{
 				GConsoleLogger->WriteStdOut(Color::YELLOW, L"Updating Procedure : %s\n", dbProcedure->_name.c_str());
 				_updateQueries[UpdateStep::StoredProcecure].push_back(xmlProcedure->GenerateAlterQuery());
@@ -715,4 +715,5 @@ void DBSynchronizer::CompareStoredProcedures()
 		GConsoleLogger->WriteStdOut(Color::YELLOW, L"Updating Procedure : %s\n", mapIt.first.c_str());
 		_updateQueries[UpdateStep::StoredProcecure].push_back(mapIt.second->GenerateCreateQuery());
 	}
+}
 }

@@ -11,4 +11,4 @@
 #pragma comment(lib, "Protobuf\\Release\\libprotobuf.lib")
 #endif
 
-// #include "Core.h"
+// #include "../GlobalCore/Core.h"

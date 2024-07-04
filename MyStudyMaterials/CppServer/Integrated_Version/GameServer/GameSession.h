@@ -1,15 +1,23 @@
 #pragma once
 #include <memory>
-#include "Types.h"
-#include "Container.h"
-#include "PacketSession.h"
+#include "Core/Types.h"
+#include "Memory/Container.h"
+#include "Network/PacketSession.h"
+//#include "Player.h"
 
-class Player;
+namespace GameServer
+{
+
+
+using namespace ServerCore;
+
 class Room;
+class Player;
+
 class GameSession : public PacketSession
 {
 public:
-	~GameSession() override;
+	virtual ~GameSession() override;
 
 	virtual void OnConnected() override;
 	virtual void OnDisconnected() override;
@@ -22,3 +30,4 @@ public:
 	std::shared_ptr<Player> mCurrentPlayer;
 	std::weak_ptr<Room> mRoom;
 };
+}

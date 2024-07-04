@@ -2,7 +2,10 @@ import argparse
 import jinja2
 import ProtoParser
 import os
-
+ 
+# protobuf 컴파일러로 ~.proto 파일을 컴파일한 결과물과
+# 템플릿 엔진 jinja2로 PacketHandler.h 파일에 렌더링한 결과물을
+# --output 경로에 생성한다
 def main():
 
 	arg_parser = argparse.ArgumentParser(description = 'PacketGenerator')
@@ -16,9 +19,10 @@ def main():
 	arg_parser.add_argument('--output', type=str, default='TestPacketHandler', help='output file')
 	arg_parser.add_argument('--recv', type=str, default='C_', help='recv convention')
 	arg_parser.add_argument('--send', type=str, default='S_', help='send convention')
+	arg_parser.add_argument('--namespace', type=str, default='#error', help='namespace')
 	args = arg_parser.parse_args()
 
-	parser = ProtoParser.ProtoParser(1000, args.recv, args.send)
+	parser = ProtoParser.ProtoParser(1000, args.recv, args.send, args.namespace )
 	# ProtoParser로 프로토콜 구조체 이름 파싱하기
 	parser.parse_proto(args.path)
 	

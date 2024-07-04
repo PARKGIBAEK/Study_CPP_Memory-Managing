@@ -1,23 +1,21 @@
 #include "DBModel.h"
-
 #include <cstdarg>
-
-#include "Container.h"
-using namespace DBModel;
 #include <regex>
 
 /*-------------
 	Column
 --------------*/
+namespace ServerDb
+{
 
 String Column::CreateText()
 {
-	return DBModel::Helpers::Format(
+	return ServerDb::Helpers::Format(
 		L"[%s] %s %s %s",
 		_name.c_str(),
 		_typeText.c_str(),
 		_nullable ? L"NULL" : L"NOT NULL",
-		_identity ? DBModel::Helpers::Format(L"IDENTITY(%d, %d)", _seedValue, _incrementValue).c_str() : L"");
+		_identity ? ServerDb::Helpers::Format(L"IDENTITY(%d, %d)", _seedValue, _incrementValue).c_str() : L"");
 }
 
 /*-----------
@@ -81,7 +79,7 @@ String Index::CreateColumnsText()
 		if (i > 0)
 			ret += L", ";
 
-		ret += DBModel::Helpers::Format(L"[%s]", _columns[i]->_name.c_str());
+		ret += ServerDb::Helpers::Format(L"[%s]", _columns[i]->_name.c_str());
 	}
 
 	return ret;
@@ -119,7 +117,7 @@ String Procedure::GenerateCreateQuery()
 	const WCHAR* query = L"CREATE PROCEDURE [dbo].[%s] %s AS BEGIN %s END";
 
 	String paramString = GenerateParamString();
-	return DBModel::Helpers::Format(query, _name.c_str(), paramString.c_str(), _body.c_str());
+	return ServerDb::Helpers::Format(query, _name.c_str(), paramString.c_str(), _body.c_str());
 }
 
 String Procedure::GenerateAlterQuery()
@@ -127,7 +125,7 @@ String Procedure::GenerateAlterQuery()
 	const WCHAR* query = L"ALTER PROCEDURE [dbo].[%s] %s AS	BEGIN %s END";
 
 	String paramString = GenerateParamString();
-	return DBModel::Helpers::Format(query, _name.c_str(), paramString.c_str(), _body.c_str());
+	return ServerDb::Helpers::Format(query, _name.c_str(), paramString.c_str(), _body.c_str());
 }
 
 String Procedure::GenerateParamString()
@@ -138,9 +136,9 @@ String Procedure::GenerateParamString()
 	for (int32 i = 0; i < size; i++)
 	{
 		if (i < size - 1)
-			str += DBModel::Helpers::Format(L"\t%s %s,\n", _parameters[i]._name.c_str(), _parameters[i]._type.c_str());
+			str += ServerDb::Helpers::Format(L"\t%s %s,\n", _parameters[i]._name.c_str(), _parameters[i]._type.c_str());
 		else
-			str += DBModel::Helpers::Format(L"\t%s %s", _parameters[i]._name.c_str(), _parameters[i]._type.c_str());
+			str += ServerDb::Helpers::Format(L"\t%s %s", _parameters[i]._name.c_str(), _parameters[i]._type.c_str());
 	}
 
 	return str;
@@ -223,4 +221,5 @@ DataType Helpers::String2DataType(const WCHAR* str, OUT int32& maxLen)
 	if (::_wcsicmp(ret[1].str().c_str(), L"NVarChar") == 0) return DataType::NVarChar;
 
 	return DataType::None;
+}
 }

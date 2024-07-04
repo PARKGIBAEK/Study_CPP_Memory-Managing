@@ -1,20 +1,14 @@
 #pragma once
 #include <memory>
-#include "DBConnection.h"
-#include "DBModel.h"
+#include "../DB/DBConnection.h"
+#include "../DB/DBModel.h"
 
 /*--------------------
 	DBSynchronizer
 ---------------------*/
-
-using Table = DBModel::Table;
-using Column = DBModel::Column;
-using Procedure = DBModel::Procedure;
-using Index = DBModel::Index;
-using IndexType = DBModel::IndexType;
-using Param = DBModel::Param;
-using DataType = DBModel::DataType;
-using Helpers = DBModel::Helpers;
+namespace ServerDb
+{
+using namespace ServerCore;
 
 class DBSynchronizer
 {
@@ -85,3 +79,4 @@ private:
 	Set<String>							_dependentIndexes;
 	Vector<String>						_updateQueries[UpdateStep::Max];
 };
+}

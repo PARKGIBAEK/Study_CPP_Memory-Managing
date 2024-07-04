@@ -1,7 +1,11 @@
-#include "GameSessionManager.h"
 #include "GameSession.h"
-#include "SendBuffer.h"
+#include "Network/SendBuffer.h"
+#include "GameSessionManager.h"
+#include "Network/Session.h"
 #include <iostream>
+
+namespace GameServer
+{
 
 GameSessionManager GSessionManager;
 
@@ -29,4 +33,5 @@ void GameSessionManager::Broadcast(std::shared_ptr<SendBuffer> sendBuffer)
 	{
 		session->Send(sendBuffer);
 	}
+}
 }

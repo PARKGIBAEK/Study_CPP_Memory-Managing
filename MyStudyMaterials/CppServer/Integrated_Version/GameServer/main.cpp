@@ -1,14 +1,17 @@
 ﻿#include "LibConfig.h"
-#include "CoreTLS.h"
-#include "CoreGlobal.h"
-#include "ThreadManager.h"
-#include "ServerService.h"
-#include "IocpService.h"
+#include "ServerGlobals.h" // 가장 먼저 포함 시켜야 전역 객체 초기화가 순서 보장됨
+#include <memory>
+#include "Core/CoreTLS.h"
+#include "Core/CoreInitializer.h"
+#include "Thread/ThreadManager.h"
+#include "Network/ServerService.h"
+#include "Network/IocpService.h"
+#include "Memory/MemoryManager.h"
 #include "GameSession.h"
 #include "ClientPacketHandler.h"
-#include <memory>
 
-#include "MemoryManager.h"
+using namespace ServerCore;
+using namespace GameServer;
 
 enum
 {
@@ -78,7 +81,7 @@ int main()
 	*/
 	ClientPacketHandler::Init();
 
-	std::shared_ptr<ServerzService>service = MakeShared<ServerService>(
+	std::shared_ptr<ServerService>service = MakeShared<ServerService>(
 		NetAddress(L"127.0.0.1", 7777),
 		MakeShared<IocpService>(),
 		MakeShared<GameSession>, // TODO : SessionManager 등
@@ -94,8 +97,9 @@ int main()
 			});
 	}
 
+	
 	// Main Thread
 	DoWorkerJob(service);
 
-	GThreadManager->Join();
+	GThreadManager->JoinAll();
 }
