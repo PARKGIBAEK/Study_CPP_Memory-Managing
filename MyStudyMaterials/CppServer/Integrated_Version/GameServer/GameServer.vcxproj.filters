@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="DB">
+      <UniqueIdentifier>{6bb8752e-8f1a-4f53-83f1-0e5f895f593f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientPacketHandler.cpp">
@@ -42,8 +45,11 @@
     <ClCompile Include="Struct.pb.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Globals.cpp">
+    <ClCompile Include="ServerGlobals.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MySqlConnectionPool.cpp">
+      <Filter>DB</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -77,8 +83,11 @@
     <ClInclude Include="Struct.pb.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Globals.h">
+    <ClInclude Include="ServerGlobals.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MySqlConnectionPool.h">
+      <Filter>DB</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

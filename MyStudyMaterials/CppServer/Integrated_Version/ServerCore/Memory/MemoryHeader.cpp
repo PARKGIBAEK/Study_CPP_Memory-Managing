@@ -1,5 +1,5 @@
 ﻿#include "../Memory/MemoryHeader.h"
-
+#include <new>
 namespace ServerCore
 {
 MemoryHeader::MemoryHeader(int32 _size)

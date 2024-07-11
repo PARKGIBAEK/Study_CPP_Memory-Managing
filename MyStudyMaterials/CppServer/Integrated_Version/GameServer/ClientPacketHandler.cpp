@@ -33,13 +33,12 @@ bool Handle_C_LOGIN(std::shared_ptr<PacketSession>& session, Protocol::C_LOGIN& 
 	static std::atomic<uint64> idGenerator = 1;
 
 	{
-		auto player = loginPkt.add_players();
-		player->set_name(u8"DB_extracted_name");
-		//player->set_playertype(Protocol::PLAYER_TYPE_KNIGHT);
-
+		Protocol::Player* player = loginPkt.add_players();
+		// player->mutable_name()->assign("DB_extracted_name");
+		// player->set_playertype(Protocol::PLAYER_TYPE_KNIGHT);
 		std::shared_ptr<Player> playerRef = MakeShared<Player>();
 		playerRef->playerId = idGenerator++;
-		playerRef->name = player->name();
+		// playerRef->name = player->name();
 		// playerRef->type = player->playertype();
 		playerRef->ownerSession = gameSession;
 
@@ -48,12 +47,12 @@ bool Handle_C_LOGIN(std::shared_ptr<PacketSession>& session, Protocol::C_LOGIN& 
 
 	{
 		auto player = loginPkt.add_players();
-		player->set_name(u8"DB_extracted_name_2");
+		// player->set_name(u8"DB_extracted_name_2");
 		//player->set_playertype(Protocol::PLAYER_TYPE_MAGE);
 
 		std::shared_ptr<Player> playerRef = MakeShared<Player>();
 		playerRef->playerId = idGenerator++;
-		playerRef->name = player->name();
+		// playerRef->name = player->name();
 		// playerRef->type = player->playertype();
 		playerRef->ownerSession = gameSession;
 
@@ -91,7 +90,6 @@ bool Handle_C_CHAT(std::shared_ptr<PacketSession>& session, Protocol::C_CHAT& pk
 	std::cout << pkt.msg() << std::endl;
 
 	Protocol::S_CHAT chatPkt;
-	chatPkt.set_msg(pkt.msg());
 	auto sendBuffer = ClientPacketHandler::MakeSendBuffer(chatPkt);
 
 	GRoom->DoAsync(&Room::Broadcast, sendBuffer);

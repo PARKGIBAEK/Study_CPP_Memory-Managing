@@ -138,9 +138,6 @@
     <ClInclude Include="Network\IocpService.h">
       <Filter>Network</Filter>
     </ClInclude>
-    <ClInclude Include="Network\ISession.h">
-      <Filter>Network</Filter>
-    </ClInclude>
     <ClInclude Include="Network\Listener.h">
       <Filter>Network</Filter>
     </ClInclude>
@@ -192,11 +189,9 @@
     <ClInclude Include="Core\Types.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="DB\DBBind.h" />
-    <ClInclude Include="DB\DBConnection.h" />
-    <ClInclude Include="DB\DBConnectionPool.h" />
-    <ClInclude Include="DB\DBModel.h" />
-    <ClInclude Include="DB\DBSynchronizer.h" />
+    <ClInclude Include="DB\MySqlConfig.h" />
+    <ClInclude Include="Network\IDispatchable.h" />
+    <ClInclude Include="Util\Path.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Memory\BaseAllocator.cpp">
@@ -310,10 +305,7 @@
     <ClCompile Include="Core\GlobalInitializer.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="DB\DBBind.cpp" />
-    <ClCompile Include="DB\DBConnection.cpp" />
-    <ClCompile Include="DB\DBConnectionPool.cpp" />
-    <ClCompile Include="DB\DBModel.cpp" />
-    <ClCompile Include="DB\DBSynchronizer.cpp" />
+    <ClCompile Include="DB\MySqlConfig.cpp" />
+    <ClCompile Include="Util\Path.cpp" />
   </ItemGroup>
 </Project>

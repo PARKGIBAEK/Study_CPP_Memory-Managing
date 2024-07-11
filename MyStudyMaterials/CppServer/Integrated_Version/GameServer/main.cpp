@@ -1,6 +1,11 @@
 ﻿#include "LibConfig.h"
 #include "ServerGlobals.h" // 가장 먼저 포함 시켜야 전역 객체 초기화가 순서 보장됨
+#include <filesystem>
 #include <memory>
+#include <boost/asio/spawn.hpp>
+#include <boost/asio/use_future.hpp>
+#include <boost/mysql/static_results.hpp>
+
 #include "Core/CoreTLS.h"
 #include "Core/CoreInitializer.h"
 #include "Thread/ThreadManager.h"
@@ -9,7 +14,9 @@
 #include "Memory/MemoryManager.h"
 #include "GameSession.h"
 #include "ClientPacketHandler.h"
-
+#include "DB/MySqlConfig.h"
+#include "MySqlConnectionPool.h"
+#include <boost/describe/class.hpp>
 using namespace ServerCore;
 using namespace GameServer;
 
@@ -37,15 +44,42 @@ void DoWorkerJob(std::shared_ptr<ServerService>& service)
 	}
 }
 
+struct user {
+	uint32 user_id;
+	std::string name;
+	uint32 humor;
+	uint32 image;
+	uint32 video;
+	uint32 chat;
+};
+BOOST_DESCRIBE_STRUCT(user, (), (user_id, name,humor,image,video,chat))
+
 int main()
 {
+	try
+	{
+		MySqlConnectionPool mysqlConfig("..\\..\\..\\DB\\connection.txt");
+		auto futureConnection = mysqlConfig.GetPooledConnectionFuture();
+		auto connection = futureConnection.get();
+
+		mysql::static_results<user> result;
+		mysql::diagnostics diag;
+		mysql::error_code ec;
+		
+		// auto futureResult = connection->async_execute("SELECT * FROM USERS",result,diag,boost::asio::use_future);
+		// auto res = futureResult.get();
+	}
+	catch (std::exception ex)
+	{
+		std::cout << ex.what();
+	}
 	/*// DB Test Code
 	ASSERT_CRASH(GDBConnectionPool->Connect(1, L"Driver={SQL Server Native Client 11.0};Server=(localdb)\\MSSQLLocalDB;Database=ServerDb;Trusted_Connection=Yes;"));
 
 	DbConnection* dbConn = GDBConnectionPool->Pop();
 	DBSynchronizer dbSync(*dbConn);
 	dbSync.Synchronize(L"GameDB.xml");
-	
+
 	{
 		WCHAR name[] = L"Test";
 
@@ -89,15 +123,15 @@ int main()
 
 	ASSERT_CRASH(service->Start())
 
-	for (int32 i = 0; i < 5; i++)
-	{
-		GThreadManager->Launch([&service]()
-			{
-				DoWorkerJob(service);
-			});
-	}
+		for (int32 i = 0; i < 5; i++)
+		{
+			GThreadManager->Launch([&service]()
+				{
+					DoWorkerJob(service);
+				});
+		}
 
-	
+
 	// Main Thread
 	DoWorkerJob(service);
 
