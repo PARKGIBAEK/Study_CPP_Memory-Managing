@@ -1,10 +1,35 @@
 ﻿#include "StompAllocator.h"
-#define WIN32_LEAN_AND_MEAN
-#define NOMINMAX
-#include <windows.h>
 
+#if defined(_WIN32) || defined(_WIN64)
+#include <malloc.h>
+#include <Windows.h>
+#else
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/mman.h>
+#endif
 
+// windows와 linux호환용 page_aligned_alloc
+void* page_aligned_malloc(size_t _size)
+{
+#if defined(_WIN32) || defined(_WIN64)
+    return ::VirtualAlloc(nullptr, _size, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+#else
+    size_t pageSize = sysconf(_SC_PAGESIZE);
+    size = ((size + pageSize - 1) / pageSize) * pageSize; // 페이지 크기에 맞게 정렬
+    void* ptr = mmap(nullptr, size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+    return (ptr == MAP_FAILED) ? nullptr : ptr;
+#endif
+}
 
+void page_aligned_free(void* _ptr, size_t _size)
+{
+#if defined(_WIN32) || defined(_WIN64)
+    ::VirtualFree(_ptr, 0, MEM_RELEASE);
+#else
+    munmap(ptr, _size);
+#endif
+}
 
 namespace ServerCore
 {
@@ -41,7 +66,8 @@ void* StompAllocator::AllocateMemory(int32 size)
       ( 메모리 내용이 0으로 초기화 됨을 보장한다 )
 
     - PAGE_READWRITE : 읽기/쓰기 접근 허용, 데이터 실행방지 옵션이 활성화 된 경우 커밋된 영역에서 코드를 실행할 경우 액세스 위반 발생*/
-    void* baseAddress = ::VirtualAlloc(NULL, pageCount * PAGE_SIZE, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+    // void* baseAddress = ::VirtualAlloc(NULL, pageCount * PAGE_SIZE, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+    void* baseAddress = page_aligned_malloc(pageCount * PAGE_SIZE);
 
     /* VirtualAlloc 함수를 통해 할당받은 메모리의 주소에서 실제 사용할 주소의 위치를 반환 	*/
     return static_cast<void*>(static_cast<int8*>(baseAddress) + offset);
@@ -57,7 +83,10 @@ void StompAllocator::ReleaseMemory(void* ptr)
     //		 5500 - ( 5500 % 4096 ) = 5500 - 1404  = 4096
 
     const int64 baseAddress = address - (address % PAGE_SIZE);
-    // MEM_RELEASE옵션을 사용할 경우 VirtualAlloc함수를 통해 할당한 메모리의 base address를 인자로 넣어주어야한다
-    ::VirtualFree(reinterpret_cast<void*>(baseAddress), 0, MEM_RELEASE);
+#if defined(_WIN32) || defined(_WIN64)
+    page_aligned_free(reinterpret_cast<void*>(baseAddress), 0);
+#else
+    page_aligned_free(reinterpret_cast<void*>(baseAddress), PAGE_SIZE);
+#endif
 }
 }

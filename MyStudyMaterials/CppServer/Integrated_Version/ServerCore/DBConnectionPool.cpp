@@ -20,23 +20,23 @@ bool DBConnectionPool::Connect(int32 connectionCount, const WCHAR* connectionStr
 {
 	WRITE_LOCK;
 
-	// SQLHENV ÇÒ´ç ÃÊ±âÈ­
+	// SQLHENV í• ë‹¹ ì´ˆê¸°í™”
 	if (SQL_SUCCESS != ::SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &_environment))
 	{
 		return false;
 	}
 
-	// SQL ¹öÀü ¼³Á¤
+	// SQL ë²„ì „ ì„¤ì •
 	if (SQL_SUCCESS != ::SQLSetEnvAttr(_environment, SQL_ATTR_ODBC_VERSION,
 		reinterpret_cast<SQLPOINTER>(SQL_OV_ODBC3), 0))
 	{
 		return false;
 	}
 
-	// connectionCount¸¸Å­ Connection »ı¼º
+	// connectionCountë§Œí¼ Connection ìƒì„±
 	for (int32 i = 0; i < connectionCount; i++)
 	{
-		DbConnection* connection = XNew<DbConnection>(); // XNew´Â PoolingÀ» À§ÇÑ ÇÒ´ç ÇÔ¼ö
+		DbConnection* connection = XNew<DbConnection>(); // XNewëŠ” Poolingì„ ìœ„í•œ í• ë‹¹ í•¨ìˆ˜
 		if (connection->Connect(_environment, connectionString) == false)
 			return false;
 
@@ -51,12 +51,12 @@ void DBConnectionPool::Clear()
 	WRITE_LOCK;
 
 	if (_environment != SQL_NULL_HANDLE)
-	{	// DB Environmenet ÇÚµé ´İ±â(ÇØÁ¦)
+	{	// DB Environmenet í•¸ë“¤ ë‹«ê¸°(í•´ì œ)
 		::SQLFreeHandle(SQL_HANDLE_ENV, _environment);
 		_environment = SQL_NULL_HANDLE;
 	}
 
-	// connection ÇØÁ¦
+	// connection í•´ì œ
 	for (DbConnection* connection : _connectionPool)
 		XDelete(connection);
 

@@ -2,6 +2,7 @@
 
 #include "../Core/CoreTLS.h"
 #include "../Job/GlobalQueue.h"
+#include "Util/Time.h"
 
 
 namespace ServerCore
@@ -55,7 +56,7 @@ void JobQueue::Execute()
         /* 처리해야할 일감이 남았지만 
             현재 쓰레드에서 일감 처리에 시간을 너무 오래 할애 했다면
             GlobalQueue에 넘겨 다른 쓰레드에서 처리할 수 있도록한다*/
-        const uint64 now = ::GetTickCount64();
+        const uint64 now = Time::GetTickCount64();
         if (now >= tls_EndTickCount)
         {
             tls_CurrentJobQueue = nullptr;
